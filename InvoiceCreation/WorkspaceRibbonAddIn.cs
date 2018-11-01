@@ -87,17 +87,40 @@ namespace InvoiceCreation
                     AircraftCategory = GetCargoGroup(ICAO);
                     ClientType = GetClientType();
                     FuelType = GetFuelType(IncidentID);
-
-
-
                     servicios = GetListServices();
 
-
-                    invoice = new Invoice();
+                    invoice = new Invoice(inDesignMode, recordContext, global);
                     DgvServicios = ((DataGridView)invoice.Controls["dataGridServicios"]);
+                    DataGridViewComboBoxColumn combType = new DataGridViewComboBoxColumn();
+                    combType.HeaderText = "Type";
+                    combType.Name = "Type";
+                    combType.MaxDropDownItems = 2;
+                    combType.Items.Add("Recipe");
+                    combType.Items.Add("Invoice");
+
+                    DataGridViewComboBoxColumn combNumber = new DataGridViewComboBoxColumn();
+                    combNumber.HeaderText = "Number";
+                    combNumber.Name = "Number";
+                    combNumber.MaxDropDownItems = 2;
+
+                    for (int i = 1; i <= 10; i++)
+                    {
+                        combNumber.Items.Add(i.ToString());
+                    }
+                    DgvServicios.Columns.Add(combType);
+                    DgvServicios.Columns.Add(combNumber);
                     DgvServicios.DataSource = servicios.OrderBy(o => o.InternalInvoice).ToList();
-                    //DgvServicios.Columns[2].Visible = false;
-                    DgvServicios.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+
+                    DgvServicios.Columns[2].ReadOnly = true;
+                    DgvServicios.Columns[3].ReadOnly = true;
+                    DgvServicios.Columns[4].ReadOnly = true;
+                    DgvServicios.Columns[5].ReadOnly = true;
+                    DgvServicios.Columns[6].ReadOnly = true;
+                    DgvServicios.Columns[7].ReadOnly = true;
+                    DgvServicios.Columns[8].ReadOnly = true;
+                    DgvServicios.Columns[9].ReadOnly = true;
+                    DgvServicios.Columns[10].ReadOnly = true;
                     ((TextBox)invoice.Controls["txtIncidentID"]).Text = IncidentID.ToString();
                     ((TextBox)invoice.Controls["txtCustomerName"]).Text = Nombre;
                     ((TextBox)invoice.Controls["txtRFC"]).Text = RFC;
@@ -105,9 +128,13 @@ namespace InvoiceCreation
                     ((TextBox)invoice.Controls["txtRoyalty"]).Text = CatRoyalty;
                     ((TextBox)invoice.Controls["txtUtilidad"]).Text = CatUtilidad;
                     ((TextBox)invoice.Controls["txtCombustible"]).Text = CatCombust;
+                    ((System.Windows.Forms.Label)invoice.Controls["lblRN"]).Text = GetReferenceNumber();
+                    ((System.Windows.Forms.Label)invoice.Controls["lblSRtype"]).Text = SrType;
+                    ((System.Windows.Forms.Label)invoice.Controls["lblCurrency"]).Text = GetSrCurrency();
+
+
                     invoice.ShowDialog();
 
-                    //MessageBox.Show("Clicked");
                 }
             }
             catch (Exception ex)
@@ -265,6 +292,60 @@ namespace InvoiceCreation
 
             }
         }
+        public string GetReferenceNumber()
+        {
+            try
+            {
+                string Reference = "";
+                ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
+                APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
+                clientInfoHeader.AppID = "Query Example";
+                String queryString = "SELECT ReferenceNumber FROM Incident  WHERE ID =  " + IncidentID;
+                clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 1, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
+                foreach (CSVTable table in queryCSV.CSVTables)
+                {
+                    String[] rowData = table.Rows;
+                    foreach (String data in rowData)
+                    {
+                        Reference = data;
+                    }
+                }
+                return Reference;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.StackTrace);
+                return "0";
+
+            }
+        }
+        public string GetSrCurrency()
+        {
+            try
+            {
+                string Currency = "";
+                ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
+                APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
+                clientInfoHeader.AppID = "Query Example";
+                String queryString = "SELECT Customfields.c.sr_currency.name FROM Incident WHERE ID =" + IncidentID;
+                clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 1, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
+                foreach (CSVTable table in queryCSV.CSVTables)
+                {
+                    String[] rowData = table.Rows;
+                    foreach (String data in rowData)
+                    {
+                        Currency = data;
+                    }
+                }
+                return Currency;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.StackTrace);
+                return "";
+
+            }
+        }
         public bool Init()
         {
             try
@@ -307,7 +388,7 @@ namespace InvoiceCreation
                 ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
                 APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
                 clientInfoHeader.AppID = "Query Example";
-                String queryString = "SELECT  ID,ItemNumber,ItemDescription,IDProveedor,Costo,CuentaGasto,Precio,InternalInvoice,ERPInvoice FROM CO.Services WHERE Incident = " + IncidentID;
+                String queryString = "SELECT  ID,ItemNumber,ItemDescription,IDProveedor,Costo,CuentaGasto,Precio,InternalInvoice,ERPInvoice FROM CO.Services WHERE Informativo = '0' AND Incident = " + IncidentID;
                 clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 10000, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
                 foreach (CSVTable table in queryCSV.CSVTables)
                 {

@@ -1,4 +1,5 @@
 ﻿using RestSharp;
+using RightNow.AddIns.AddInViews;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,9 +14,17 @@ namespace InvoiceCreation
 {
     public partial class Invoice : Form
     {
+        public bool DesingMode { get; set; }
+        public IRecordContext RecordContext { get; set; }
+        public IGlobalContext GlobalContext { get; set; }
+
         public bool created { get; set; }
-        public Invoice()
+
+        public Invoice(bool inDesignMode, IRecordContext RecordContext, IGlobalContext globalContext)
         {
+            this.GlobalContext = globalContext;
+            this.RecordContext = RecordContext;
+            this.DesingMode = inDesignMode;
             InitializeComponent();
         }
 
@@ -29,9 +38,10 @@ namespace InvoiceCreation
                 {
                     GenerarFactura(i);
                 }
-                if (created) {
+                if (created)
+                {
                     MessageBox.Show("Data saved");
-                this.Close();
+                    this.Close();
                 }
             }
             else
@@ -47,43 +57,44 @@ namespace InvoiceCreation
                 string dateTime = DateTime.Now.ToString();
                 string createddate = Convert.ToDateTime(dateTime).ToString("yyyy-MM-dd");
 
+
                 string envelope = "<soapenv:Envelope" +
-    "   xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"" +
-    "   xmlns:typ=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/invoices/invoiceService/types/\"" +
-    "   xmlns:inv=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/invoices/invoiceService/\"" +
-    "   xmlns:tran=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/shared/model/flex/TransactionInterfaceLineDff/\"" +
-    "   xmlns:tran1=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/shared/model/flex/TransactionLineDff/\"" +
-    "   xmlns:tran2=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/shared/model/flex/TransactionLineGdf/\"" +
-    "   xmlns:tran3=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/shared/model/flex/TransactionHeaderDff/\"" +
-    "   xmlns:tran4=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/shared/model/flex/TransactionHeaderGdf/\"" +
-    "   xmlns:tran5=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/shared/model/flex/TransactionInterfaceHeaderDff/\"" +
-    "   xmlns:tran6=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/shared/model/flex/TransactionDistributionDff/\">" +
-    "<soapenv:Header/>" +
-    "<soapenv:Body>" +
-    "<typ:createSimpleInvoice>" +
-    "<typ:invoiceHeaderInformation>" +
-    "<inv:BusinessUnit>BU_ICCS</inv:BusinessUnit>" +
-    "<inv:TransactionSource>ORIGEN ICCS</inv:TransactionSource>" +
-    "<inv:TransactionType>CFCC</inv:TransactionType>" +
-    "<inv:TrxDate>" + createddate + "</inv:TrxDate>" +
-    "<inv:GlDate>" + createddate + "</inv:GlDate>" +
-    "<inv:BillToCustomerName>" + txtCustomerName.Text + "</inv:BillToCustomerName>" +
-    "<inv:BillToAccountNumber>" + txtAccount.Text + "</inv:BillToAccountNumber>" +
-    "<inv:PaymentTermsName>CONTADO</inv:PaymentTermsName>" +
-    "<inv:InvoiceCurrencyCode>MXN</inv:InvoiceCurrencyCode>";
+                    "   xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"" +
+                    "   xmlns:typ=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/invoices/invoiceService/types/\"" +
+                    "   xmlns:inv=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/invoices/invoiceService/\"" +
+                    "   xmlns:tran=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/shared/model/flex/TransactionInterfaceLineDff/\"" +
+                    "   xmlns:tran1=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/shared/model/flex/TransactionLineDff/\"" +
+                    "   xmlns:tran2=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/shared/model/flex/TransactionLineGdf/\"" +
+                    "   xmlns:tran3=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/shared/model/flex/TransactionHeaderDff/\"" +
+                    "   xmlns:tran4=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/shared/model/flex/TransactionHeaderGdf/\"" +
+                    "   xmlns:tran5=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/shared/model/flex/TransactionInterfaceHeaderDff/\"" +
+                    "   xmlns:tran6=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/shared/model/flex/TransactionDistributionDff/\">" +
+                    "<soapenv:Header/>" +
+                    "<soapenv:Body>" +
+                    "<typ:createSimpleInvoice>" +
+                    "<typ:invoiceHeaderInformation>" +
+                    "<inv:BusinessUnit>BU_ICCS</inv:BusinessUnit>" +
+                    "<inv:TransactionSource>ORIGEN ICCS</inv:TransactionSource>" +
+                    "<inv:TransactionType>CFCC</inv:TransactionType>" +
+                    "<inv:TrxDate>" + createddate + "</inv:TrxDate>" +
+                    "<inv:GlDate>" + createddate + "</inv:GlDate>" +
+                    "<inv:BillToCustomerName>" + txtCustomerName.Text + "</inv:BillToCustomerName>" +
+                    "<inv:BillToAccountNumber>" + txtAccount.Text + "</inv:BillToAccountNumber>" +
+                    "<inv:PaymentTermsName>CONTADO</inv:PaymentTermsName>" +
+                    "<inv:InvoiceCurrencyCode>MXN</inv:InvoiceCurrencyCode>";
                 envelope = envelope + getInvoiceItems(x);
 
                 envelope = envelope +
-                "<inv:TransactionHeaderFLEX>" +
-                "<tran3:xxServiceRequest>2929-14256</tran3:xxServiceRequest>" +
-                "<tran3:xxDatosFactura>SQR354|LJ350|MMAC|JUL-25-2018 1440 Z|JUL-25-2018 1800 Z|FBO JUL-25-2018|46789</tran3:xxDatosFactura>" +
-                "<tran3:xxDatosDeRutas>KMIA-MIA/MMMD-MID/MMMD/MMUN_AG</tran3:xxDatosDeRutas>" +
-                "<tran3:xxDatosCombistible>1892 LTRS./.6594 US|499.83 GAL/2.496 USD|1800488211</tran3:xxDatosCombistible>" +
-                "</inv:TransactionHeaderFLEX>" +
-                "</typ:invoiceHeaderInformation>" +
-                "</typ:createSimpleInvoice>" +
-                "</soapenv:Body>" +
-                "</soapenv:Envelope>";
+                 "<inv:TransactionHeaderFLEX>" +
+                 "<tran3:xxServiceRequest>" + lblRN.Text + "</tran3:xxServiceRequest>" +
+                 "<tran3:xxDatosFactura>SQR354|LJ350|MMAC|JUL-25-2018 1440 Z|JUL-25-2018 1800 Z|FBO JUL-25-2018|46789</tran3:xxDatosFactura>" +
+                 "<tran3:xxDatosDeRutas>KMIA-MIA/MMMD-MID/MMMD/MMUN_AG</tran3:xxDatosDeRutas>" +
+                 "<tran3:xxDatosCombistible>1892 LTRS./.6594 US|499.83 GAL/2.496 USD|1800488211</tran3:xxDatosCombistible>" +
+                 "</inv:TransactionHeaderFLEX>" +
+                 "</typ:invoiceHeaderInformation>" +
+                 "</typ:createSimpleInvoice>" +
+                 "</soapenv:Body>" +
+                 "</soapenv:Envelope>";
 
                 byte[] byteArray = Encoding.UTF8.GetBytes(envelope);
                 txtEnvelope.Text = envelope;
@@ -157,14 +168,14 @@ namespace InvoiceCreation
                 {
                     string res = "<inv:InvoiceLine>" +
                                            "<inv:LineNumber>" + i + "</inv:LineNumber>" +
-                                           "<inv:ItemNumber>" + dgvRenglon.Cells[1].Value.ToString() + "</inv:ItemNumber>" +
-                                           "<inv:Description>" + dgvRenglon.Cells[2].Value.ToString() + "</inv:Description>" +
+                                           "<inv:ItemNumber>" + dgvRenglon.Cells[3].Value.ToString() + "</inv:ItemNumber>" +
+                                           "<inv:Description>" + dgvRenglon.Cells[5].Value.ToString() + "</inv:Description>" +
                                            "<inv:Quantity unitCode=\"SER\">1</inv:Quantity>" +
-                                           "<inv:UnitSellingPrice currencyCode=\"MXN\">" + dgvRenglon.Cells[6].Value.ToString() + "</inv:UnitSellingPrice>" +
+                                           "<inv:UnitSellingPrice currencyCode=\"MXN\">" + dgvRenglon.Cells[8].Value.ToString() + "</inv:UnitSellingPrice>" +
                                            "<inv:TaxClassificationCode>AR IVA 16%</inv:TaxClassificationCode>" +
                                            "<inv:TransactionLineFLEX>" +
-                                           "<tran1:xxProveedor>" + dgvRenglon.Cells[3].Value.ToString() + "</tran1:xxProveedor>" +
-                                           "<tran1:xxCostoRealFull>" + dgvRenglon.Cells[4].Value.ToString() + "</tran1:xxCostoRealFull>" +
+                                           "<tran1:xxProveedor>" + dgvRenglon.Cells[5].Value.ToString() + "</tran1:xxProveedor>" +
+                                           "<tran1:xxCostoRealFull>" + dgvRenglon.Cells[6].Value.ToString() + "</tran1:xxCostoRealFull>" +
                                            "<tran1:xxCantidad>1</tran1:xxCantidad>" +
                                            "</inv:TransactionLineFLEX>" +
                                            "</inv:InvoiceLine>";
@@ -228,5 +239,9 @@ namespace InvoiceCreation
 
         }
 
+        private void Invoice_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
