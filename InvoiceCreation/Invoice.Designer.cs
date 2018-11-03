@@ -383,7 +383,7 @@
             this.Name = "Invoice";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Invoice";
-            this.Load += new System.EventHandler(this.Invoice_Load);
+          
             ((System.ComponentModel.ISupportInitialize)(this.dataGridServicios)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

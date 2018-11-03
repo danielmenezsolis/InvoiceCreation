@@ -32,16 +32,23 @@ namespace InvoiceCreation
         {
             if (dataGridServicios.Rows.Count > 0)
             {
-                created = false;
-                List<int> internalinvoice = DiferentsInvoices();
-                foreach (int i in internalinvoice)
+                if (ValidateRows())
                 {
-                    GenerarFactura(i);
+                    created = false;
+                    List<int> internalinvoice = DiferentsInvoices();
+                    foreach (int i in internalinvoice)
+                    {
+                        GenerarFactura(i);
+                    }
+                    if (created)
+                    {
+                        MessageBox.Show("Data saved");
+                        this.Close();
+                    }
                 }
-                if (created)
+                else
                 {
-                    MessageBox.Show("Data saved");
-                    this.Close();
+                    MessageBox.Show("Please select a Type and Number at any row");
                 }
             }
             else
@@ -185,6 +192,22 @@ namespace InvoiceCreation
             }
             return restotal;
         }
+
+        private bool ValidateRows()
+        {
+
+            bool validate = true;
+            foreach (DataGridViewRow dgvRenglon in dataGridServicios.Rows)
+            {
+                if (String.IsNullOrEmpty(dgvRenglon.Cells[0].Value.ToString()) || String.IsNullOrEmpty(dgvRenglon.Cells[1].Value.ToString()))
+                {
+                    validate = false;
+                }
+            }
+
+            return validate;
+        }
+
 
         private List<int> DiferentsInvoices()
         {

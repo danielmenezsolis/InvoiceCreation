@@ -388,7 +388,7 @@ namespace InvoiceCreation
                 ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
                 APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
                 clientInfoHeader.AppID = "Query Example";
-                String queryString = "SELECT  ID,ItemNumber,ItemDescription,IDProveedor,Costo,CuentaGasto,Precio,InternalInvoice,ERPInvoice FROM CO.Services WHERE Informativo = '0' AND Incident = " + IncidentID;
+                String queryString = "SELECT  ID,ItemNumber,ItemDescription,IDProveedor,Costo,CuentaGasto,Precio,InternalInvoice,ERPInvoice,Fuel_Id FROM CO.Services WHERE Informativo = '0' AND Incident = " + IncidentID;
                 clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 10000, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
                 foreach (CSVTable table in queryCSV.CSVTables)
                 {
@@ -400,13 +400,14 @@ namespace InvoiceCreation
                         string[] substrings = data.Split(delimiter);
                         service.ServiceID = substrings[0];
                         service.ItemNumber = substrings[1];
-                        service.Description = substrings[2].Replace('"', ' ').Trim();
-                        service.SupplierID = substrings[3].Replace('"', ' ').Trim();
+                        service.Description = substrings[2];
+                        service.SupplierID = substrings[3];
                         service.Cost = substrings[4];
                         service.CuentaGasto = substrings[5];
                         service.Precio = substrings[6];
                         service.InternalInvoice = substrings[7];
                         service.ERPInvoice = substrings[8];
+                        service.FuelId = substrings[9];
                         services.Add(service);
                     }
                 }

@@ -17,5 +17,8 @@ namespace InvoiceCreation
         public string Precio { get; set; }
         public string InternalInvoice { get; set; }
         public string ERPInvoice { get; set; }
+        public string FuelId { get; set; }
+        public string Type { get; set; }
+        public string Number { get; set; }
     }
 }
