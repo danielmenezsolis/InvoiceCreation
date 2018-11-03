@@ -1,10 +1,13 @@
-﻿using RestSharp;
+﻿using InvoiceCreation.SOAPICCS;
+using RestSharp;
 using RightNow.AddIns.AddInViews;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.ServiceModel;
+using System.ServiceModel.Channels;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
@@ -17,7 +20,7 @@ namespace InvoiceCreation
         public bool DesingMode { get; set; }
         public IRecordContext RecordContext { get; set; }
         public IGlobalContext GlobalContext { get; set; }
-
+        private RightNowSyncPortClient clientORN { get; set; }
         public bool created { get; set; }
 
         public Invoice(bool inDesignMode, IRecordContext RecordContext, IGlobalContext globalContext)
@@ -25,38 +28,44 @@ namespace InvoiceCreation
             this.GlobalContext = globalContext;
             this.RecordContext = RecordContext;
             this.DesingMode = inDesignMode;
+            Init();
             InitializeComponent();
         }
-
         private void BtnInvoice_Click(object sender, EventArgs e)
         {
-            if (dataGridServicios.Rows.Count > 0)
+            try
             {
-                if (ValidateRows())
+                if (dataGridServicios.Rows.Count > 0)
                 {
-                    created = false;
-                    List<int> internalinvoice = DiferentsInvoices();
-                    foreach (int i in internalinvoice)
+                    if (ValidateRows())
                     {
-                        GenerarFactura(i);
+                        created = false;
+                        List<int> internalinvoice = DiferentsInvoices();
+                        foreach (int i in internalinvoice)
+                        {
+                            GenerarFactura(i);
+                        }
+                        if (created)
+                        {
+                            MessageBox.Show("Data saved");
+                            this.Close();
+                        }
                     }
-                    if (created)
+                    else
                     {
-                        MessageBox.Show("Data saved");
-                        this.Close();
+                        MessageBox.Show("Please select a Type and Number at any row");
                     }
                 }
                 else
                 {
-                    MessageBox.Show("Please select a Type and Number at any row");
+                    MessageBox.Show("You should have at least one service");
                 }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("You should have at least one service");
+                MessageBox.Show(ex.Message + "Det" + ex.StackTrace);
             }
         }
-
         private void GenerarFactura(int x)
         {
             try
@@ -94,9 +103,9 @@ namespace InvoiceCreation
                 envelope = envelope +
                  "<inv:TransactionHeaderFLEX>" +
                  "<tran3:xxServiceRequest>" + lblRN.Text + "</tran3:xxServiceRequest>" +
-                 "<tran3:xxDatosFactura>SQR354|LJ350|MMAC|JUL-25-2018 1440 Z|JUL-25-2018 1800 Z|FBO JUL-25-2018|46789</tran3:xxDatosFactura>" +
-                 "<tran3:xxDatosDeRutas>KMIA-MIA/MMMD-MID/MMMD/MMUN_AG</tran3:xxDatosDeRutas>" +
-                 "<tran3:xxDatosCombistible>1892 LTRS./.6594 US|499.83 GAL/2.496 USD|1800488211</tran3:xxDatosCombistible>" +
+                 "<tran3:xxDatosFactura>" + lblTail.Text + "|" + lblICAO.Text + "|MMAC|JUL-25-2018 1440 Z|JUL-25-2018 1800 Z|FBO JUL-25-2018|46789</tran3:xxDatosFactura>" +
+                 "<tran3:xxDatosDeRutas>" + lblArrivalTo.Text + "</tran3:xxDatosDeRutas>" +
+                 "<tran3:xxDatosCombistible>" + GetFuels() + "</tran3:xxDatosCombistible>" +
                  "</inv:TransactionHeaderFLEX>" +
                  "</typ:invoiceHeaderInformation>" +
                  "</typ:createSimpleInvoice>" +
@@ -104,7 +113,7 @@ namespace InvoiceCreation
                  "</soapenv:Envelope>";
 
                 byte[] byteArray = Encoding.UTF8.GetBytes(envelope);
-                txtEnvelope.Text = envelope;
+                GlobalContext.LogMessage(envelope);
                 // Construct the base 64 encoded string used as credentials for the service call
                 byte[] toEncodeAsBytes = System.Text.ASCIIEncoding.ASCII.GetBytes("itotal" + ":" + "Oracle123");
                 string credentials = System.Convert.ToBase64String(toEncodeAsBytes);
@@ -161,10 +170,9 @@ namespace InvoiceCreation
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message + "Det" + ex.StackTrace);
             }
         }
-
         private string getInvoiceItems(int x)
         {
             string restotal = "";
@@ -192,34 +200,74 @@ namespace InvoiceCreation
             }
             return restotal;
         }
-
         private bool ValidateRows()
         {
-
-            bool validate = true;
-            foreach (DataGridViewRow dgvRenglon in dataGridServicios.Rows)
+            try
             {
-                if (String.IsNullOrEmpty(dgvRenglon.Cells[0].Value.ToString()) || String.IsNullOrEmpty(dgvRenglon.Cells[1].Value.ToString()))
+                bool validate = true;
+                foreach (DataGridViewRow dgvRenglon in dataGridServicios.Rows)
                 {
-                    validate = false;
+
+                    if (String.IsNullOrEmpty(dgvRenglon.Cells[0].FormattedValue.ToString()) || String.IsNullOrEmpty(dgvRenglon.Cells[1].FormattedValue.ToString()))
+                    {
+                        validate = false;
+                    }
                 }
+
+                return validate;
             }
-
-            return validate;
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message + "Det" + ex.StackTrace);
+                return false;
+            }
         }
-
-
         private List<int> DiferentsInvoices()
         {
             List<int> invoice = new List<int>();
             foreach (DataGridViewRow dgvRenglon in dataGridServicios.Rows)
             {
-                invoice.Add(Convert.ToInt32(dgvRenglon.Cells[7].Value));
+                invoice.Add(Convert.ToInt32(dgvRenglon.Cells[1].Value));
             }
             return invoice.Distinct().ToList();
         }
+        private string GetFuels()
+        {
+            try
+            {
+                string fuels = "";
+                List<int> fuel = new List<int>();
+                foreach (DataGridViewRow dgvRenglon in dataGridServicios.Rows)
+                {
+                    fuel.Add(Convert.ToInt32(dgvRenglon.Cells[11].Value));
+                }
+                fuel.Distinct().ToList();
 
-
+                foreach (var id in fuel)
+                {
+                    MessageBox.Show(id.ToString());
+                    ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
+                    APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
+                    clientInfoHeader.AppID = "Query Example";
+                    String queryString = "SELECT Liters, Liters * 3.7854 Gallons FROM CO.Fueling WHERE ID = " + id;
+                    clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 10000, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
+                    foreach (CSVTable table in queryCSV.CSVTables)
+                    {
+                        String[] rowData = table.Rows;
+                        foreach (String data in rowData)
+                        {
+                            fuels += data;
+                        }
+                    }
+                }
+                return fuels;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message + "Det" + ex.StackTrace);
+                return "";
+            }
+        }
         private void UpdateTrxNumber(string Trx, int Invoicex)
         {
             try
@@ -261,7 +309,40 @@ namespace InvoiceCreation
             }
 
         }
+        public bool Init()
+        {
+            try
+            {
+                bool result = false;
+                EndpointAddress endPointAddr = new EndpointAddress(GlobalContext.GetInterfaceServiceUrl(ConnectServiceType.Soap));
+                // Minimum required
+                BasicHttpBinding binding = new BasicHttpBinding(BasicHttpSecurityMode.TransportWithMessageCredential);
+                binding.Security.Message.ClientCredentialType = BasicHttpMessageCredentialType.UserName;
+                binding.ReceiveTimeout = new TimeSpan(0, 10, 0);
+                binding.MaxReceivedMessageSize = 1048576; //1MB
+                binding.SendTimeout = new TimeSpan(0, 10, 0);
+                // Create client proxy class
+                clientORN = new RightNowSyncPortClient(binding, endPointAddr);
+                // Ask the client to not send the timestamp
+                BindingElementCollection elements = clientORN.Endpoint.Binding.CreateBindingElements();
+                elements.Find<SecurityBindingElement>().IncludeTimestamp = false;
+                clientORN.Endpoint.Binding = new CustomBinding(elements);
+                // Ask the Add-In framework the handle the session logic
+                GlobalContext.PrepareConnectSession(clientORN.ChannelFactory);
+                if (clientORN != null)
+                {
+                    result = true;
+                }
 
+                return result;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en INIT: " + ex.Message);
+                return false;
+
+            }
+        }
         private void Invoice_Load(object sender, EventArgs e)
         {
 

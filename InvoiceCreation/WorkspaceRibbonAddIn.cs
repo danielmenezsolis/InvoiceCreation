@@ -31,6 +31,7 @@ namespace InvoiceCreation
         public int IncidentID { get; set; }
         public string SrType { get; set; }
         public string ICAO { get; set; }
+        public string Tail { get; set; }
         public string AircraftCategory { get; set; }
         public string ClientType { get; set; }
         public string FuelType { get; set; }
@@ -51,6 +52,7 @@ namespace InvoiceCreation
             {
                 if (Init())
                 {
+                    string ArrivalTo = "";
                     Incident = (IIncident)recordContext.GetWorkspaceRecord(WorkspaceRecordType.Incident);
                     IncidentID = Incident.ID;
                     IList<ICfVal> campos = Incident.CustomField;
@@ -82,11 +84,14 @@ namespace InvoiceCreation
                         }
                     }
 
-                    ICAO = getICAODesi(IncidentID);
+                    ICAO = getICAODesi();
                     SrType = GetSRType();
                     AircraftCategory = GetCargoGroup(ICAO);
+                    Tail = GetTail();
                     ClientType = GetClientType();
-                    FuelType = GetFuelType(IncidentID);
+                    FuelType = GetFuelType();
+                    ArrivalTo = getArrivalTO();
+
                     servicios = GetListServices();
 
                     invoice = new Invoice(inDesignMode, recordContext, global);
@@ -111,7 +116,6 @@ namespace InvoiceCreation
                     DgvServicios.Columns.Add(combNumber);
                     DgvServicios.DataSource = servicios.OrderBy(o => o.InternalInvoice).ToList();
 
-
                     DgvServicios.Columns[2].ReadOnly = true;
                     DgvServicios.Columns[3].ReadOnly = true;
                     DgvServicios.Columns[4].ReadOnly = true;
@@ -131,6 +135,11 @@ namespace InvoiceCreation
                     ((System.Windows.Forms.Label)invoice.Controls["lblRN"]).Text = GetReferenceNumber();
                     ((System.Windows.Forms.Label)invoice.Controls["lblSRtype"]).Text = SrType;
                     ((System.Windows.Forms.Label)invoice.Controls["lblCurrency"]).Text = GetSrCurrency();
+                    ((System.Windows.Forms.Label)invoice.Controls["lblICAO"]).Text = ICAO;
+                    ((System.Windows.Forms.Label)invoice.Controls["lblAircraftCategory"]).Text = AircraftCategory;
+                    ((System.Windows.Forms.Label)invoice.Controls["lblTail"]).Text = Tail;
+                    ((System.Windows.Forms.Label)invoice.Controls["lblArrivalTo"]).Text = ArrivalTo;
+
 
 
                     invoice.ShowDialog();
@@ -247,13 +256,13 @@ namespace InvoiceCreation
             }
             return cGroup;
         }
-        public string getICAODesi(int Incident)
+        public string getICAODesi()
         {
             string Icao = "";
             ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
             APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
             clientInfoHeader.AppID = "Query Example";
-            String queryString = "SELECT CustomFields.co.Aircraft.AircraftType1.ICAODesignator  FROM Incident WHERE ID =" + Incident;
+            String queryString = "SELECT CustomFields.co.Aircraft.AircraftType1.ICAODesignator  FROM Incident WHERE ID =" + IncidentID;
             clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 1, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
             foreach (CSVTable table in queryCSV.CSVTables)
             {
@@ -265,7 +274,44 @@ namespace InvoiceCreation
             }
             return Icao;
         }
-        public string GetFuelType(int Incident)
+        public string GetTail()
+        {
+            string tail = "";
+            ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
+            APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
+            clientInfoHeader.AppID = "Query Example";
+            String queryString = "SELECT CustomFields.CO.Aircraft.Tail FROM Incident WHERE ID = " + IncidentID;
+            clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 10000, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
+            foreach (CSVTable table in queryCSV.CSVTables)
+            {
+                String[] rowData = table.Rows;
+                foreach (String data in rowData)
+                {
+                    tail = data;
+                }
+            }
+            return tail;
+        }
+        public string getArrivalTO()
+        {
+            string arrivalto = "";
+            ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
+            APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
+            clientInfoHeader.AppID = "Query Example";
+            String queryString = "SELECT CustomFields.co.Airports.LookupName,CustomFields.co.Airports1.LookupName FROM Incident WHERE ID = " + IncidentID;
+            clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 10000, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
+            foreach (CSVTable table in queryCSV.CSVTables)
+            {
+                String[] rowData = table.Rows;
+                foreach (String data in rowData)
+                {
+                    arrivalto = data.Replace("-", "_");
+                }
+            }
+            return arrivalto;
+        }
+
+        public string GetFuelType()
         {
             try
             {
@@ -273,7 +319,7 @@ namespace InvoiceCreation
                 ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
                 APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
                 clientInfoHeader.AppID = "Query Example";
-                String queryString = "SELECT CustomFields.co.Aircraft.AircraftType1.FuelType.Name  FROM Incident WHERE ID =" + Incident;
+                String queryString = "SELECT CustomFields.co.Aircraft.AircraftType1.FuelType.Name  FROM Incident WHERE ID =" + IncidentID;
                 clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 1, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
                 foreach (CSVTable table in queryCSV.CSVTables)
                 {

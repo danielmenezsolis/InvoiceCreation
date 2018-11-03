@@ -59,6 +59,10 @@
             this.lblRN = new System.Windows.Forms.Label();
             this.lblSRtype = new System.Windows.Forms.Label();
             this.lblCurrency = new System.Windows.Forms.Label();
+            this.lblICAO = new System.Windows.Forms.Label();
+            this.lblAircraftCategory = new System.Windows.Forms.Label();
+            this.lblTail = new System.Windows.Forms.Label();
+            this.lblArrivalTo = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridServicios)).BeginInit();
             this.SuspendLayout();
             // 
@@ -266,7 +270,7 @@
             // txtIncidentID
             // 
             this.txtIncidentID.Enabled = false;
-            this.txtIncidentID.Location = new System.Drawing.Point(367, 38);
+            this.txtIncidentID.Location = new System.Drawing.Point(714, 169);
             this.txtIncidentID.Name = "txtIncidentID";
             this.txtIncidentID.ReadOnly = true;
             this.txtIncidentID.Size = new System.Drawing.Size(55, 20);
@@ -338,16 +342,48 @@
             // 
             // lblCurrency
             // 
-            this.lblCurrency.Location = new System.Drawing.Point(367, 71);
+            this.lblCurrency.Location = new System.Drawing.Point(367, 37);
             this.lblCurrency.Name = "lblCurrency";
             this.lblCurrency.Size = new System.Drawing.Size(55, 21);
             this.lblCurrency.TabIndex = 70;
+            // 
+            // lblICAO
+            // 
+            this.lblICAO.Location = new System.Drawing.Point(367, 58);
+            this.lblICAO.Name = "lblICAO";
+            this.lblICAO.Size = new System.Drawing.Size(55, 21);
+            this.lblICAO.TabIndex = 71;
+            // 
+            // lblAircraftCategory
+            // 
+            this.lblAircraftCategory.Location = new System.Drawing.Point(367, 89);
+            this.lblAircraftCategory.Name = "lblAircraftCategory";
+            this.lblAircraftCategory.Size = new System.Drawing.Size(55, 21);
+            this.lblAircraftCategory.TabIndex = 72;
+            // 
+            // lblTail
+            // 
+            this.lblTail.Location = new System.Drawing.Point(367, 114);
+            this.lblTail.Name = "lblTail";
+            this.lblTail.Size = new System.Drawing.Size(55, 21);
+            this.lblTail.TabIndex = 73;
+            // 
+            // lblArrivalTo
+            // 
+            this.lblArrivalTo.Location = new System.Drawing.Point(367, 147);
+            this.lblArrivalTo.Name = "lblArrivalTo";
+            this.lblArrivalTo.Size = new System.Drawing.Size(55, 21);
+            this.lblArrivalTo.TabIndex = 74;
             // 
             // Invoice
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(767, 388);
+            this.Controls.Add(this.lblArrivalTo);
+            this.Controls.Add(this.lblTail);
+            this.Controls.Add(this.lblAircraftCategory);
+            this.Controls.Add(this.lblICAO);
             this.Controls.Add(this.lblCurrency);
             this.Controls.Add(this.lblSRtype);
             this.Controls.Add(this.lblRN);
@@ -383,7 +419,6 @@
             this.Name = "Invoice";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Invoice";
-          
             ((System.ComponentModel.ISupportInitialize)(this.dataGridServicios)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -420,5 +455,9 @@
         private System.Windows.Forms.Label lblRN;
         private System.Windows.Forms.Label lblSRtype;
         private System.Windows.Forms.Label lblCurrency;
+        private System.Windows.Forms.Label lblICAO;
+        private System.Windows.Forms.Label lblAircraftCategory;
+        private System.Windows.Forms.Label lblTail;
+        private System.Windows.Forms.Label lblArrivalTo;
     }
 }
