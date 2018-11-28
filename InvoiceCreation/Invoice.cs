@@ -12,6 +12,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Linq;
+using System.Xml.Serialization;
 
 namespace InvoiceCreation
 {
@@ -104,9 +105,13 @@ namespace InvoiceCreation
                  "<inv:TransactionHeaderFLEX>" +
                  "<tran3:xxServiceRequest>" + lblRN.Text + "</tran3:xxServiceRequest>" +
                  "<tran3:xxDatosFactura>" + lblTail.Text + "|" + lblICAO.Text + "|MMAC|JUL-25-2018 1440 Z|JUL-25-2018 1800 Z|FBO JUL-25-2018|46789</tran3:xxDatosFactura>" +
-                 "<tran3:xxDatosDeRutas>" + lblArrivalTo.Text + "</tran3:xxDatosDeRutas>" +
-                 "<tran3:xxDatosCombistible>" + GetFuels() + "</tran3:xxDatosCombistible>" +
-                 "</inv:TransactionHeaderFLEX>" +
+                 "<tran3:xxDatosDeRutas>" + lblArrivalTo.Text + "</tran3:xxDatosDeRutas>";
+                if (lblSRtype.Text == "FUEL")
+                {
+                    envelope = envelope + "<tran3:xxDatosCombistible>" + GetFuels() + "</tran3:xxDatosCombistible>";
+                }
+                envelope = envelope + "<tran3:xxDatosCombistible> </tran3:xxDatosCombistible>" +
+                    "</inv:TransactionHeaderFLEX>" +
                  "</typ:invoiceHeaderInformation>" +
                  "</typ:createSimpleInvoice>" +
                  "</soapenv:Body>" +
@@ -179,18 +184,18 @@ namespace InvoiceCreation
             int i = 1;
             foreach (DataGridViewRow dgvRenglon in dataGridServicios.Rows)
             {
-                if (dgvRenglon.Cells[7].Value.ToString() == x.ToString())
+                if (dgvRenglon.Cells[1].Value.ToString() == x.ToString())
                 {
                     string res = "<inv:InvoiceLine>" +
                                            "<inv:LineNumber>" + i + "</inv:LineNumber>" +
-                                           "<inv:ItemNumber>" + dgvRenglon.Cells[3].Value.ToString() + "</inv:ItemNumber>" +
-                                           "<inv:Description>" + dgvRenglon.Cells[5].Value.ToString() + "</inv:Description>" +
+                                           "<inv:ItemNumber>" + dgvRenglon.Cells[4].Value.ToString() + "</inv:ItemNumber>" +
+                                           "<inv:Description>" + dgvRenglon.Cells[6].Value.ToString() + "</inv:Description>" +
                                            "<inv:Quantity unitCode=\"SER\">1</inv:Quantity>" +
-                                           "<inv:UnitSellingPrice currencyCode=\"MXN\">" + dgvRenglon.Cells[8].Value.ToString() + "</inv:UnitSellingPrice>" +
+                                           "<inv:UnitSellingPrice currencyCode=\"MXN\">" + dgvRenglon.Cells[9].Value.ToString() + "</inv:UnitSellingPrice>" +
                                            "<inv:TaxClassificationCode>AR IVA 16%</inv:TaxClassificationCode>" +
                                            "<inv:TransactionLineFLEX>" +
-                                           "<tran1:xxProveedor>" + dgvRenglon.Cells[5].Value.ToString() + "</tran1:xxProveedor>" +
-                                           "<tran1:xxCostoRealFull>" + dgvRenglon.Cells[6].Value.ToString() + "</tran1:xxCostoRealFull>" +
+                                           "<tran1:xxProveedor>" + dgvRenglon.Cells[6].Value.ToString() + "</tran1:xxProveedor>" +
+                                           "<tran1:xxCostoRealFull>" + dgvRenglon.Cells[7].Value.ToString() + "</tran1:xxCostoRealFull>" +
                                            "<tran1:xxCantidad>1</tran1:xxCantidad>" +
                                            "</inv:TransactionLineFLEX>" +
                                            "</inv:InvoiceLine>";
@@ -239,13 +244,13 @@ namespace InvoiceCreation
                 List<int> fuel = new List<int>();
                 foreach (DataGridViewRow dgvRenglon in dataGridServicios.Rows)
                 {
-                    fuel.Add(Convert.ToInt32(dgvRenglon.Cells[11].Value));
+                    fuel.Add(Convert.ToInt32(dgvRenglon.Cells[12].Value));
                 }
                 fuel.Distinct().ToList();
 
                 foreach (var id in fuel)
                 {
-                    MessageBox.Show(id.ToString());
+
                     ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
                     APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
                     clientInfoHeader.AppID = "Query Example";
@@ -274,7 +279,7 @@ namespace InvoiceCreation
             {
                 foreach (DataGridViewRow dgvRenglon in dataGridServicios.Rows)
                 {
-                    if (dgvRenglon.Cells[7].Value.ToString() == Invoicex.ToString())
+                    if (dgvRenglon.Cells[8].Value.ToString() == Invoicex.ToString())
                     {
                         var client = new RestClient("https://iccsmx.custhelp.com/");
                         var request = new RestRequest("/services/rest/connect/latest/CO.Services/" + dgvRenglon.Cells[0].Value.ToString(), Method.POST);
@@ -348,4 +353,7 @@ namespace InvoiceCreation
 
         }
     }
+
+    
+  
 }

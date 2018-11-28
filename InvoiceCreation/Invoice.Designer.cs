@@ -63,6 +63,7 @@
             this.lblAircraftCategory = new System.Windows.Forms.Label();
             this.lblTail = new System.Windows.Forms.Label();
             this.lblArrivalTo = new System.Windows.Forms.Label();
+            this.BtnChange = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridServicios)).BeginInit();
             this.SuspendLayout();
             // 
@@ -70,7 +71,7 @@
             // 
             this.BtnInvoice.Image = global::InvoiceCreation.Properties.Resources.receipt16;
             this.BtnInvoice.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.BtnInvoice.Location = new System.Drawing.Point(10, 357);
+            this.BtnInvoice.Location = new System.Drawing.Point(12, 196);
             this.BtnInvoice.Name = "BtnInvoice";
             this.BtnInvoice.Size = new System.Drawing.Size(73, 23);
             this.BtnInvoice.TabIndex = 1;
@@ -106,13 +107,14 @@
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dataGridServicios.DefaultCellStyle = dataGridViewCellStyle2;
+            this.dataGridServicios.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.dataGridServicios.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnF2;
-            this.dataGridServicios.Location = new System.Drawing.Point(-3, 196);
+            this.dataGridServicios.Location = new System.Drawing.Point(0, 225);
             this.dataGridServicios.MultiSelect = false;
             this.dataGridServicios.Name = "dataGridServicios";
             this.dataGridServicios.RowHeadersVisible = false;
             this.dataGridServicios.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridServicios.Size = new System.Drawing.Size(772, 146);
+            this.dataGridServicios.Size = new System.Drawing.Size(767, 163);
             this.dataGridServicios.TabIndex = 5;
             this.dataGridServicios.TabStop = false;
             // 
@@ -286,6 +288,7 @@
             this.cboIVA.Name = "cboIVA";
             this.cboIVA.Size = new System.Drawing.Size(177, 21);
             this.cboIVA.TabIndex = 63;
+            this.cboIVA.Visible = false;
             // 
             // label5
             // 
@@ -295,6 +298,7 @@
             this.label5.Size = new System.Drawing.Size(30, 13);
             this.label5.TabIndex = 64;
             this.label5.Text = "I.V.A";
+            this.label5.Visible = false;
             // 
             // cboBU
             // 
@@ -302,19 +306,21 @@
             this.cboBU.Items.AddRange(new object[] {
             "BU ICCS",
             "BU ICCS US"});
-            this.cboBU.Location = new System.Drawing.Point(143, 144);
+            this.cboBU.Location = new System.Drawing.Point(528, 169);
             this.cboBU.Name = "cboBU";
             this.cboBU.Size = new System.Drawing.Size(177, 21);
             this.cboBU.TabIndex = 65;
+            this.cboBU.Visible = false;
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(31, 152);
+            this.label10.Location = new System.Drawing.Point(451, 177);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(71, 13);
             this.label10.TabIndex = 66;
             this.label10.Text = "Business Unit";
+            this.label10.Visible = false;
             // 
             // label19
             // 
@@ -375,11 +381,21 @@
             this.lblArrivalTo.Size = new System.Drawing.Size(55, 21);
             this.lblArrivalTo.TabIndex = 74;
             // 
+            // BtnChange
+            // 
+            this.BtnChange.Location = new System.Drawing.Point(647, 196);
+            this.BtnChange.Name = "BtnChange";
+            this.BtnChange.Size = new System.Drawing.Size(108, 23);
+            this.BtnChange.TabIndex = 75;
+            this.BtnChange.Text = "Change Currency";
+            this.BtnChange.UseVisualStyleBackColor = true;
+            // 
             // Invoice
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(767, 388);
+            this.Controls.Add(this.BtnChange);
             this.Controls.Add(this.lblArrivalTo);
             this.Controls.Add(this.lblTail);
             this.Controls.Add(this.lblAircraftCategory);
@@ -393,7 +409,6 @@
             this.Controls.Add(this.label5);
             this.Controls.Add(this.cboIVA);
             this.Controls.Add(this.txtIncidentID);
-            this.Controls.Add(this.txtEnvelope);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
@@ -412,6 +427,7 @@
             this.Controls.Add(this.dataGridServicios);
             this.Controls.Add(this.BtnInvoice);
             this.Controls.Add(this.label2);
+            this.Controls.Add(this.txtEnvelope);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -459,5 +475,6 @@
         private System.Windows.Forms.Label lblAircraftCategory;
         private System.Windows.Forms.Label lblTail;
         private System.Windows.Forms.Label lblArrivalTo;
+        private System.Windows.Forms.Button BtnChange;
     }
 }

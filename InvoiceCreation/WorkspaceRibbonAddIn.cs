@@ -1,10 +1,16 @@
 ﻿using System;
 using System.AddIn;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
+using System.Text;
 using System.Windows.Forms;
+using System.Xml;
+using System.Xml.Linq;
+using System.Xml.Serialization;
 using InvoiceCreation.SOAPICCS;
 using RightNow.AddIns.AddInViews;
 using RightNow.AddIns.Common;
@@ -35,6 +41,8 @@ namespace InvoiceCreation
         public string AircraftCategory { get; set; }
         public string ClientType { get; set; }
         public string FuelType { get; set; }
+        public double ExRate { get; set; }
+
 
         public WorkspaceRibbonAddIn(bool inDesignMode, IRecordContext RecordContext, IGlobalContext globalContext)
         {
@@ -91,6 +99,8 @@ namespace InvoiceCreation
                     ClientType = GetClientType();
                     FuelType = GetFuelType();
                     ArrivalTo = getArrivalTO();
+                    ExRate = getExchangeRate(DateTime.Now);
+
 
                     servicios = GetListServices();
 
@@ -103,6 +113,13 @@ namespace InvoiceCreation
                     combType.Items.Add("Recipe");
                     combType.Items.Add("Invoice");
 
+                    DataGridViewComboBoxColumn combBU = new DataGridViewComboBoxColumn();
+                    combBU.HeaderText = "Business Unit";
+                    combBU.Name = "Business Unit";
+                    combBU.MaxDropDownItems = 2;
+                    combBU.Items.Add("ICCS_BU");
+                    combBU.Items.Add("ICCS_BU_US");
+
                     DataGridViewComboBoxColumn combNumber = new DataGridViewComboBoxColumn();
                     combNumber.HeaderText = "Number";
                     combNumber.Name = "Number";
@@ -114,9 +131,8 @@ namespace InvoiceCreation
                     }
                     DgvServicios.Columns.Add(combType);
                     DgvServicios.Columns.Add(combNumber);
+                    DgvServicios.Columns.Add(combBU);
                     DgvServicios.DataSource = servicios.OrderBy(o => o.InternalInvoice).ToList();
-
-                    DgvServicios.Columns[2].ReadOnly = true;
                     DgvServicios.Columns[3].ReadOnly = true;
                     DgvServicios.Columns[4].ReadOnly = true;
                     DgvServicios.Columns[5].ReadOnly = true;
@@ -125,6 +141,7 @@ namespace InvoiceCreation
                     DgvServicios.Columns[8].ReadOnly = true;
                     DgvServicios.Columns[9].ReadOnly = true;
                     DgvServicios.Columns[10].ReadOnly = true;
+                    DgvServicios.Columns[11].ReadOnly = true;
                     ((TextBox)invoice.Controls["txtIncidentID"]).Text = IncidentID.ToString();
                     ((TextBox)invoice.Controls["txtCustomerName"]).Text = Nombre;
                     ((TextBox)invoice.Controls["txtRFC"]).Text = RFC;
@@ -139,8 +156,10 @@ namespace InvoiceCreation
                     ((System.Windows.Forms.Label)invoice.Controls["lblAircraftCategory"]).Text = AircraftCategory;
                     ((System.Windows.Forms.Label)invoice.Controls["lblTail"]).Text = Tail;
                     ((System.Windows.Forms.Label)invoice.Controls["lblArrivalTo"]).Text = ArrivalTo;
-
-
+                    if (Nombre.Contains("Test"))
+                    {
+                        MessageBox.Show("Due to client, prices have been changed to USD Currency");
+                    }
 
                     invoice.ShowDialog();
 
@@ -434,7 +453,7 @@ namespace InvoiceCreation
                 ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
                 APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
                 clientInfoHeader.AppID = "Query Example";
-                String queryString = "SELECT  ID,ItemNumber,ItemDescription,IDProveedor,Costo,CuentaGasto,Precio,InternalInvoice,ERPInvoice,Fuel_Id FROM CO.Services WHERE Informativo = '0' AND Incident = " + IncidentID;
+                String queryString = "SELECT  ID,ItemNumber,ItemDescription,IDProveedor,Costo,CuentaGasto,Precio,InternalInvoice,ERPInvoice,Fuel_Id,Iva,Site FROM CO.Services WHERE Informativo = '0' AND (Componente IS NULL OR Componente  = '0') AND Incident = " + IncidentID;
                 clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 10000, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
                 foreach (CSVTable table in queryCSV.CSVTables)
                 {
@@ -450,10 +469,22 @@ namespace InvoiceCreation
                         service.SupplierID = substrings[3];
                         service.Cost = substrings[4];
                         service.CuentaGasto = substrings[5];
-                        service.Precio = substrings[6];
+                        if (Nombre.Contains("Test"))
+                        {
+                            double precio = 0;
+                            precio = string.IsNullOrEmpty(substrings[6]) ? 0 : double.Parse(substrings[6]);
+                            service.Precio = (precio * ExRate).ToString();
+                        }
+                        else
+                        {
+                            service.Precio = substrings[6];
+                        }
+
                         service.InternalInvoice = substrings[7];
                         service.ERPInvoice = substrings[8];
                         service.FuelId = substrings[9];
+                        service.Tax = substrings[10];
+                        service.Site = substrings[11];
                         services.Add(service);
                     }
                 }
@@ -467,9 +498,111 @@ namespace InvoiceCreation
                 return null;
             }
         }
+
+
+        private double getExchangeRate(DateTime date)
+        {
+            try
+            {
+                double rate = 1;
+                string envelope = "<soap:Envelope " +
+                "	xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"" +
+     "	xmlns:pub=\"http://xmlns.oracle.com/oxp/service/PublicReportService\">" +
+       "<soap:Header/>" +
+     "	<soap:Body>" +
+     "		<pub:runReport>" +
+     "			<pub:reportRequest>" +
+     "			<pub:attributeFormat>xml</pub:attributeFormat>" +
+     "				<pub:attributeLocale>en</pub:attributeLocale>" +
+     "				<pub:attributeTemplate>default</pub:attributeTemplate>" +
+
+                 "<pub:parameterNameValues>" +
+                      "<pub:item>" +
+                   "<pub:name>P_EXCHANGE_DATE</pub:name>" +
+                   "<pub:values>" +
+                      "<pub:item>" + date.ToString("yyyy-MM-dd") + "</pub:item>" +
+                   "</pub:values>" +
+                "</pub:item>" +
+                 "</pub:parameterNameValues>" +
+
+     "				<pub:reportAbsolutePath>Custom/Integracion/XX_DAILY_RATES_REP.xdo</pub:reportAbsolutePath>" +
+     "				<pub:sizeOfDataChunkDownload>-1</pub:sizeOfDataChunkDownload>" +
+     "			</pub:reportRequest>" +
+     "		</pub:runReport>" +
+     "	</soap:Body>" +
+     "</soap:Envelope>";
+                global.LogMessage(envelope);
+                byte[] byteArray = Encoding.UTF8.GetBytes(envelope);
+                // Construct the base 64 encoded string used as credentials for the service call
+                byte[] toEncodeAsBytes = ASCIIEncoding.ASCII.GetBytes("itotal" + ":" + "Oracle123");
+                string credentials = Convert.ToBase64String(toEncodeAsBytes);
+                // Create HttpWebRequest connection to the service
+                HttpWebRequest request =
+                 (HttpWebRequest)WebRequest.Create("https://egqy-test.fa.us6.oraclecloud.com:443/xmlpserver/services/ExternalReportWSSService");
+                // Configure the request content type to be xml, HTTP method to be POST, and set the content length
+                request.Method = "POST";
+
+                request.ContentType = "application/soap+xml; charset=UTF-8;action=\"\"";
+                request.ContentLength = byteArray.Length;
+                // Configure the request to use basic authentication, with base64 encoded user name and password, to invoke the service.
+                request.Headers.Add("Authorization", "Basic " + credentials);
+                // Set the SOAP action to be invoked; while the call works without this, the value is expected to be set based as per standards
+                //request.Headers.Add("SOAPAction", "http://xmlns.oracle.com/apps/cdm/foundation/parties/organizationService/applicationModule/findOrganizationProfile");
+                // Write the xml payload to the request
+                Stream dataStream = request.GetRequestStream();
+                dataStream.Write(byteArray, 0, byteArray.Length);
+                dataStream.Close();
+                // Write the xml payload to the request
+                XDocument doc;
+                XmlDocument docu = new XmlDocument();
+                string result;
+                using (WebResponse response = request.GetResponse())
+                {
+                    using (Stream stream = response.GetResponseStream())
+                    {
+                        doc = XDocument.Load(stream);
+                        result = doc.ToString();
+                        XmlDocument xmlDoc = new XmlDocument();
+                        xmlDoc.LoadXml(result);
+                        XmlNamespaceManager nms = new XmlNamespaceManager(xmlDoc.NameTable);
+                        nms.AddNamespace("env", "http://schemas.xmlsoap.org/soap/envelope/");
+                        nms.AddNamespace("ns2", "http://xmlns.oracle.com/oxp/service/PublicReportService");
+
+                        XmlNode desiredNode = xmlDoc.SelectSingleNode("//ns2:runReportReturn", nms);
+                        if (desiredNode.HasChildNodes)
+                        {
+                            for (int i = 0; i < desiredNode.ChildNodes.Count; i++)
+                            {
+                                if (desiredNode.ChildNodes[i].LocalName == "reportBytes")
+                                {
+                                    byte[] data = Convert.FromBase64String(desiredNode.ChildNodes[i].InnerText);
+                                    string decodedString = Encoding.UTF8.GetString(data);
+                                    XmlTextReader reader = new XmlTextReader(new System.IO.StringReader(decodedString));
+                                    reader.Read();
+                                    XmlSerializer serializer = new XmlSerializer(typeof(DATA_DS_RATES));
+                                    DATA_DS_RATES res = (DATA_DS_RATES)serializer.Deserialize(reader);
+                                    if (res.G_N_RATES != null)
+                                    {
+                                        rate = Convert.ToDouble(res.G_N_RATES.G_1_RATES.CONVERSION_RATE);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return rate;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.StackTrace);
+                return 1;
+            }
+        }
+
     }
 
-    [AddIn("Create Invoice", Version = "1.0.0.0")]
+    [AddIn("Invoice Payables", Version = "1.0.0.0")]
     public class WorkspaceRibbonButtonFactory : IWorkspaceRibbonButtonFactory
     {
 
@@ -478,10 +611,6 @@ namespace InvoiceCreation
         {
             return new WorkspaceRibbonAddIn(inDesignMode, RecordContext, globalContext);
         }
-
-        /// <summary>
-        /// The 32x32 pixel icon displayed in the Workspace Ribbon.
-        /// </summary>
         public System.Drawing.Image Image32
         {
             get { return Properties.Resources.receipt32; }
@@ -495,12 +624,12 @@ namespace InvoiceCreation
 
         public string Text
         {
-            get { return "Invoice Creation"; }
+            get { return "Invoice Payables"; }
         }
 
         public string Tooltip
         {
-            get { return "Invoice Creation"; }
+            get { return "Invoice Payables"; }
         }
 
         public bool Initialize(IGlobalContext GlobalContext)
@@ -510,4 +639,33 @@ namespace InvoiceCreation
         }
 
     }
+
+    //RATES
+    [XmlRoot(ElementName = "G_1_RATES")]
+    public class G_1_RATES
+    {
+        [XmlElement(ElementName = "CONVERSION_RATE")]
+        public string CONVERSION_RATE { get; set; }
+        [XmlElement(ElementName = "CONVERSION_DATE")]
+        public string CONVERSION_DATE { get; set; }
+    }
+
+    [XmlRoot(ElementName = "G_N_RATES")]
+    public class G_N_RATES
+    {
+        [XmlElement(ElementName = "USER_CONVERSION_TYPE")]
+        public string USER_CONVERSION_TYPE { get; set; }
+        [XmlElement(ElementName = "G_1_RATES")]
+        public G_1_RATES G_1_RATES { get; set; }
+    }
+
+    [XmlRoot(ElementName = "DATA_DS_RATES")]
+    public class DATA_DS_RATES
+    {
+        [XmlElement(ElementName = "P_EXCHANGE_DATE")]
+        public string P_EXCHANGE_DATE { get; set; }
+        [XmlElement(ElementName = "G_N_RATES")]
+        public G_N_RATES G_N_RATES { get; set; }
+    }
+
 }

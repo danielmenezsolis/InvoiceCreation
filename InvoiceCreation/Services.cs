@@ -20,5 +20,7 @@ namespace InvoiceCreation
         public string FuelId { get; set; }
         public string Type { get; set; }
         public string Number { get; set; }
+        public string Site { get; set; }
+        public string Tax { get; set; }
     }
 }
