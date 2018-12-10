@@ -30,7 +30,7 @@ namespace InvoiceCreation
         public IIncident Incident { get; set; }
         public string Nombre { get; set; }
         public string RFC { get; set; }
-        public string AccountNomber { get; set; }
+        public string AccountNumber { get; set; }
         public string CatRoyalty { get; set; }
         public string CatUtilidad { get; set; }
         public string CatCombust { get; set; }
@@ -42,6 +42,15 @@ namespace InvoiceCreation
         public string ClientType { get; set; }
         public string FuelType { get; set; }
         public double ExRate { get; set; }
+        public string PayTerm { get; set; }
+        public string PartyId { get; set; }
+        public string PartySiteNumber { get; set; }
+        public string CatOrder { get; set; }
+        public string TripNumber { get; set; }
+        public string Reservation { get; set; }
+        public string SNumber { get; set; }
+        public Dictionary<string, string> BUS { get; set; }
+
 
 
         public WorkspaceRibbonAddIn(bool inDesignMode, IRecordContext RecordContext, IGlobalContext globalContext)
@@ -60,12 +69,34 @@ namespace InvoiceCreation
             {
                 if (Init())
                 {
-                    string ArrivalTo = "";
+
                     Incident = (IIncident)recordContext.GetWorkspaceRecord(WorkspaceRecordType.Incident);
                     IncidentID = Incident.ID;
                     IList<ICfVal> campos = Incident.CustomField;
                     foreach (ICfVal val in campos)
                     {
+
+                        if (val.CfId == 29)
+                        {
+                            TripNumber = val.ValStr;
+                        }
+                        if (val.CfId == 30)
+                        {
+                            Reservation = val.ValStr;
+                        }
+                        if (val.CfId == 33)
+                        {
+                            SNumber = val.ValStr;
+                        }
+                        if (val.CfId == 35)
+                        {
+                            CatOrder = val.ValStr;
+                        }
+
+                        if (val.CfId == 57)
+                        {
+                            PartyId = val.ValStr;
+                        }
                         if (val.CfId == 58)
                         {
                             Nombre = val.ValStr;
@@ -76,7 +107,7 @@ namespace InvoiceCreation
                         }
                         if (val.CfId == 60)
                         {
-                            AccountNomber = val.ValStr;
+                            AccountNumber = val.ValStr;
                         }
                         if (val.CfId == 61)
                         {
@@ -98,9 +129,11 @@ namespace InvoiceCreation
                     Tail = GetTail();
                     ClientType = GetClientType();
                     FuelType = GetFuelType();
-                    ArrivalTo = getArrivalTO();
-                    ExRate = getExchangeRate(DateTime.Now);
 
+                    ExRate = getExchangeRate(DateTime.Now);
+                    PayTerm = GetPaymentTermns();
+                    PartySiteNumber = getPartySiteNumber();
+                    BUS = GetBUS();
 
                     servicios = GetListServices();
 
@@ -110,15 +143,16 @@ namespace InvoiceCreation
                     combType.HeaderText = "Type";
                     combType.Name = "Type";
                     combType.MaxDropDownItems = 2;
-                    combType.Items.Add("Recipe");
                     combType.Items.Add("Invoice");
+                    combType.Items.Add("Recipe");
 
                     DataGridViewComboBoxColumn combBU = new DataGridViewComboBoxColumn();
                     combBU.HeaderText = "Business Unit";
                     combBU.Name = "Business Unit";
                     combBU.MaxDropDownItems = 2;
-                    combBU.Items.Add("ICCS_BU");
-                    combBU.Items.Add("ICCS_BU_US");
+                    combBU.DataSource = new BindingSource(BUS, null);
+                    combBU.DisplayMember = "Value";
+                    combBU.ValueMember = "Key";
 
                     DataGridViewComboBoxColumn combNumber = new DataGridViewComboBoxColumn();
                     combNumber.HeaderText = "Number";
@@ -145,7 +179,7 @@ namespace InvoiceCreation
                     ((TextBox)invoice.Controls["txtIncidentID"]).Text = IncidentID.ToString();
                     ((TextBox)invoice.Controls["txtCustomerName"]).Text = Nombre;
                     ((TextBox)invoice.Controls["txtRFC"]).Text = RFC;
-                    ((TextBox)invoice.Controls["txtAccount"]).Text = AccountNomber;
+                    ((TextBox)invoice.Controls["txtAccount"]).Text = AccountNumber;
                     ((TextBox)invoice.Controls["txtRoyalty"]).Text = CatRoyalty;
                     ((TextBox)invoice.Controls["txtUtilidad"]).Text = CatUtilidad;
                     ((TextBox)invoice.Controls["txtCombustible"]).Text = CatCombust;
@@ -155,7 +189,22 @@ namespace InvoiceCreation
                     ((System.Windows.Forms.Label)invoice.Controls["lblICAO"]).Text = ICAO;
                     ((System.Windows.Forms.Label)invoice.Controls["lblAircraftCategory"]).Text = AircraftCategory;
                     ((System.Windows.Forms.Label)invoice.Controls["lblTail"]).Text = Tail;
-                    ((System.Windows.Forms.Label)invoice.Controls["lblArrivalTo"]).Text = ArrivalTo;
+                    ((System.Windows.Forms.Label)invoice.Controls["lblPayTerm"]).Text = PayTerm;
+                    ((System.Windows.Forms.Label)invoice.Controls["lblPSN"]).Text = PartySiteNumber;
+                    ((System.Windows.Forms.Label)invoice.Controls["lblRoutes"]).Text = GetRoutes();
+                    ((System.Windows.Forms.Label)invoice.Controls["lblArrival"]).Text = GetArrival();
+                    ((System.Windows.Forms.Label)invoice.Controls["lblDeparture"]).Text = GetDeparture();
+
+                    ((System.Windows.Forms.Label)invoice.Controls["lblTripNumber"]).Text = TripNumber;
+                    ((System.Windows.Forms.Label)invoice.Controls["lblCatOrder"]).Text = CatOrder;
+                    ((System.Windows.Forms.Label)invoice.Controls["lblReservation"]).Text = Reservation;
+                    ((System.Windows.Forms.Label)invoice.Controls["lblSNumber"]).Text = SNumber;
+                    ((System.Windows.Forms.Label)invoice.Controls["lblStatus"]).Text = GetStatus();
+                    //lblCateringOrder
+
+
+
+
                     if (Nombre.Contains("Test"))
                     {
                         MessageBox.Show("Due to client, prices have been changed to USD Currency");
@@ -170,6 +219,255 @@ namespace InvoiceCreation
                 MessageBox.Show("Error en Click: " + ex.Message + "Det: " + ex.StackTrace);
             }
         }
+
+        public Dictionary<string, string> GetBUS()
+        {
+            Dictionary<string, string> test = new Dictionary<string, string>();
+            string envelope = "<soapenv:Envelope" +
+                "   xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"" +
+                "   xmlns:typ=\"http://xmlns.oracle.com/apps/hcm/organizations/organizationServiceV2/types/\"" +
+                "   xmlns:typ1=\"http://xmlns.oracle.com/adf/svc/types/\">" +
+                "<soapenv:Header/>" +
+                "<soapenv:Body>" +
+                    "<typ:findOrganization>" +
+                        "<typ:findCriteria>" +
+                            "<typ1:fetchStart>0</typ1:fetchStart>" +
+                            "<typ1:fetchSize>-1</typ1:fetchSize>" +
+                            "<typ1:filter>" +
+                                "<typ1:group>" +
+                                    "<typ1:item>" +
+                                        "<typ1:attribute>ClassificationCode</typ1:attribute>" +
+                                        "<typ1:operator>=</typ1:operator>" +
+                                        "<typ1:value>FUN_BUSINESS_UNIT</typ1:value>" +
+                                    "</typ1:item>" +
+                                "</typ1:group>" +
+                            "</typ1:filter>" +
+                            "<typ1:findAttribute>Name</typ1:findAttribute>" +
+                            "<typ1:findAttribute>OrganizationId</typ1:findAttribute>" +
+                        "</typ:findCriteria>" +
+                        "<typ:findControl>" +
+                            "<typ1:retrieveAllTranslations>false</typ1:retrieveAllTranslations>" +
+                        "</typ:findControl>" +
+                    "</typ:findOrganization>" +
+                "</soapenv:Body>" +
+            "</soapenv:Envelope>";
+            byte[] byteArray = Encoding.UTF8.GetBytes(envelope);
+            // Construct the base 64 encoded string used as credentials for the service call
+            byte[] toEncodeAsBytes = System.Text.ASCIIEncoding.ASCII.GetBytes("itotal" + ":" + "Oracle123");
+            string credentials = System.Convert.ToBase64String(toEncodeAsBytes);
+            // Create HttpWebRequest connection to the service
+            HttpWebRequest request =
+             (HttpWebRequest)WebRequest.Create("https://egqy-test.fa.us6.oraclecloud.com:443/hcmService/OrganizationServiceV2");
+            // Configure the request content type to be xml, HTTP method to be POST, and set the content length
+            request.Method = "POST";
+            request.ContentType = "text/xml;charset=UTF-8";
+            request.ContentLength = byteArray.Length;
+            // Configure the request to use basic authentication, with base64 encoded user name and password, to invoke the service.
+            request.Headers.Add("Authorization", "Basic " + credentials);
+            // Set the SOAP action to be invoked; while the call works without this, the value is expected to be set based as per standards
+
+            request.Headers.Add("SOAPAction", "http://xmlns.oracle.com/apps/hcm/organizations/organizationServiceV2/findOrganization");
+            // Write the xml payload to the request
+            Stream dataStream = request.GetRequestStream();
+            dataStream.Write(byteArray, 0, byteArray.Length);
+            dataStream.Close();
+
+            // Write the xml payload to the request
+            XDocument doc;
+            XmlDocument docu = new XmlDocument();
+            string result;
+            using (WebResponse response = request.GetResponse())
+            {
+                using (Stream stream = response.GetResponseStream())
+                {
+                    doc = XDocument.Load(stream);
+                    result = doc.ToString();
+                    XmlDocument xmlDoc = new XmlDocument();
+                    xmlDoc.LoadXml(result);
+                    XmlNamespaceManager nms = new XmlNamespaceManager(xmlDoc.NameTable);
+                    nms.AddNamespace("ns1", "http://xmlns.oracle.com/apps/hcm/organizations/organizationServiceV2/");
+                    XmlNodeList nodeList = xmlDoc.SelectNodes("//ns1:Value", nms);
+                    foreach (XmlNode node in nodeList)
+                    {
+
+                        if (node.HasChildNodes)
+                        {
+                            string BName = "";
+                            string BId = "";
+                            if (node.LocalName == "Value")
+                            {
+                                XmlNodeList nodeListvalue = node.ChildNodes;
+                                foreach (XmlNode nodeValue in nodeListvalue)
+                                {
+                                    if (nodeValue.LocalName == "OrganizationId")
+                                    {
+                                        BId = nodeValue.InnerText;
+                                    }
+                                    if (nodeValue.LocalName == "Name")
+                                    {
+                                        BName = nodeValue.InnerText;
+
+                                    }
+                                }
+                                if (!BName.Contains("NA"))
+                                {
+                                    test.Add(BId, BName);
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+            return test;
+        }
+
+        public string getPartySiteNumber()
+        {
+            try
+            {
+                string val = "";
+                string envelope = "<soapenv:Envelope " +
+                      "   xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"" +
+                      "   xmlns:typ=\"http://xmlns.oracle.com/apps/cdm/foundation/parties/organizationService/applicationModule/types/\">" +
+                      "<soapenv:Header/>" +
+                      "<soapenv:Body>" +
+                      "<typ:getOrganization>" +
+                              "<typ:partyId>" + PartyId + "</typ:partyId>" +
+                          "</typ:getOrganization>" +
+                      "</soapenv:Body>" +
+                  "</soapenv:Envelope>";
+                global.LogMessage(envelope);
+                byte[] byteArray = Encoding.UTF8.GetBytes(envelope);
+                // Construct the base 64 encoded string used as credentials for the service call
+                byte[] toEncodeAsBytes = System.Text.ASCIIEncoding.ASCII.GetBytes("itotal" + ":" + "Oracle123");
+                string credentials = System.Convert.ToBase64String(toEncodeAsBytes);
+                // Create HttpWebRequest connection to the service
+                HttpWebRequest request =
+                 (HttpWebRequest)WebRequest.Create("https://egqy-test.fa.us6.oraclecloud.com:443/crmService/FoundationPartiesOrganizationService");
+                // Configure the request content type to be xml, HTTP method to be POST, and set the content length
+                request.Method = "POST";
+                request.ContentType = "text/xml;charset=UTF-8";
+                request.ContentLength = byteArray.Length;
+                // Configure the request to use basic authentication, with base64 encoded user name and password, to invoke the service.
+                request.Headers.Add("Authorization", "Basic " + credentials);
+                // Set the SOAP action to be invoked; while the call works without this, the value is expected to be set based as per standards
+                request.Headers.Add("SOAPAction", "http://xmlns.oracle.com/apps/cdm/foundation/parties/organizationService/applicationModule/getOrganization");
+                // Write the xml payload to the request
+                Stream dataStream = request.GetRequestStream();
+                dataStream.Write(byteArray, 0, byteArray.Length);
+                dataStream.Close();
+
+                // Write the xml payload to the request
+                XDocument doc;
+                XmlDocument docu = new XmlDocument();
+                string result;
+                using (WebResponse response = request.GetResponse())
+                {
+                    using (Stream stream = response.GetResponseStream())
+                    {
+                        doc = XDocument.Load(stream);
+                        result = doc.ToString();
+                        XmlDocument xmlDoc = new XmlDocument();
+                        xmlDoc.LoadXml(result);
+                        XmlNamespaceManager nms = new XmlNamespaceManager(xmlDoc.NameTable);
+                        nms.AddNamespace("ns1", "http://xmlns.oracle.com/apps/cdm/foundation/parties/partyService/");
+                        XmlNode desiredNode = xmlDoc.SelectSingleNode("//ns1:PartySiteNumber", nms);
+                        val = desiredNode.FirstChild == null ? "" : desiredNode.FirstChild.InnerText;
+                    }
+                }
+
+                return val;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message + "Det: " + ex.StackTrace);
+                return "";
+            }
+        }
+
+
+        public string GetPaymentTermns()
+        {
+            string val = "";
+            string envelope = "<soapenv:Envelope " +
+              "   xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"" +
+              "   xmlns:typ=\"http://xmlns.oracle.com/apps/financials/receivables/customers/customerProfileService/types/\"" +
+              "   xmlns:cus=\"http://xmlns.oracle.com/apps/financials/receivables/customers/customerProfileService/\"" +
+              "   xmlns:cus1=\"http://xmlns.oracle.com/apps/financials/receivables/customerSetup/customerProfiles/model/flex/CustomerProfileDff/\"" +
+              "   xmlns:cus2=\"http://xmlns.oracle.com/apps/financials/receivables/customerSetup/customerProfiles/model/flex/CustomerProfileGdf/\">" +
+              "<soapenv:Header/>" +
+              "<soapenv:Body>" +
+                  "<typ:getActiveCustomerProfile>" +
+                      "<typ:customerProfile>" +
+                          "<cus:AccountNumber>" + AccountNumber + "</cus:AccountNumber>" +
+                      "</typ:customerProfile>" +
+                  "</typ:getActiveCustomerProfile>" +
+              "</soapenv:Body>" +
+             "</soapenv:Envelope>";
+            global.LogMessage(envelope);
+            byte[] byteArray = Encoding.UTF8.GetBytes(envelope);
+            // Construct the base 64 encoded string used as credentials for the service call
+            byte[] toEncodeAsBytes = System.Text.ASCIIEncoding.ASCII.GetBytes("itotal" + ":" + "Oracle123");
+            string credentials = System.Convert.ToBase64String(toEncodeAsBytes);
+            // Create HttpWebRequest connection to the service
+            HttpWebRequest request =
+             (HttpWebRequest)WebRequest.Create("https://egqy-test.fa.us6.oraclecloud.com:443/fscmService/ReceivablesCustomerProfileService");
+            // Configure the request content type to be xml, HTTP method to be POST, and set the content length
+            request.Method = "POST";
+            request.ContentType = "text/xml;charset=UTF-8";
+            request.ContentLength = byteArray.Length;
+            // Configure the request to use basic authentication, with base64 encoded user name and password, to invoke the service.
+            request.Headers.Add("Authorization", "Basic " + credentials);
+            // Set the SOAP action to be invoked; while the call works without this, the value is expected to be set based as per standards
+
+            request.Headers.Add("SOAPAction", "http://xmlns.oracle.com/apps/financials/receivables/customers/customerProfileService/getActiveCustomerProfile");
+            // Write the xml payload to the request
+            Stream dataStream = request.GetRequestStream();
+            dataStream.Write(byteArray, 0, byteArray.Length);
+            dataStream.Close();
+
+            // Write the xml payload to the request
+            XDocument doc;
+            XmlDocument docu = new XmlDocument();
+            string result;
+            using (WebResponse response = request.GetResponse())
+            {
+                using (Stream stream = response.GetResponseStream())
+                {
+                    doc = XDocument.Load(stream);
+                    result = doc.ToString();
+                    XmlDocument xmlDoc = new XmlDocument();
+                    xmlDoc.LoadXml(result);
+                    XmlNamespaceManager nms = new XmlNamespaceManager(xmlDoc.NameTable);
+                    nms.AddNamespace("ns3", "http://xmlns.oracle.com/apps/financials/receivables/customers/customerProfileService/");
+                    XmlNode desiredNode = xmlDoc.SelectSingleNode("//ns3:PaymentTerms", nms);
+                    val = desiredNode.FirstChild == null ? "" : desiredNode.FirstChild.InnerText;
+                }
+            }
+
+            return val;
+
+        }
+        public string GetRoutes()
+        {
+            string routes = "";
+            ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
+            APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
+            clientInfoHeader.AppID = "Query Example";
+            String queryString = "SELECT FromAirport.LookupName,ArrivalAirport.LookupName,ToAirport.LookupName FROM CO.Itinerary WHERE Incident1 = " + IncidentID + " ORDER BY Incident1";
+            clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 10, "/", false, false, out CSVTableSet queryCSV, out byte[] FileData);
+            foreach (CSVTable table in queryCSV.CSVTables)
+            {
+                String[] rowData = table.Rows;
+                foreach (String data in rowData)
+                {
+                    routes += data + ",";
+                }
+            }
+
+            return routes;
+        }
         public string GetClientType()
         {
             try
@@ -181,7 +479,7 @@ namespace InvoiceCreation
                     APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
                     clientInfoHeader.AppID = "Query Example";
                     String queryString = "SELECT CustomFields.c.rfcerp FROM Incident WHERE ID =" + IncidentID + "";
-                    clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 1, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
+                    clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 1, "/", false, false, out CSVTableSet queryCSV, out byte[] FileData);
                     foreach (CSVTable table in queryCSV.CSVTables)
                     {
                         String[] rowData = table.Rows;
@@ -311,7 +609,7 @@ namespace InvoiceCreation
             }
             return tail;
         }
-        public string getArrivalTO()
+        public string GetArrival()
         {
             string arrivalto = "";
             ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
@@ -324,12 +622,47 @@ namespace InvoiceCreation
                 String[] rowData = table.Rows;
                 foreach (String data in rowData)
                 {
-                    arrivalto = data.Replace("-", "_");
+                    arrivalto = data;
                 }
             }
             return arrivalto;
         }
-
+        public string GetStatus()
+        {
+            string status = "";
+            ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
+            APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
+            clientInfoHeader.AppID = "Query Example";
+            String queryString = "SELECT StatusWithType.Status.Name  FROM Incident WHERE ID = " + IncidentID;
+            clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 1, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
+            foreach (CSVTable table in queryCSV.CSVTables)
+            {
+                String[] rowData = table.Rows;
+                foreach (String data in rowData)
+                {
+                    status = data.ToUpper();
+                }
+            }
+            return status;
+        }
+        public string GetDeparture()
+        {
+            string arrivalto = "";
+            ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
+            APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
+            clientInfoHeader.AppID = "Query Example";
+            String queryString = "SELECT CustomFields.co.Airports1.LookupName,CustomFields.co.Airports1.LookupName FROM Incident WHERE ID = " + IncidentID;
+            clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 1, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
+            foreach (CSVTable table in queryCSV.CSVTables)
+            {
+                String[] rowData = table.Rows;
+                foreach (String data in rowData)
+                {
+                    arrivalto = data;
+                }
+            }
+            return arrivalto;
+        }
         public string GetFuelType()
         {
             try
@@ -454,6 +787,7 @@ namespace InvoiceCreation
                 APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
                 clientInfoHeader.AppID = "Query Example";
                 String queryString = "SELECT  ID,ItemNumber,ItemDescription,IDProveedor,Costo,CuentaGasto,Precio,InternalInvoice,ERPInvoice,Fuel_Id,Iva,Site FROM CO.Services WHERE Informativo = '0' AND (Componente IS NULL OR Componente  = '0') AND Incident = " + IncidentID;
+                global.LogMessage(queryString);
                 clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 10000, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
                 foreach (CSVTable table in queryCSV.CSVTables)
                 {
@@ -498,8 +832,6 @@ namespace InvoiceCreation
                 return null;
             }
         }
-
-
         private double getExchangeRate(DateTime date)
         {
             try

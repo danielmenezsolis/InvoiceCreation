@@ -62,8 +62,17 @@
             this.lblICAO = new System.Windows.Forms.Label();
             this.lblAircraftCategory = new System.Windows.Forms.Label();
             this.lblTail = new System.Windows.Forms.Label();
-            this.lblArrivalTo = new System.Windows.Forms.Label();
             this.BtnChange = new System.Windows.Forms.Button();
+            this.lblPayTerm = new System.Windows.Forms.Label();
+            this.lblPSN = new System.Windows.Forms.Label();
+            this.lblRoutes = new System.Windows.Forms.Label();
+            this.lblArrival = new System.Windows.Forms.Label();
+            this.lblDeparture = new System.Windows.Forms.Label();
+            this.lblCatOrder = new System.Windows.Forms.Label();
+            this.lblTripNumber = new System.Windows.Forms.Label();
+            this.lblReservation = new System.Windows.Forms.Label();
+            this.lblSNumber = new System.Windows.Forms.Label();
+            this.lblStatus = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridServicios)).BeginInit();
             this.SuspendLayout();
             // 
@@ -325,16 +334,16 @@
             // label19
             // 
             this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(503, 5);
+            this.label19.Location = new System.Drawing.Point(525, 5);
             this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(103, 13);
+            this.label19.Size = new System.Drawing.Size(68, 13);
             this.label19.TabIndex = 67;
-            this.label19.Text = "Reference Number: ";
+            this.label19.Text = "SR Number: ";
             // 
             // lblRN
             // 
             this.lblRN.AutoSize = true;
-            this.lblRN.Location = new System.Drawing.Point(619, 5);
+            this.lblRN.Location = new System.Drawing.Point(610, 5);
             this.lblRN.Name = "lblRN";
             this.lblRN.Size = new System.Drawing.Size(0, 13);
             this.lblRN.TabIndex = 68;
@@ -374,13 +383,6 @@
             this.lblTail.Size = new System.Drawing.Size(55, 21);
             this.lblTail.TabIndex = 73;
             // 
-            // lblArrivalTo
-            // 
-            this.lblArrivalTo.Location = new System.Drawing.Point(367, 147);
-            this.lblArrivalTo.Name = "lblArrivalTo";
-            this.lblArrivalTo.Size = new System.Drawing.Size(55, 21);
-            this.lblArrivalTo.TabIndex = 74;
-            // 
             // BtnChange
             // 
             this.BtnChange.Location = new System.Drawing.Point(647, 196);
@@ -389,14 +391,97 @@
             this.BtnChange.TabIndex = 75;
             this.BtnChange.Text = "Change Currency";
             this.BtnChange.UseVisualStyleBackColor = true;
+            this.BtnChange.Visible = false;
+            // 
+            // lblPayTerm
+            // 
+            this.lblPayTerm.Location = new System.Drawing.Point(367, 152);
+            this.lblPayTerm.Name = "lblPayTerm";
+            this.lblPayTerm.Size = new System.Drawing.Size(55, 21);
+            this.lblPayTerm.TabIndex = 76;
+            // 
+            // lblPSN
+            // 
+            this.lblPSN.Location = new System.Drawing.Point(31, 144);
+            this.lblPSN.Name = "lblPSN";
+            this.lblPSN.Size = new System.Drawing.Size(55, 10);
+            this.lblPSN.TabIndex = 77;
+            // 
+            // lblRoutes
+            // 
+            this.lblRoutes.AutoSize = true;
+            this.lblRoutes.Location = new System.Drawing.Point(367, 196);
+            this.lblRoutes.Name = "lblRoutes";
+            this.lblRoutes.Size = new System.Drawing.Size(0, 13);
+            this.lblRoutes.TabIndex = 78;
+            // 
+            // lblArrival
+            // 
+            this.lblArrival.AutoSize = true;
+            this.lblArrival.Location = new System.Drawing.Point(113, 189);
+            this.lblArrival.Name = "lblArrival";
+            this.lblArrival.Size = new System.Drawing.Size(0, 13);
+            this.lblArrival.TabIndex = 79;
+            // 
+            // lblDeparture
+            // 
+            this.lblDeparture.AutoSize = true;
+            this.lblDeparture.Location = new System.Drawing.Point(113, 160);
+            this.lblDeparture.Name = "lblDeparture";
+            this.lblDeparture.Size = new System.Drawing.Size(0, 13);
+            this.lblDeparture.TabIndex = 80;
+            // 
+            // lblCatOrder
+            // 
+            this.lblCatOrder.Location = new System.Drawing.Point(140, 201);
+            this.lblCatOrder.Name = "lblCatOrder";
+            this.lblCatOrder.Size = new System.Drawing.Size(55, 10);
+            this.lblCatOrder.TabIndex = 81;
+            // 
+            // lblTripNumber
+            // 
+            this.lblTripNumber.Location = new System.Drawing.Point(223, 201);
+            this.lblTripNumber.Name = "lblTripNumber";
+            this.lblTripNumber.Size = new System.Drawing.Size(55, 10);
+            this.lblTripNumber.TabIndex = 82;
+            // 
+            // lblReservation
+            // 
+            this.lblReservation.Location = new System.Drawing.Point(306, 201);
+            this.lblReservation.Name = "lblReservation";
+            this.lblReservation.Size = new System.Drawing.Size(55, 10);
+            this.lblReservation.TabIndex = 83;
+            // 
+            // lblSNumber
+            // 
+            this.lblSNumber.Location = new System.Drawing.Point(389, 201);
+            this.lblSNumber.Name = "lblSNumber";
+            this.lblSNumber.Size = new System.Drawing.Size(55, 10);
+            this.lblSNumber.TabIndex = 84;
+            // 
+            // lblStatus
+            // 
+            this.lblStatus.Location = new System.Drawing.Point(487, 201);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(55, 10);
+            this.lblStatus.TabIndex = 85;
             // 
             // Invoice
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(767, 388);
+            this.Controls.Add(this.lblStatus);
+            this.Controls.Add(this.lblSNumber);
+            this.Controls.Add(this.lblReservation);
+            this.Controls.Add(this.lblTripNumber);
+            this.Controls.Add(this.lblCatOrder);
+            this.Controls.Add(this.lblDeparture);
+            this.Controls.Add(this.lblArrival);
+            this.Controls.Add(this.lblRoutes);
+            this.Controls.Add(this.lblPSN);
+            this.Controls.Add(this.lblPayTerm);
             this.Controls.Add(this.BtnChange);
-            this.Controls.Add(this.lblArrivalTo);
             this.Controls.Add(this.lblTail);
             this.Controls.Add(this.lblAircraftCategory);
             this.Controls.Add(this.lblICAO);
@@ -474,7 +559,16 @@
         private System.Windows.Forms.Label lblICAO;
         private System.Windows.Forms.Label lblAircraftCategory;
         private System.Windows.Forms.Label lblTail;
-        private System.Windows.Forms.Label lblArrivalTo;
         private System.Windows.Forms.Button BtnChange;
+        private System.Windows.Forms.Label lblPayTerm;
+        private System.Windows.Forms.Label lblPSN;
+        private System.Windows.Forms.Label lblRoutes;
+        private System.Windows.Forms.Label lblArrival;
+        private System.Windows.Forms.Label lblDeparture;
+        private System.Windows.Forms.Label lblCatOrder;
+        private System.Windows.Forms.Label lblTripNumber;
+        private System.Windows.Forms.Label lblReservation;
+        private System.Windows.Forms.Label lblSNumber;
+        private System.Windows.Forms.Label lblStatus;
     }
 }

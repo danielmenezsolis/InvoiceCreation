@@ -22,5 +22,6 @@ namespace InvoiceCreation
         public string Number { get; set; }
         public string Site { get; set; }
         public string Tax { get; set; }
+        public string Qty { get; set; }
     }
 }
