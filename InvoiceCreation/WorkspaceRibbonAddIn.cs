@@ -26,6 +26,7 @@ namespace InvoiceCreation
         private bool inDesignMode { get; set; }
         private RightNowSyncPortClient clientORN { get; set; }
         public DataGridView DgvServicios { get; set; }
+        public ComboBox BUnitS { get; set; }
         public List<Services> servicios { get; set; }
         public IIncident Incident { get; set; }
         public string Nombre { get; set; }
@@ -139,12 +140,19 @@ namespace InvoiceCreation
 
                     invoice = new Invoice(inDesignMode, recordContext, global);
                     DgvServicios = ((DataGridView)invoice.Controls["dataGridServicios"]);
+                    BUnitS = ((ComboBox)invoice.Controls["cboBU"]);
+
+                    BUnitS.DataSource = new BindingSource(BUS, null);
+                    BUnitS.DisplayMember = "Value";
+                    BUnitS.ValueMember = "Key";
+
                     DataGridViewComboBoxColumn combType = new DataGridViewComboBoxColumn();
                     combType.HeaderText = "Type";
                     combType.Name = "Type";
                     combType.MaxDropDownItems = 2;
                     combType.Items.Add("Invoice");
                     combType.Items.Add("Recipe");
+
 
                     DataGridViewComboBoxColumn combBU = new DataGridViewComboBoxColumn();
                     combBU.HeaderText = "Business Unit";
@@ -153,6 +161,7 @@ namespace InvoiceCreation
                     combBU.DataSource = new BindingSource(BUS, null);
                     combBU.DisplayMember = "Value";
                     combBU.ValueMember = "Key";
+                    combBU.Visible = false;
 
                     DataGridViewComboBoxColumn combNumber = new DataGridViewComboBoxColumn();
                     combNumber.HeaderText = "Number";
@@ -183,6 +192,7 @@ namespace InvoiceCreation
                     ((TextBox)invoice.Controls["txtRoyalty"]).Text = CatRoyalty;
                     ((TextBox)invoice.Controls["txtUtilidad"]).Text = CatUtilidad;
                     ((TextBox)invoice.Controls["txtCombustible"]).Text = CatCombust;
+                    ((TextBox)invoice.Controls["txtExchangeRate"]).Text = Math.Round(ExRate, 4).ToString();
                     ((System.Windows.Forms.Label)invoice.Controls["lblRN"]).Text = GetReferenceNumber();
                     ((System.Windows.Forms.Label)invoice.Controls["lblSRtype"]).Text = SrType;
                     ((System.Windows.Forms.Label)invoice.Controls["lblCurrency"]).Text = GetSrCurrency();
@@ -801,19 +811,9 @@ namespace InvoiceCreation
                         service.ItemNumber = substrings[1];
                         service.Description = substrings[2];
                         service.SupplierID = substrings[3];
-                        service.Cost = substrings[4];
+                        service.Cost = String.IsNullOrEmpty(substrings[4]) ? "0" : (Math.Round(Convert.ToDouble(substrings[4]), 4)).ToString();
                         service.CuentaGasto = substrings[5];
-                        if (Nombre.Contains("Test"))
-                        {
-                            double precio = 0;
-                            precio = string.IsNullOrEmpty(substrings[6]) ? 0 : double.Parse(substrings[6]);
-                            service.Precio = (precio * ExRate).ToString();
-                        }
-                        else
-                        {
-                            service.Precio = substrings[6];
-                        }
-
+                        service.Precio = String.IsNullOrEmpty(substrings[6]) ? "0" : (Math.Round(Convert.ToDouble(substrings[6]), 4)).ToString();
                         service.InternalInvoice = substrings[7];
                         service.ERPInvoice = substrings[8];
                         service.FuelId = substrings[9];
@@ -934,7 +934,7 @@ namespace InvoiceCreation
 
     }
 
-    [AddIn("Invoice Payables", Version = "1.0.0.0")]
+    [AddIn("Generate Invoice", Version = "1.0.0.0")]
     public class WorkspaceRibbonButtonFactory : IWorkspaceRibbonButtonFactory
     {
 
@@ -956,12 +956,12 @@ namespace InvoiceCreation
 
         public string Text
         {
-            get { return "Invoice Payables"; }
+            get { return "Generate Invoice"; }
         }
 
         public string Tooltip
         {
-            get { return "Invoice Payables"; }
+            get { return "Generate Invoice"; }
         }
 
         public bool Initialize(IGlobalContext GlobalContext)

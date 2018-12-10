@@ -42,178 +42,18 @@ namespace InvoiceCreation
                     if (ValidateRows())
                     {
                         Cursor.Current = Cursors.WaitCursor;
-                        int y = 1;
-                        foreach (DataGridViewRow dgvRenglon in dataGridServicios.Rows)
+
+                        List<int> internalinvoice = DiferentsInvoices();
+                        foreach (int i in internalinvoice)
                         {
-                            string itemN = dgvRenglon.Cells[4].Value.ToString();
-                            string itemDe = dgvRenglon.Cells[5].Value.ToString();
-                            DataGridViewComboBoxCell cbu = (DataGridViewComboBoxCell)dgvRenglon.Cells[2];
-                            string BU = cbu.Value.ToString();
-                            string BUText = cbu.FormattedValue.ToString();
-                            DataGridViewComboBoxCell Ctt = (DataGridViewComboBoxCell)dgvRenglon.Cells[0];
-                            string CustomerTrxTypeNameText = Ctt.FormattedValue.ToString();
-                            string BatchSourceName = "";
-
-                            if (BUText.Contains("USD"))
+                            int y = InvoiceGenerate(i);
+                            if (y > 0)
                             {
-                                BatchSourceName = "ORIGEN ICCS US";
-                                CustomerTrxTypeNameText = "CFCC_ICCS_US";
-                            }
-                            else
-                            {
-                                if (CustomerTrxTypeNameText == "Invoice")
-                                {
-
-                                    CustomerTrxTypeNameText = "CFCC";
-                                }
-                                else
-                                {
-                                    CustomerTrxTypeNameText = "RCBO ICCS";
-                                }
-
-                                BatchSourceName = "ORIGEN ICCS";
-                            }
-
-
-                            string IVA = dgvRenglon.Cells[16].Value.ToString();
-                            double Costo = String.IsNullOrEmpty(dgvRenglon.Cells[7].Value.ToString()) ? 0 : Convert.ToDouble(dgvRenglon.Cells[7].Value.ToString());
-                            double Precio = String.IsNullOrEmpty(dgvRenglon.Cells[9].Value.ToString()) ? 0 : Convert.ToDouble(dgvRenglon.Cells[9].Value.ToString());
-                            string Sup = dgvRenglon.Cells[6].Value.ToString();
-                            string lineDate = lblRN.Text.Substring(0, 6);
-                            string lineVal = lblRN.Text.Substring(6).Replace("-", string.Empty).Replace("0", string.Empty);
-                            string envelope = "<soapenv:Envelope " +
-                            "   xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"" +
-                            "   xmlns:typ=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/invoices/invoiceService/types/\"" +
-                            "   xmlns:inv=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/invoices/invoiceService/\"" +
-                            "   xmlns:tran=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/autoInvoices/model/flex/TransactionInterfaceGdf/\"" +
-                            "   xmlns:tran1=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/autoInvoices/model/flex/TransactionLineInterfaceGdf/\"" +
-                            "   xmlns:tran2=\"http://xmlns.oracle.com/apps/flex/financials/receivables/transactions/autoInvoices/TransactionLineInterfaceLineDff/\"" +
-                            "   xmlns:tran3=\"http://xmlns.oracle.com/apps/flex/financials/receivables/transactions/autoInvoices/TransactionInterfaceLinkToDff/\"" +
-                            "   xmlns:tran4=\"http://xmlns.oracle.com/apps/flex/financials/receivables/transactions/autoInvoices/TransactionInterfaceReferenceDff/\"" +
-                            "   xmlns:tran5=\"http://xmlns.oracle.com/apps/flex/financials/receivables/transactions/autoInvoices/TransactionLineDff/\"" +
-                            "   xmlns:tran6=\"http://xmlns.oracle.com/apps/flex/financials/receivables/transactions/autoInvoices/TransactionInterfaceHeaderDff/\"" +
-                            "   xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-                            " <soapenv:Header/> " +
-                            " <soapenv:Body> " +
-                            "<typ:createInterfaceLine>" +
-                            "<typ:interfaceLine>" +
-                            "<inv:OrgId>" + BU + "</inv:OrgId>" +
-                            "<inv:BatchSourceName>" + BatchSourceName + "</inv:BatchSourceName>" +
-                            "<inv:CustomerTrxTypeName>" + CustomerTrxTypeNameText + "</inv:CustomerTrxTypeName>" +
-                            "<inv:BillCustomerAccountNumber>" + txtAccount.Text + "</inv:BillCustomerAccountNumber>" +
-                            "<inv:BillCustomerSiteNumber>" + lblPSN.Text + "</inv:BillCustomerSiteNumber>" +
-                            "<inv:TrxDate>" + DateTime.Now.ToString("yyyy-MM-dd") + "</inv:TrxDate>" +
-                            "<inv:CurrencyCode>" + lblCurrency.Text + "</inv:CurrencyCode>";
-                            if (lblCurrency.Text == "USD")
-                            {
-                                envelope += "<inv:ConversionType>DOF</inv:ConversionType>";
-                                //"<inv:ConversionRate>1</inv:ConversionRate>";
-
-                            }
-                            envelope += "<inv:GlDate>" + DateTime.Now.ToString("yyyy-MM-dd") + "</inv:GlDate>" +
-                            "<inv:ItemNumber>" + itemN + "</inv:ItemNumber>" +
-                           "<inv:Description>" + itemDe + "</inv:Description>" +
-                           "<inv:LineType>LINE</inv:LineType>" +
-                           "<inv:Quantity unitCode=\"SER\">1</inv:Quantity>" +
-                           "<inv:TaxCode>" + IVA + "</inv:TaxCode>" +
-                           //"<inv:PaymentTermsName>" + lblPayTerm.Text + "</inv:PaymentTermsName>" +
-                           "<inv:PaymentTermsName>30 DIAS</inv:PaymentTermsName>" +
-                           "<inv:UnitSellingPrice currencyCode=\"" + lblCurrency.Text + "\">" + Costo + "</inv:UnitSellingPrice>" +
-                           "<inv:TransactionInterfaceLineDff xsi:type=\"tran2:InvoiceLineContext\">" +
-                               "<tran2:__FLEX_Context>Invoice_Line_Context</tran2:__FLEX_Context>" +
-                               "<tran2:lines>" + ((lineDate + lineVal + y).PadLeft(10)).Trim() + "4" + "</tran2:lines>" +
-                           "</inv:TransactionInterfaceLineDff>" +
-                           "<inv:TransactionLineDff>" +
-                               "<tran5:xxProveedor>" + Sup + "</tran5:xxProveedor>" +
-                               "<tran5:xxCostoRealFull>" + Costo + "</tran5:xxCostoRealFull>" +
-                               "<tran5:xxCantidad>1</tran5:xxCantidad>" +
-                           "</inv:TransactionLineDff>" +
-                           "<inv:TransactionInterfaceHeaderDff>" +
-                               "<tran6:xxServiceRequest>" + lblRN.Text + "</tran6:xxServiceRequest>" +
-                               "<tran6:xxDatosFactura>" + lblTail.Text + "|" + lblICAO.Text + "|" + lblArrival.Text + "JUL-25-2018 1440 Z|JUL-25-2018 1800 Z|" + lblSRtype.Text + " " + DateTime.Now.ToString("yyyy-MM-dd") + "|" + lblTripNumber.Text + "|" + lblReservation.Text + "|" + lblCatOrder.Text + "|" + lblSNumber.Text + "||" + lblStatus.Text + "</tran6:xxDatosFactura>" +
-                               "<tran6:xxDatosRuta>" + lblRoutes.Text + "</tran6:xxDatosRuta>" +
-                               "<tran6:xxDatosCombistible>" + GetFuels() + " LTRS. / " + (GetFuels() * 3.7853).ToString() + " /GALS.| " + VoucheN + "</tran6:xxDatosCombistible>" +
-                          "</inv:TransactionInterfaceHeaderDff>" +
-                       "</typ:interfaceLine>" +
-                   "</typ:createInterfaceLine>" +
-               "</soapenv:Body>" +
-            "</soapenv:Envelope>";
-
-                            byte[] byteArray = Encoding.UTF8.GetBytes(envelope);
-                            GlobalContext.LogMessage(envelope);
-                            // Construct the base 64 encoded string used as credentials for the service call
-                            byte[] toEncodeAsBytes = System.Text.ASCIIEncoding.ASCII.GetBytes("itotal" + ":" + "Oracle123");
-                            string credentials = System.Convert.ToBase64String(toEncodeAsBytes);
-                            // Create HttpWebRequest connection to the service
-                            HttpWebRequest request =
-                             (HttpWebRequest)WebRequest.Create("https://egqy-test.fa.us6.oraclecloud.com:443/fscmService/RecInvoiceService");
-                            // Configure the request content type to be xml, HTTP method to be POST, and set the content length
-                            request.Method = "POST";
-                            request.ContentType = "text/xml;charset=UTF-8";
-                            request.ContentLength = byteArray.Length;
-                            // Configure the request to use basic authentication, with base64 encoded user name and password, to invoke the service.
-                            request.Headers.Add("Authorization", "Basic " + credentials);
-                            // Set the SOAP action to be invoked; while the call works without this, the value is expected to be set based as per standards
-                            request.Headers.Add("SOAPAction", "http://xmlns.oracle.com/apps/financials/receivables/transactions/invoices/invoiceService/createInterfaceLine");
-                            // Write the xml payload to the request
-                            Stream dataStream = request.GetRequestStream();
-                            dataStream.Write(byteArray, 0, byteArray.Length);
-                            dataStream.Close();
-
-
-                            // Write the xml payload to the request
-                            XDocument doc;
-                            XmlDocument docu = new XmlDocument();
-                            string result;
-                            using (WebResponse response = request.GetResponse())
-                            {
-                                using (Stream stream = response.GetResponseStream())
-                                {
-                                    doc = XDocument.Load(stream);
-                                    result = doc.ToString();
-                                    XmlDocument xmlDoc = new XmlDocument();
-                                    xmlDoc.LoadXml(result);
-                                    XmlNamespaceManager nms = new XmlNamespaceManager(xmlDoc.NameTable);
-                                    nms.AddNamespace("ns2", "http://xmlns.oracle.com/apps/financials/receivables/transactions/invoices/invoiceService/");
-                                    nms.AddNamespace("ns1", "http://xmlns.oracle.com/apps/financials/receivables/transactions/invoices/invoiceService/types/");
-
-                                    XmlNode desiredNode = xmlDoc.SelectSingleNode("//ns2:TransactionLineDff", nms);
-                                    if (desiredNode.HasChildNodes)
-                                    {
-                                        for (int i = 0; i < desiredNode.ChildNodes.Count; i++)
-                                        {
-                                            if (desiredNode.ChildNodes[i].LocalName == "InterfaceLineGuid")
-                                            {
-                                                y++;
-                                            }
-                                        }
-                                    }
-
-                                }
-                                response.Close();
+                                EjecutarBatch();
+                                MessageBox.Show("Invoice No Send: " + i + "Services send " + y);
                             }
                         }
-
-                        if (y > 1)
-                        {
-                            EjecutarBatch();
-                        }
-
                         Cursor.Current = Cursors.Default;
-                        /*
-                         created = false;
-                         List<int> internalinvoice = DiferentsInvoices();
-                         foreach (int i in internalinvoice)
-                         {
-                             GenerarFactura(i);
-                         }
-                         */
-
-                        if (created)
-                        {
-                            MessageBox.Show("Data saved");
-                            //this.Close();
-                        }
                     }
                     else
                     {
@@ -232,75 +72,252 @@ namespace InvoiceCreation
                 MessageBox.Show(ex.Message + "Det" + ex.StackTrace);
             }
         }
-
         private void EjecutarBatch()
         {
-            string envelope = "<soapenv:Envelope " +
-                              "   xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"" +
-                              "   xmlns:typ=\"http://xmlns.oracle.com/apps/financials/commonModules/shared/model/erpIntegrationService/types/\">" +
-                              "<soapenv:Header/>" +
-                              "<soapenv:Body>" +
-                                  "<typ:submitESSJobRequest>" +
-                                      "<typ:jobPackageName>/oracle/apps/ess/financials/receivables/transactions/autoInvoices/</typ:jobPackageName>" +
-                                      "<typ:jobDefinitionName>AutoInvoiceImportEss</typ:jobDefinitionName>" +
-                                      "<typ:paramList>300000001746038</typ:paramList>" +
-                                      "<typ:paramList>CX AR</typ:paramList>" +
-                                      "<typ:paramList>" + DateTime.Today.ToString("yyyy-MM-dd") + "</typ:paramList>" +
-                                  "</typ:submitESSJobRequest>" +
-                              "</soapenv:Body>" +
-                          "</soapenv:Envelope>";
-
-            byte[] byteArray = Encoding.UTF8.GetBytes(envelope);
-            // Construct the base 64 encoded string used as credentials for the service call
-            byte[] toEncodeAsBytes = System.Text.ASCIIEncoding.ASCII.GetBytes("itotal" + ":" + "Oracle123");
-            string credentials = System.Convert.ToBase64String(toEncodeAsBytes);
-            // Create HttpWebRequest connection to the service
-            HttpWebRequest request =
-             (HttpWebRequest)WebRequest.Create("https://egqy-test.fa.us6.oraclecloud.com:443/fscmService/ErpIntegrationService");
-            // Configure the request content type to be xml, HTTP method to be POST, and set the content length
-            request.Method = "POST";
-            request.ContentType = "text/xml;charset=UTF-8";
-            request.ContentLength = byteArray.Length;
-            // Configure the request to use basic authentication, with base64 encoded user name and password, to invoke the service.
-            request.Headers.Add("Authorization", "Basic " + credentials);
-            // Set the SOAP action to be invoked; while the call works without this, the value is expected to be set based as per standards
-            request.Headers.Add("SOAPAction", "http://xmlns.oracle.com/apps/financials/commonModules/shared/model/erpIntegrationService/submitESSJobRequest");
-            // Write the xml payload to the request
-            Stream dataStream = request.GetRequestStream();
-            dataStream.Write(byteArray, 0, byteArray.Length);
-            dataStream.Close();
-            using (WebResponse response = request.GetResponse())
+            try
             {
-                using (Stream stream = response.GetResponseStream())
+                string envelope = "<soapenv:Envelope " +
+                                  "   xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"" +
+                                  "   xmlns:typ=\"http://xmlns.oracle.com/apps/financials/commonModules/shared/model/erpIntegrationService/types/\">" +
+                                  "<soapenv:Header/>" +
+                                  "<soapenv:Body>" +
+                                      "<typ:submitESSJobRequest>" +
+                                          "<typ:jobPackageName>/oracle/apps/ess/financials/receivables/transactions/autoInvoices/</typ:jobPackageName>" +
+                                          "<typ:jobDefinitionName>AutoInvoiceImportEss</typ:jobDefinitionName>" +
+                                          "<typ:paramList>300000001746038</typ:paramList>" +
+                                          "<typ:paramList>CX AR</typ:paramList>" +
+                                          "<typ:paramList>" + DateTime.Today.ToString("yyyy-MM-dd") + "</typ:paramList>" +
+                                      "</typ:submitESSJobRequest>" +
+                                  "</soapenv:Body>" +
+                              "</soapenv:Envelope>";
+
+                byte[] byteArray = Encoding.UTF8.GetBytes(envelope);
+                // Construct the base 64 encoded string used as credentials for the service call
+                byte[] toEncodeAsBytes = System.Text.ASCIIEncoding.ASCII.GetBytes("itotal" + ":" + "Oracle123");
+                string credentials = System.Convert.ToBase64String(toEncodeAsBytes);
+                // Create HttpWebRequest connection to the service
+                HttpWebRequest request =
+                 (HttpWebRequest)WebRequest.Create("https://egqy-test.fa.us6.oraclecloud.com:443/fscmService/ErpIntegrationService");
+                // Configure the request content type to be xml, HTTP method to be POST, and set the content length
+                request.Method = "POST";
+                request.ContentType = "text/xml;charset=UTF-8";
+                request.ContentLength = byteArray.Length;
+                // Configure the request to use basic authentication, with base64 encoded user name and password, to invoke the service.
+                request.Headers.Add("Authorization", "Basic " + credentials);
+                // Set the SOAP action to be invoked; while the call works without this, the value is expected to be set based as per standards
+                request.Headers.Add("SOAPAction", "http://xmlns.oracle.com/apps/financials/commonModules/shared/model/erpIntegrationService/submitESSJobRequest");
+                // Write the xml payload to the request
+                Stream dataStream = request.GetRequestStream();
+                dataStream.Write(byteArray, 0, byteArray.Length);
+                dataStream.Close();
+                using (WebResponse response = request.GetResponse())
                 {
-                    StreamReader reader = new StreamReader(stream, Encoding.UTF8);
-                    String responseString = reader.ReadToEnd();
-                    int env = responseString.IndexOf("<?xml");
-                    int envfi = responseString.IndexOf("env:Envelope>");
-                    envfi = envfi + 13;
-                    int tot = envfi - env;
-                    string res = responseString.Substring(env, tot);
-                    XmlDocument xmlDoc = new XmlDocument();
-                    XmlTextReader readerxml = new XmlTextReader(new StringReader(res));
-                    xmlDoc.Load(readerxml);
-                    XmlNamespaceManager nms = new XmlNamespaceManager(xmlDoc.NameTable);
-                    nms.AddNamespace("ns0", "http://xmlns.oracle.com/apps/financials/commonModules/shared/model/erpIntegrationService/types/");
-                    XmlNode desiredNode = xmlDoc.SelectSingleNode("//ns0:submitESSJobRequestResponse", nms);
-                    if (desiredNode.HasChildNodes)
+                    using (Stream stream = response.GetResponseStream())
                     {
-                        for (int i = 0; i < desiredNode.ChildNodes.Count; i++)
+                        StreamReader reader = new StreamReader(stream, Encoding.UTF8);
+                        String responseString = reader.ReadToEnd();
+                        int env = responseString.IndexOf("<?xml");
+                        int envfi = responseString.IndexOf("env:Envelope>");
+                        envfi = envfi + 13;
+                        int tot = envfi - env;
+                        string res = responseString.Substring(env, tot);
+                        XmlDocument xmlDoc = new XmlDocument();
+                        XmlTextReader readerxml = new XmlTextReader(new StringReader(res));
+                        xmlDoc.Load(readerxml);
+                        XmlNamespaceManager nms = new XmlNamespaceManager(xmlDoc.NameTable);
+                        nms.AddNamespace("ns0", "http://xmlns.oracle.com/apps/financials/commonModules/shared/model/erpIntegrationService/types/");
+                        XmlNode desiredNode = xmlDoc.SelectSingleNode("//ns0:submitESSJobRequestResponse", nms);
+                        if (desiredNode.HasChildNodes)
                         {
-                            if (desiredNode.ChildNodes[i].LocalName == "result")
+                            for (int i = 0; i < desiredNode.ChildNodes.Count; i++)
                             {
-                                MessageBox.Show(desiredNode.InnerText);
+                                if (desiredNode.ChildNodes[i].LocalName == "result")
+                                {
+                                    MessageBox.Show(desiredNode.InnerText);
+                                }
                             }
                         }
-                    }
 
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show("EjecutarBatch" + ex.Message + "Det: " + ex.StackTrace);
+            }
+
 
         }
+        private int InvoiceGenerate(int x)
+        {
+            try
+            {
+                int y = 0;
+                foreach (DataGridViewRow dgvRenglon in dataGridServicios.Rows)
+                {
+                    if (dgvRenglon.Cells[1].Value.ToString() == x.ToString())
+                    {
+                        string itemN = dgvRenglon.Cells[4].Value.ToString();
+                        string itemDe = dgvRenglon.Cells[5].Value.ToString();
+                        //DataGridViewComboBoxCell cbu = (DataGridViewComboBoxCell)dgvRenglon.Cells[2];
+                        string BU = cboBU.SelectedValue.ToString();
+                        string BUText = cboBU.Text;
+                        DataGridViewComboBoxCell Ctt = (DataGridViewComboBoxCell)dgvRenglon.Cells[0];
+                        string CustomerTrxTypeNameText = Ctt.FormattedValue.ToString();
+                        string BatchSourceName = "";
+
+                        if (BUText.Contains("USD"))
+                        {
+                            BatchSourceName = "ORIGEN ICCS US";
+                            CustomerTrxTypeNameText = "CFCC_ICCS_US";
+                        }
+                        else
+                        {
+                            if (CustomerTrxTypeNameText == "Invoice")
+                            {
+
+                                CustomerTrxTypeNameText = "CFCC";
+                            }
+                            else
+                            {
+                                CustomerTrxTypeNameText = "RCBO ICCS";
+                            }
+
+                            BatchSourceName = "ORIGEN ICCS";
+                        }
+                        string IVA = dgvRenglon.Cells[16].Value.ToString();
+                        double Costo = String.IsNullOrEmpty(dgvRenglon.Cells[7].Value.ToString()) ? 0 : Convert.ToDouble(dgvRenglon.Cells[7].Value.ToString());
+                        double Precio = String.IsNullOrEmpty(dgvRenglon.Cells[9].Value.ToString()) ? 0 : Convert.ToDouble(dgvRenglon.Cells[9].Value.ToString());
+                        string Sup = dgvRenglon.Cells[6].Value.ToString();
+                        string lineDate = lblRN.Text.Substring(0, 6);
+                        string lineVal = lblRN.Text.Substring(6).Replace("-", string.Empty).Replace("0", string.Empty);
+                        Random rnd = new Random();
+                        int intrnd = rnd.Next(1, 999);
+
+
+                        string envelope = "<soapenv:Envelope " +
+                        "   xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"" +
+                        "   xmlns:typ=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/invoices/invoiceService/types/\"" +
+                        "   xmlns:inv=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/invoices/invoiceService/\"" +
+                        "   xmlns:tran=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/autoInvoices/model/flex/TransactionInterfaceGdf/\"" +
+                        "   xmlns:tran1=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/autoInvoices/model/flex/TransactionLineInterfaceGdf/\"" +
+                        "   xmlns:tran2=\"http://xmlns.oracle.com/apps/flex/financials/receivables/transactions/autoInvoices/TransactionLineInterfaceLineDff/\"" +
+                        "   xmlns:tran3=\"http://xmlns.oracle.com/apps/flex/financials/receivables/transactions/autoInvoices/TransactionInterfaceLinkToDff/\"" +
+                        "   xmlns:tran4=\"http://xmlns.oracle.com/apps/flex/financials/receivables/transactions/autoInvoices/TransactionInterfaceReferenceDff/\"" +
+                        "   xmlns:tran5=\"http://xmlns.oracle.com/apps/flex/financials/receivables/transactions/autoInvoices/TransactionLineDff/\"" +
+                        "   xmlns:tran6=\"http://xmlns.oracle.com/apps/flex/financials/receivables/transactions/autoInvoices/TransactionInterfaceHeaderDff/\"" +
+                        "   xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                        " <soapenv:Header/> " +
+                        " <soapenv:Body> " +
+                        "<typ:createInterfaceLine>" +
+                        "<typ:interfaceLine>" +
+                        "<inv:OrgId>" + BU + "</inv:OrgId>" +
+                        "<inv:BatchSourceName>" + BatchSourceName + "</inv:BatchSourceName>" +
+                        "<inv:CustomerTrxTypeName>" + CustomerTrxTypeNameText + "</inv:CustomerTrxTypeName>" +
+                        "<inv:BillCustomerAccountNumber>" + txtAccount.Text + "</inv:BillCustomerAccountNumber>" +
+                        "<inv:BillCustomerSiteNumber>" + lblPSN.Text + "</inv:BillCustomerSiteNumber>" +
+                        "<inv:TrxDate>" + DateTime.Now.ToString("yyyy-MM-dd") + "</inv:TrxDate>" +
+                        "<inv:CurrencyCode>" + cboCurrency.Text + "</inv:CurrencyCode>";
+                        if (cboCurrency.Text == "USD")
+                        {
+                            envelope += "<inv:ConversionType>DOF</inv:ConversionType>";
+                            //"<inv:ConversionRate>1</inv:ConversionRate>";
+                        }
+                        envelope += "<inv:GlDate>" + DateTime.Now.ToString("yyyy-MM-dd") + "</inv:GlDate>" +
+                        "<inv:ItemNumber>" + itemN + "</inv:ItemNumber>" +
+                       "<inv:Description>" + itemDe + "</inv:Description>" +
+                       "<inv:LineType>LINE</inv:LineType>" +
+                       "<inv:Quantity unitCode=\"SER\">1</inv:Quantity>" +
+                       "<inv:TaxCode>" + IVA + "</inv:TaxCode>" +
+                       //"<inv:PaymentTermsName>" + lblPayTerm.Text + "</inv:PaymentTermsName>" +
+                       "<inv:PaymentTermsName>30 DIAS</inv:PaymentTermsName>" +
+                       "<inv:UnitSellingPrice currencyCode=\"" + cboCurrency.Text + "\">" + Costo + "</inv:UnitSellingPrice>" +
+                       "<inv:TransactionInterfaceLineDff xsi:type=\"tran2:InvoiceLineContext\">" +
+                           "<tran2:__FLEX_Context>Invoice_Line_Context</tran2:__FLEX_Context>" +
+                           // "<tran2:lines>" + ((lineDate + lineVal + intrnd).PadLeft(10)).Trim() + "</tran2:lines>" +
+                           "<tran2:lines>" + ((lineDate + lineVal + x + y + "8").PadLeft(10)).Trim() + "</tran2:lines>" +
+                           "</inv:TransactionInterfaceLineDff>" +
+                           "<inv:TransactionLineDff>" +
+                           "<tran5:xxProveedor>" + Sup + "</tran5:xxProveedor>" +
+                           "<tran5:xxCostoRealFull>" + Costo + "</tran5:xxCostoRealFull>" +
+                           "<tran5:xxCantidad>1</tran5:xxCantidad>" +
+                           "</inv:TransactionLineDff>" +
+                           "<inv:TransactionInterfaceHeaderDff>" +
+                           "<tran6:xxServiceRequest>" + lblRN.Text + "</tran6:xxServiceRequest>" +
+                           "<tran6:xxDatosFactura>" + lblTail.Text + "|" + lblICAO.Text + "|" + lblArrival.Text + "JUL-25-2018 1440 Z|JUL-25-2018 1800 Z|" + lblSRtype.Text + " " + DateTime.Now.ToString("yyyy-MM-dd") + "|" + lblTripNumber.Text + "|" + lblReservation.Text + "|" + lblCatOrder.Text + "|" + lblSNumber.Text + "||" + lblStatus.Text + "</tran6:xxDatosFactura>" +
+                           "<tran6:xxDatosDeRutas>" + lblRoutes.Text + "</tran6:xxDatosDeRutas>" +
+                           "<tran6:xxDatosCombistible>" + GetFuels() + " LTRS. / " + (GetFuels() * 3.7853).ToString() + " /GALS.| " + VoucheN + "</tran6:xxDatosCombistible>" +
+                      "</inv:TransactionInterfaceHeaderDff>" +
+                   "</typ:interfaceLine>" +
+               "</typ:createInterfaceLine>" +
+           "</soapenv:Body>" +
+        "</soapenv:Envelope>";
+
+                        byte[] byteArray = Encoding.UTF8.GetBytes(envelope);
+                        GlobalContext.LogMessage(envelope);
+                        // Construct the base 64 encoded string used as credentials for the service call
+                        byte[] toEncodeAsBytes = System.Text.ASCIIEncoding.ASCII.GetBytes("itotal" + ":" + "Oracle123");
+                        string credentials = System.Convert.ToBase64String(toEncodeAsBytes);
+                        // Create HttpWebRequest connection to the service
+                        HttpWebRequest request =
+                         (HttpWebRequest)WebRequest.Create("https://egqy-test.fa.us6.oraclecloud.com:443/fscmService/RecInvoiceService");
+                        // Configure the request content type to be xml, HTTP method to be POST, and set the content length
+                        request.Method = "POST";
+                        request.ContentType = "text/xml;charset=UTF-8";
+                        request.ContentLength = byteArray.Length;
+                        // Configure the request to use basic authentication, with base64 encoded user name and password, to invoke the service.
+                        request.Headers.Add("Authorization", "Basic " + credentials);
+                        // Set the SOAP action to be invoked; while the call works without this, the value is expected to be set based as per standards
+                        request.Headers.Add("SOAPAction", "http://xmlns.oracle.com/apps/financials/receivables/transactions/invoices/invoiceService/createInterfaceLine");
+                        // Write the xml payload to the request
+                        Stream dataStream = request.GetRequestStream();
+                        dataStream.Write(byteArray, 0, byteArray.Length);
+                        dataStream.Close();
+
+
+                        // Write the xml payload to the request
+                        XDocument doc;
+                        XmlDocument docu = new XmlDocument();
+                        string result;
+                        using (WebResponse response = request.GetResponse())
+                        {
+                            using (Stream stream = response.GetResponseStream())
+                            {
+                                doc = XDocument.Load(stream);
+                                result = doc.ToString();
+                                XmlDocument xmlDoc = new XmlDocument();
+                                xmlDoc.LoadXml(result);
+                                XmlNamespaceManager nms = new XmlNamespaceManager(xmlDoc.NameTable);
+                                nms.AddNamespace("ns2", "http://xmlns.oracle.com/apps/financials/receivables/transactions/invoices/invoiceService/");
+                                nms.AddNamespace("ns1", "http://xmlns.oracle.com/apps/financials/receivables/transactions/invoices/invoiceService/types/");
+
+                                XmlNode desiredNode = xmlDoc.SelectSingleNode("//ns2:TransactionLineDff", nms);
+                                if (desiredNode.HasChildNodes)
+                                {
+                                    for (int i = 0; i < desiredNode.ChildNodes.Count; i++)
+                                    {
+                                        if (desiredNode.ChildNodes[i].LocalName == "InterfaceLineGuid")
+                                        {
+                                            y++;
+                                        }
+                                    }
+                                }
+
+                            }
+                            response.Close();
+                        }
+                    }
+                }
+                return y;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Mess: " + ex.Message + "Det" + ex.StackTrace);
+                return 0;
+            }
+        }
+
+
         private void GenerarFactura(int x)
         {
             try

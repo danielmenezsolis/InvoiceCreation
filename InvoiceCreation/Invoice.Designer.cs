@@ -73,6 +73,10 @@
             this.lblReservation = new System.Windows.Forms.Label();
             this.lblSNumber = new System.Windows.Forms.Label();
             this.lblStatus = new System.Windows.Forms.Label();
+            this.cboCurrency = new System.Windows.Forms.ComboBox();
+            this.lblExRate = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.txtExchangeRate = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridServicios)).BeginInit();
             this.SuspendLayout();
             // 
@@ -80,7 +84,7 @@
             // 
             this.BtnInvoice.Image = global::InvoiceCreation.Properties.Resources.receipt16;
             this.BtnInvoice.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.BtnInvoice.Location = new System.Drawing.Point(12, 196);
+            this.BtnInvoice.Location = new System.Drawing.Point(9, 240);
             this.BtnInvoice.Name = "BtnInvoice";
             this.BtnInvoice.Size = new System.Drawing.Size(73, 23);
             this.BtnInvoice.TabIndex = 1;
@@ -118,7 +122,7 @@
             this.dataGridServicios.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridServicios.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.dataGridServicios.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnF2;
-            this.dataGridServicios.Location = new System.Drawing.Point(0, 225);
+            this.dataGridServicios.Location = new System.Drawing.Point(0, 268);
             this.dataGridServicios.MultiSelect = false;
             this.dataGridServicios.Name = "dataGridServicios";
             this.dataGridServicios.RowHeadersVisible = false;
@@ -147,7 +151,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 180);
+            this.label1.Location = new System.Drawing.Point(9, 222);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(74, 13);
             this.label1.TabIndex = 46;
@@ -156,14 +160,14 @@
             // label2
             // 
             this.label2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label2.Location = new System.Drawing.Point(-3, 187);
+            this.label2.Location = new System.Drawing.Point(-3, 229);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(772, 2);
             this.label2.TabIndex = 47;
             // 
             // txtUtilidad
             // 
-            this.txtUtilidad.Location = new System.Drawing.Point(528, 75);
+            this.txtUtilidad.Location = new System.Drawing.Point(528, 78);
             this.txtUtilidad.Name = "txtUtilidad";
             this.txtUtilidad.ReadOnly = true;
             this.txtUtilidad.Size = new System.Drawing.Size(177, 20);
@@ -172,7 +176,7 @@
             // 
             // txtCombustible
             // 
-            this.txtCombustible.Location = new System.Drawing.Point(528, 110);
+            this.txtCombustible.Location = new System.Drawing.Point(528, 122);
             this.txtCombustible.Name = "txtCombustible";
             this.txtCombustible.ReadOnly = true;
             this.txtCombustible.Size = new System.Drawing.Size(177, 20);
@@ -181,7 +185,7 @@
             // 
             // txtCustomerName
             // 
-            this.txtCustomerName.Location = new System.Drawing.Point(143, 37);
+            this.txtCustomerName.Location = new System.Drawing.Point(143, 34);
             this.txtCustomerName.Name = "txtCustomerName";
             this.txtCustomerName.ReadOnly = true;
             this.txtCustomerName.Size = new System.Drawing.Size(177, 20);
@@ -190,7 +194,7 @@
             // 
             // txtRFC
             // 
-            this.txtRFC.Location = new System.Drawing.Point(143, 75);
+            this.txtRFC.Location = new System.Drawing.Point(143, 67);
             this.txtRFC.Name = "txtRFC";
             this.txtRFC.ReadOnly = true;
             this.txtRFC.Size = new System.Drawing.Size(177, 20);
@@ -199,7 +203,7 @@
             // 
             // txtAccount
             // 
-            this.txtAccount.Location = new System.Drawing.Point(143, 110);
+            this.txtAccount.Location = new System.Drawing.Point(143, 100);
             this.txtAccount.Name = "txtAccount";
             this.txtAccount.ReadOnly = true;
             this.txtAccount.Size = new System.Drawing.Size(177, 20);
@@ -208,7 +212,7 @@
             // 
             // txtRoyalty
             // 
-            this.txtRoyalty.Location = new System.Drawing.Point(528, 37);
+            this.txtRoyalty.Location = new System.Drawing.Point(528, 34);
             this.txtRoyalty.Name = "txtRoyalty";
             this.txtRoyalty.ReadOnly = true;
             this.txtRoyalty.Size = new System.Drawing.Size(177, 20);
@@ -218,7 +222,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(31, 79);
+            this.label3.Location = new System.Drawing.Point(31, 74);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(28, 13);
             this.label3.TabIndex = 54;
@@ -227,7 +231,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(31, 114);
+            this.label4.Location = new System.Drawing.Point(31, 107);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(87, 13);
             this.label4.TabIndex = 55;
@@ -236,25 +240,25 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(452, 114);
+            this.label6.Location = new System.Drawing.Point(441, 129);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(64, 13);
+            this.label6.Size = new System.Drawing.Size(27, 13);
             this.label6.TabIndex = 57;
-            this.label6.Text = "Combustible";
+            this.label6.Text = "Fuel";
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(452, 79);
+            this.label7.Location = new System.Drawing.Point(441, 85);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(42, 13);
+            this.label7.Size = new System.Drawing.Size(32, 13);
             this.label7.TabIndex = 58;
-            this.label7.Text = "Utilidad";
+            this.label7.Text = "Utility";
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(452, 41);
+            this.label8.Location = new System.Drawing.Point(441, 37);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(42, 13);
             this.label8.TabIndex = 59;
@@ -293,7 +297,7 @@
             this.cboIVA.Items.AddRange(new object[] {
             "0%",
             "16%"});
-            this.cboIVA.Location = new System.Drawing.Point(528, 144);
+            this.cboIVA.Location = new System.Drawing.Point(528, 168);
             this.cboIVA.Name = "cboIVA";
             this.cboIVA.Size = new System.Drawing.Size(177, 21);
             this.cboIVA.TabIndex = 63;
@@ -302,12 +306,11 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(452, 152);
+            this.label5.Location = new System.Drawing.Point(441, 176);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(30, 13);
+            this.label5.Size = new System.Drawing.Size(49, 13);
             this.label5.TabIndex = 64;
-            this.label5.Text = "I.V.A";
-            this.label5.Visible = false;
+            this.label5.Text = "Currency";
             // 
             // cboBU
             // 
@@ -315,21 +318,19 @@
             this.cboBU.Items.AddRange(new object[] {
             "BU ICCS",
             "BU ICCS US"});
-            this.cboBU.Location = new System.Drawing.Point(528, 169);
+            this.cboBU.Location = new System.Drawing.Point(143, 166);
             this.cboBU.Name = "cboBU";
             this.cboBU.Size = new System.Drawing.Size(177, 21);
             this.cboBU.TabIndex = 65;
-            this.cboBU.Visible = false;
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(451, 177);
+            this.label10.Location = new System.Drawing.Point(31, 176);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(71, 13);
             this.label10.TabIndex = 66;
             this.label10.Text = "Business Unit";
-            this.label10.Visible = false;
             // 
             // label19
             // 
@@ -385,7 +386,7 @@
             // 
             // BtnChange
             // 
-            this.BtnChange.Location = new System.Drawing.Point(647, 196);
+            this.BtnChange.Location = new System.Drawing.Point(647, 234);
             this.BtnChange.Name = "BtnChange";
             this.BtnChange.Size = new System.Drawing.Size(108, 23);
             this.BtnChange.TabIndex = 75;
@@ -402,7 +403,7 @@
             // 
             // lblPSN
             // 
-            this.lblPSN.Location = new System.Drawing.Point(31, 144);
+            this.lblPSN.Location = new System.Drawing.Point(367, 40);
             this.lblPSN.Name = "lblPSN";
             this.lblPSN.Size = new System.Drawing.Size(55, 10);
             this.lblPSN.TabIndex = 77;
@@ -466,11 +467,52 @@
             this.lblStatus.Size = new System.Drawing.Size(55, 10);
             this.lblStatus.TabIndex = 85;
             // 
+            // cboCurrency
+            // 
+            this.cboCurrency.FormattingEnabled = true;
+            this.cboCurrency.Items.AddRange(new object[] {
+            "MXN",
+            "USD"});
+            this.cboCurrency.Location = new System.Drawing.Point(528, 166);
+            this.cboCurrency.Name = "cboCurrency";
+            this.cboCurrency.Size = new System.Drawing.Size(177, 21);
+            this.cboCurrency.TabIndex = 86;
+            // 
+            // lblExRate
+            // 
+            this.lblExRate.AutoSize = true;
+            this.lblExRate.Location = new System.Drawing.Point(362, 188);
+            this.lblExRate.Name = "lblExRate";
+            this.lblExRate.Size = new System.Drawing.Size(0, 13);
+            this.lblExRate.TabIndex = 87;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(31, 140);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(81, 13);
+            this.label12.TabIndex = 89;
+            this.label12.Text = "Exchange Rate";
+            // 
+            // txtExchangeRate
+            // 
+            this.txtExchangeRate.Location = new System.Drawing.Point(143, 133);
+            this.txtExchangeRate.Name = "txtExchangeRate";
+            this.txtExchangeRate.ReadOnly = true;
+            this.txtExchangeRate.Size = new System.Drawing.Size(177, 20);
+            this.txtExchangeRate.TabIndex = 88;
+            this.txtExchangeRate.TabStop = false;
+            // 
             // Invoice
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(767, 388);
+            this.ClientSize = new System.Drawing.Size(767, 431);
+            this.Controls.Add(this.label12);
+            this.Controls.Add(this.txtExchangeRate);
+            this.Controls.Add(this.lblExRate);
+            this.Controls.Add(this.cboCurrency);
             this.Controls.Add(this.lblStatus);
             this.Controls.Add(this.lblSNumber);
             this.Controls.Add(this.lblReservation);
@@ -570,5 +612,9 @@
         private System.Windows.Forms.Label lblReservation;
         private System.Windows.Forms.Label lblSNumber;
         private System.Windows.Forms.Label lblStatus;
+        private System.Windows.Forms.ComboBox cboCurrency;
+        private System.Windows.Forms.Label lblExRate;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TextBox txtExchangeRate;
     }
 }
