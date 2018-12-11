@@ -175,7 +175,7 @@ namespace InvoiceCreation
                     DgvServicios.Columns.Add(combType);
                     DgvServicios.Columns.Add(combNumber);
                     DgvServicios.Columns.Add(combBU);
-                    DgvServicios.DataSource = servicios.OrderBy(o => o.InternalInvoice).ToList();
+                    DgvServicios.DataSource = servicios.OrderBy(o => o.ServiceID).ToList();
                     DgvServicios.Columns[3].ReadOnly = true;
                     DgvServicios.Columns[4].ReadOnly = true;
                     DgvServicios.Columns[5].ReadOnly = true;
@@ -185,6 +185,14 @@ namespace InvoiceCreation
                     DgvServicios.Columns[9].ReadOnly = true;
                     DgvServicios.Columns[10].ReadOnly = true;
                     DgvServicios.Columns[11].ReadOnly = true;
+                    DgvServicios.Columns[3].Visible = false;
+                    DgvServicios.Columns[8].Visible = false;
+                    DgvServicios.Columns[10].Visible = false;
+                    DgvServicios.Columns[11].Visible = false;
+                    DgvServicios.Columns[12].Visible = false;
+                    DgvServicios.Columns[13].Visible = false;
+                    DgvServicios.Columns[14].Visible = false;
+                    DgvServicios.Columns[16].Visible = false;
                     ((TextBox)invoice.Controls["txtIncidentID"]).Text = IncidentID.ToString();
                     ((TextBox)invoice.Controls["txtCustomerName"]).Text = Nombre;
                     ((TextBox)invoice.Controls["txtRFC"]).Text = RFC;
@@ -796,7 +804,7 @@ namespace InvoiceCreation
                 ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
                 APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
                 clientInfoHeader.AppID = "Query Example";
-                String queryString = "SELECT  ID,ItemNumber,ItemDescription,IDProveedor,Costo,CuentaGasto,Precio,InternalInvoice,ERPInvoice,Fuel_Id,Iva,Site FROM CO.Services WHERE Informativo = '0' AND (Componente IS NULL OR Componente  = '0') AND Incident = " + IncidentID;
+                String queryString = "SELECT  ID,ItemNumber,ItemDescription,IDProveedor,Costo,CuentaGasto,Precio,InternalInvoice,ERPInvoice,Fuel_Id,Iva,Site,Facturado FROM CO.Services WHERE Informativo = '0' AND (Componente IS NULL OR Componente  = '0') AND Incident = " + IncidentID;
                 global.LogMessage(queryString);
                 clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 10000, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
                 foreach (CSVTable table in queryCSV.CSVTables)
@@ -814,11 +822,12 @@ namespace InvoiceCreation
                         service.Cost = String.IsNullOrEmpty(substrings[4]) ? "0" : (Math.Round(Convert.ToDouble(substrings[4]), 4)).ToString();
                         service.CuentaGasto = substrings[5];
                         service.Precio = String.IsNullOrEmpty(substrings[6]) ? "0" : (Math.Round(Convert.ToDouble(substrings[6]), 4)).ToString();
-                        service.InternalInvoice = substrings[7];
+                        service.InvoiceNumber = substrings[7];
                         service.ERPInvoice = substrings[8];
                         service.FuelId = substrings[9];
                         service.Tax = substrings[10];
                         service.Site = substrings[11];
+                        service.Facturado = substrings[12] == "1" ? "1" : "0";
                         services.Add(service);
                     }
                 }

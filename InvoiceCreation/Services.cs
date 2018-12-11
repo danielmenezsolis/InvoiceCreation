@@ -15,7 +15,7 @@ namespace InvoiceCreation
         public string Cost { get; set; }
         public string CuentaGasto { get; set; }
         public string Precio { get; set; }
-        public string InternalInvoice { get; set; }
+        public string InvoiceNumber { get; set; }
         public string ERPInvoice { get; set; }
         public string FuelId { get; set; }
         public string Type { get; set; }
@@ -23,5 +23,6 @@ namespace InvoiceCreation
         public string Site { get; set; }
         public string Tax { get; set; }
         public string Qty { get; set; }
+        public string Facturado { get; set; }
     }
 }

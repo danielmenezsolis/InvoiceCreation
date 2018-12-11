@@ -326,7 +326,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(31, 176);
+            this.label10.Location = new System.Drawing.Point(31, 174);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(71, 13);
             this.label10.TabIndex = 66;
@@ -351,38 +351,43 @@
             // 
             // lblSRtype
             // 
-            this.lblSRtype.Location = new System.Drawing.Point(367, 14);
+            this.lblSRtype.Location = new System.Drawing.Point(338, 14);
             this.lblSRtype.Name = "lblSRtype";
-            this.lblSRtype.Size = new System.Drawing.Size(55, 21);
+            this.lblSRtype.Size = new System.Drawing.Size(67, 21);
             this.lblSRtype.TabIndex = 69;
+            this.lblSRtype.Visible = false;
             // 
             // lblCurrency
             // 
-            this.lblCurrency.Location = new System.Drawing.Point(367, 37);
+            this.lblCurrency.Location = new System.Drawing.Point(338, 35);
             this.lblCurrency.Name = "lblCurrency";
-            this.lblCurrency.Size = new System.Drawing.Size(55, 21);
+            this.lblCurrency.Size = new System.Drawing.Size(67, 21);
             this.lblCurrency.TabIndex = 70;
+            this.lblCurrency.Visible = false;
             // 
             // lblICAO
             // 
-            this.lblICAO.Location = new System.Drawing.Point(367, 58);
+            this.lblICAO.Location = new System.Drawing.Point(338, 66);
             this.lblICAO.Name = "lblICAO";
-            this.lblICAO.Size = new System.Drawing.Size(55, 21);
+            this.lblICAO.Size = new System.Drawing.Size(67, 21);
             this.lblICAO.TabIndex = 71;
+            this.lblICAO.Visible = false;
             // 
             // lblAircraftCategory
             // 
-            this.lblAircraftCategory.Location = new System.Drawing.Point(367, 89);
+            this.lblAircraftCategory.Location = new System.Drawing.Point(338, 87);
             this.lblAircraftCategory.Name = "lblAircraftCategory";
-            this.lblAircraftCategory.Size = new System.Drawing.Size(55, 21);
+            this.lblAircraftCategory.Size = new System.Drawing.Size(67, 21);
             this.lblAircraftCategory.TabIndex = 72;
+            this.lblAircraftCategory.Visible = false;
             // 
             // lblTail
             // 
-            this.lblTail.Location = new System.Drawing.Point(367, 114);
+            this.lblTail.Location = new System.Drawing.Point(338, 108);
             this.lblTail.Name = "lblTail";
-            this.lblTail.Size = new System.Drawing.Size(55, 21);
+            this.lblTail.Size = new System.Drawing.Size(67, 21);
             this.lblTail.TabIndex = 73;
+            this.lblTail.Visible = false;
             // 
             // BtnChange
             // 
@@ -396,76 +401,83 @@
             // 
             // lblPayTerm
             // 
-            this.lblPayTerm.Location = new System.Drawing.Point(367, 152);
+            this.lblPayTerm.Location = new System.Drawing.Point(338, 129);
             this.lblPayTerm.Name = "lblPayTerm";
-            this.lblPayTerm.Size = new System.Drawing.Size(55, 21);
+            this.lblPayTerm.Size = new System.Drawing.Size(67, 15);
             this.lblPayTerm.TabIndex = 76;
+            this.lblPayTerm.Visible = false;
             // 
             // lblPSN
             // 
-            this.lblPSN.Location = new System.Drawing.Point(367, 40);
+            this.lblPSN.Location = new System.Drawing.Point(338, 56);
             this.lblPSN.Name = "lblPSN";
-            this.lblPSN.Size = new System.Drawing.Size(55, 10);
+            this.lblPSN.Size = new System.Drawing.Size(67, 10);
             this.lblPSN.TabIndex = 77;
+            this.lblPSN.Visible = false;
             // 
             // lblRoutes
             // 
-            this.lblRoutes.AutoSize = true;
-            this.lblRoutes.Location = new System.Drawing.Point(367, 196);
+            this.lblRoutes.Location = new System.Drawing.Point(338, 154);
             this.lblRoutes.Name = "lblRoutes";
-            this.lblRoutes.Size = new System.Drawing.Size(0, 13);
+            this.lblRoutes.Size = new System.Drawing.Size(67, 10);
             this.lblRoutes.TabIndex = 78;
+            this.lblRoutes.Visible = false;
             // 
             // lblArrival
             // 
-            this.lblArrival.AutoSize = true;
-            this.lblArrival.Location = new System.Drawing.Point(113, 189);
+            this.lblArrival.Location = new System.Drawing.Point(338, 174);
             this.lblArrival.Name = "lblArrival";
-            this.lblArrival.Size = new System.Drawing.Size(0, 13);
+            this.lblArrival.Size = new System.Drawing.Size(55, 13);
             this.lblArrival.TabIndex = 79;
+            this.lblArrival.Visible = false;
             // 
             // lblDeparture
             // 
-            this.lblDeparture.AutoSize = true;
-            this.lblDeparture.Location = new System.Drawing.Point(113, 160);
+            this.lblDeparture.Location = new System.Drawing.Point(338, 197);
             this.lblDeparture.Name = "lblDeparture";
-            this.lblDeparture.Size = new System.Drawing.Size(0, 13);
+            this.lblDeparture.Size = new System.Drawing.Size(44, 21);
             this.lblDeparture.TabIndex = 80;
+            this.lblDeparture.Visible = false;
             // 
             // lblCatOrder
             // 
-            this.lblCatOrder.Location = new System.Drawing.Point(140, 201);
+            this.lblCatOrder.Location = new System.Drawing.Point(338, 228);
             this.lblCatOrder.Name = "lblCatOrder";
             this.lblCatOrder.Size = new System.Drawing.Size(55, 10);
             this.lblCatOrder.TabIndex = 81;
+            this.lblCatOrder.Visible = false;
             // 
             // lblTripNumber
             // 
-            this.lblTripNumber.Location = new System.Drawing.Point(223, 201);
+            this.lblTripNumber.Location = new System.Drawing.Point(338, 218);
             this.lblTripNumber.Name = "lblTripNumber";
-            this.lblTripNumber.Size = new System.Drawing.Size(55, 10);
+            this.lblTripNumber.Size = new System.Drawing.Size(67, 10);
             this.lblTripNumber.TabIndex = 82;
+            this.lblTripNumber.Visible = false;
             // 
             // lblReservation
             // 
-            this.lblReservation.Location = new System.Drawing.Point(306, 201);
+            this.lblReservation.Location = new System.Drawing.Point(338, 187);
             this.lblReservation.Name = "lblReservation";
-            this.lblReservation.Size = new System.Drawing.Size(55, 10);
+            this.lblReservation.Size = new System.Drawing.Size(67, 10);
             this.lblReservation.TabIndex = 83;
+            this.lblReservation.Visible = false;
             // 
             // lblSNumber
             // 
-            this.lblSNumber.Location = new System.Drawing.Point(389, 201);
+            this.lblSNumber.Location = new System.Drawing.Point(338, 164);
             this.lblSNumber.Name = "lblSNumber";
-            this.lblSNumber.Size = new System.Drawing.Size(55, 10);
+            this.lblSNumber.Size = new System.Drawing.Size(67, 10);
             this.lblSNumber.TabIndex = 84;
+            this.lblSNumber.Visible = false;
             // 
             // lblStatus
             // 
-            this.lblStatus.Location = new System.Drawing.Point(487, 201);
+            this.lblStatus.Location = new System.Drawing.Point(338, 247);
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new System.Drawing.Size(55, 10);
             this.lblStatus.TabIndex = 85;
+            this.lblStatus.Visible = false;
             // 
             // cboCurrency
             // 
@@ -480,11 +492,11 @@
             // 
             // lblExRate
             // 
-            this.lblExRate.AutoSize = true;
-            this.lblExRate.Location = new System.Drawing.Point(362, 188);
+            this.lblExRate.Location = new System.Drawing.Point(338, 144);
             this.lblExRate.Name = "lblExRate";
-            this.lblExRate.Size = new System.Drawing.Size(0, 13);
+            this.lblExRate.Size = new System.Drawing.Size(67, 10);
             this.lblExRate.TabIndex = 87;
+            this.lblExRate.Visible = false;
             // 
             // label12
             // 
@@ -562,6 +574,7 @@
             this.Name = "Invoice";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Invoice";
+            this.Load += new System.EventHandler(this.Invoice_Load_1);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridServicios)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
