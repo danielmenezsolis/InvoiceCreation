@@ -22,8 +22,9 @@ namespace InvoiceCreation
         public IRecordContext RecordContext { get; set; }
         public IGlobalContext GlobalContext { get; set; }
         private RightNowSyncPortClient clientORN { get; set; }
+        public string BUG { get; set; }
+        public string BUIDG { get; set; }
         public bool created { get; set; }
-        public string VoucheN { get; set; }
 
         public Invoice(bool inDesignMode, IRecordContext RecordContext, IGlobalContext globalContext)
         {
@@ -42,6 +43,7 @@ namespace InvoiceCreation
                 {
                     if (dataGridServicios.Rows.Count > 0)
                     {
+                        created = false;
                         Cursor.Current = Cursors.WaitCursor;
                         List<int> internalinvoice = DiferentsInvoices();
                         foreach (int i in internalinvoice)
@@ -82,14 +84,15 @@ namespace InvoiceCreation
                                       "<typ:submitESSJobRequest>" +
                                           "<typ:jobPackageName>/oracle/apps/ess/financials/receivables/transactions/autoInvoices/</typ:jobPackageName>" +
                                           "<typ:jobDefinitionName>AutoInvoiceImportEss</typ:jobDefinitionName>" +
-                                          "<typ:paramList>300000001746038</typ:paramList>" +
-                                          "<typ:paramList>CX AR</typ:paramList>" +
+                                          "<typ:paramList>" + BUIDG + "</typ:paramList>" +
+                                          "<typ:paramList>" + BUG + "</typ:paramList>" +
                                           "<typ:paramList>" + DateTime.Today.ToString("yyyy-MM-dd") + "</typ:paramList>" +
                                       "</typ:submitESSJobRequest>" +
                                   "</soapenv:Body>" +
                               "</soapenv:Envelope>";
 
                 byte[] byteArray = Encoding.UTF8.GetBytes(envelope);
+                GlobalContext.LogMessage(envelope);
                 // Construct the base 64 encoded string used as credentials for the service call
                 byte[] toEncodeAsBytes = System.Text.ASCIIEncoding.ASCII.GetBytes("itotal" + ":" + "Oracle123");
                 string credentials = System.Convert.ToBase64String(toEncodeAsBytes);
@@ -131,7 +134,7 @@ namespace InvoiceCreation
                             {
                                 if (desiredNode.ChildNodes[i].LocalName == "result")
                                 {
-                                    MessageBox.Show(desiredNode.InnerText);
+                                    created = true;
                                 }
                             }
                         }
@@ -159,15 +162,17 @@ namespace InvoiceCreation
                         {
                             string itemN = dgvRenglon.Cells[4].Value.ToString();
                             string itemDe = dgvRenglon.Cells[5].Value.ToString();
-                            //DataGridViewComboBoxCell cbu = (DataGridViewComboBoxCell)dgvRenglon.Cells[2];
-                            string BU = cboBU.SelectedValue.ToString();
-                            string BUText = cboBU.Text;
+                            BUIDG = cboBU.SelectedValue.ToString();
+                            BUG = cboBU.Text;
                             DataGridViewComboBoxCell Ctt = (DataGridViewComboBoxCell)dgvRenglon.Cells[0];
                             string CustomerTrxTypeNameText = Ctt.FormattedValue.ToString();
                             string BatchSourceName = "";
                             string ServiceId = dgvRenglon.Cells[3].Value.ToString();
+                            string FuelId = dgvRenglon.Cells[12].Value.ToString();
+                            string Itinerary = dgvRenglon.Cells[19].Value.ToString();
+                            string Aircraft = dgvRenglon.Cells[20].Value.ToString();
 
-                            if (BUText.Contains("USD"))
+                            if (BUG.Contains("US"))
                             {
                                 BatchSourceName = "ORIGEN ICCS US";
                                 CustomerTrxTypeNameText = "CFCC_ICCS_US";
@@ -192,6 +197,7 @@ namespace InvoiceCreation
                             string Sup = dgvRenglon.Cells[6].Value.ToString();
                             string lineDate = lblRN.Text.Substring(0, 6);
                             string lineVal = lblRN.Text.Substring(6).Replace("-", string.Empty).Replace("0", string.Empty);
+
                             Random rnd = new Random();
                             string envelope = "<soapenv:Envelope " +
                             "   xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"" +
@@ -209,7 +215,7 @@ namespace InvoiceCreation
                             " <soapenv:Body> " +
                             "<typ:createInterfaceLine>" +
                             "<typ:interfaceLine>" +
-                            "<inv:OrgId>" + BU + "</inv:OrgId>" +
+                            "<inv:OrgId>" + BUIDG + "</inv:OrgId>" +
                             "<inv:BatchSourceName>" + BatchSourceName + "</inv:BatchSourceName>" +
                             "<inv:CustomerTrxTypeName>" + CustomerTrxTypeNameText + "</inv:CustomerTrxTypeName>" +
                             "<inv:BillCustomerAccountNumber>" + txtAccount.Text + "</inv:BillCustomerAccountNumber>" +
@@ -222,34 +228,56 @@ namespace InvoiceCreation
                                 //"<inv:ConversionRate>1</inv:ConversionRate>";
                             }
                             envelope += "<inv:GlDate>" + DateTime.Now.ToString("yyyy-MM-dd") + "</inv:GlDate>" +
-                            "<inv:ItemNumber>" + itemN + "</inv:ItemNumber>" +
-                           "<inv:Description>" + itemDe + "</inv:Description>" +
-                           "<inv:LineType>LINE</inv:LineType>" +
+                            "<inv:ItemNumber>" + itemN + "</inv:ItemNumber>";
+                            if (lblSRtype.Text == "PERMISOS")
+                            {
+                                envelope += "<inv:Description>" + Aircraft + " / " + itemDe + "</inv:Description>";
+                            }
+                            else
+                            {
+                                envelope += "<inv:Description>" + itemDe + "</inv:Description>";
+                            }
+                            envelope += "<inv:LineType>LINE</inv:LineType>" +
                            "<inv:Quantity unitCode=\"SER\">1</inv:Quantity>" +
                            "<inv:TaxCode>" + IVA + "</inv:TaxCode>" +
-                           //"<inv:PaymentTermsName>" + lblPayTerm.Text + "</inv:PaymentTermsName>" +
-                           "<inv:PaymentTermsName>30 DIAS</inv:PaymentTermsName>" +
-                           "<inv:UnitSellingPrice currencyCode=\"" + cboCurrency.Text + "\">" + Costo + "</inv:UnitSellingPrice>" +
+                           "<inv:PaymentTermsName>" + lblPayTerm.Text + "</inv:PaymentTermsName>" +
+                           //"<inv:PaymentTermsName>30 DIAS</inv:PaymentTermsName>" +
+                           "<inv:UnitSellingPrice currencyCode=\"" + cboCurrency.Text + "\">" + Precio + "</inv:UnitSellingPrice>" +
                            "<inv:TransactionInterfaceLineDff xsi:type=\"tran2:InvoiceLineContext\">" +
                                "<tran2:__FLEX_Context>Invoice_Line_Context</tran2:__FLEX_Context>" +
-                               // "<tran2:lines>" + ((lineDate + lineVal + intrnd).PadLeft(10)).Trim() + "</tran2:lines>" +
-                               "<tran2:lines>" + ((x + y + lineDate + lineVal).PadLeft(10)).Trim() + "</tran2:lines>" +
+                               "<tran2:lines>" + ServiceId + "</tran2:lines>" +
                                "</inv:TransactionInterfaceLineDff>" +
                                "<inv:TransactionLineDff>" +
                                "<tran5:xxProveedor>" + Sup + "</tran5:xxProveedor>" +
-                               "<tran5:xxCostoRealFull>" + Costo + "</tran5:xxCostoRealFull>" +
+                               "<tran5:xxCostoRealFull>" + Precio + "</tran5:xxCostoRealFull>" +
                                "<tran5:xxCantidad>1</tran5:xxCantidad>" +
                                "</inv:TransactionLineDff>" +
                                "<inv:TransactionInterfaceHeaderDff>" +
-                               "<tran6:xxServiceRequest>" + lblRN.Text + "</tran6:xxServiceRequest>" +
-                               "<tran6:xxDatosFactura>" + lblTail.Text + "|" + lblICAO.Text + "|" + lblArrival.Text + "|JUL-25-2018 1440 Z|JUL-25-2018 1800 Z|" + lblSRtype.Text + " " + DateTime.Now.ToString("yyyy-MM-dd") + "|" + lblTripNumber.Text + "|" + lblReservation.Text + "|" + lblCatOrder.Text + "|" + lblSNumber.Text + "||" + lblStatus.Text + "</tran6:xxDatosFactura>" +
-                               "<tran6:xxDatosDeRutas>" + lblRoutes.Text + "</tran6:xxDatosDeRutas>" +
-                               "<tran6:xxDatosCombistible>" + GetFuels() + " LTRS. / " + (GetFuels() * 3.7853).ToString() + " /GALS.| " + VoucheN + "|" + "</tran6:xxDatosCombistible>" +
-                          "</inv:TransactionInterfaceHeaderDff>" +
-                       "</typ:interfaceLine>" +
-                   "</typ:createInterfaceLine>" +
-               "</soapenv:Body>" +
-            "</soapenv:Envelope>";
+                               "<tran6:xxServiceRequest>" + lblRN.Text + "</tran6:xxServiceRequest>";
+                            if (lblSRtype.Text == "FCC" || lblSRtype.Text == "FBO")
+                            {
+                                envelope += "<tran6:xxDatosFactura>" + lblTail.Text + "|" + lblICAO.Text + "|" + lblArrival.Text + "|" + GetArrivalDateItinerary(Itinerary) + "|" + GetDepartureDateItinerary(Itinerary) + "|" + lblSRtype.Text + " " + DateTime.Now.ToString("yyyy-MM-dd") + "|" + lblTripNumber.Text + "|" + lblReservation.Text + "|" + lblCatOrder.Text + "|" + lblSNumber.Text + "||" + lblStatus.Text + "</tran6:xxDatosFactura>";
+                                envelope += "<tran6:xxDatosDeRutas>" + GetRoutes(Itinerary) + "</tran6:xxDatosDeRutas>";
+                            }
+                            else
+                            {
+                                envelope += "<tran6:xxDatosFactura>" + lblTail.Text + "|" + lblICAO.Text + "|" + lblArrival.Text + "|" + lblArrivalDate.Text + "|" + lblDepartureDate.Text + "|" + lblSRtype.Text + " " + DateTime.Now.ToString("yyyy-MM-dd") + "|" + lblTripNumber.Text + "|" + lblReservation.Text + "|" + lblCatOrder.Text + "|" + lblSNumber.Text + "||" + lblStatus.Text + "</tran6:xxDatosFactura>";
+                            }
+                            if (!string.IsNullOrEmpty(FuelId))
+                            {
+                                double Lts = GetFuels(FuelId);
+                                if (Lts > 0)
+                                {
+                                    string VN = GetFVN(FuelId);
+                                    envelope += "<tran6:xxDatosCombistible>" + Lts + " LTRS. / " + (Math.Round(Convert.ToDouble((Precio / (Lts / 3.7853)) / 3.7853), 2)).ToString() + " USD " + Math.Round(Convert.ToDouble((Lts / 3.7853)), 2).ToString() + " GALS. /" + Math.Round(Convert.ToDouble(Precio / (Lts / 3.7853)), 2).ToString() + " USD |" + VN + "</tran6:xxDatosCombistible>";
+                                }
+                            }
+                            envelope += "<tran6:xxGpofactura>" + x + "</tran6:xxGpofactura>" +
+                                "</inv:TransactionInterfaceHeaderDff>" +
+                              "</typ:interfaceLine>" +
+                                                                         "</typ:createInterfaceLine>" +
+                                                                     "</soapenv:Body>" +
+                                                                  "</soapenv:Envelope>";
 
                             byte[] byteArray = Encoding.UTF8.GetBytes(envelope);
                             GlobalContext.LogMessage(envelope);
@@ -314,8 +342,6 @@ namespace InvoiceCreation
                 return 0;
             }
         }
-
-
         private void GenerarFactura(int x)
         {
             try
@@ -479,6 +505,88 @@ namespace InvoiceCreation
             }
             return invoice.Distinct().ToList();
         }
+        public string GetRoutes(string Itinerary)
+        {
+            string routes = "";
+            ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
+            APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
+            clientInfoHeader.AppID = "Query Example";
+            String queryString = "SELECT FromAirport.LookupName,ArrivalAirport.LookupName,ToAirport.LookupName FROM CO.Itinerary WHERE ID = " + Itinerary;
+            clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 1, "/", false, false, out CSVTableSet queryCSV, out byte[] FileData);
+            foreach (CSVTable table in queryCSV.CSVTables)
+            {
+                String[] rowData = table.Rows;
+                foreach (String data in rowData)
+                {
+                    routes += data;
+                }
+            }
+            return routes;
+        }
+        private string GetArrivalDateItinerary(string Itinerary)
+        {
+            try
+            {
+                string arrival = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+                ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
+                APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
+                clientInfoHeader.AppID = "Query Example";
+                String queryString = "SELECT ATA,ATATime FROM CO.Itinerary WHERE ID = " + Itinerary;
+                //String queryString = "SELECT Liters, Liters * 3.7854 Gallons FROM CO.Fueling WHERE ID = " + id;
+                clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 1, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
+                foreach (CSVTable table in queryCSV.CSVTables)
+                {
+                    String[] rowData = table.Rows;
+                    foreach (String data in rowData)
+                    {
+                        Char delimiter = '|';
+                        string[] substrings = data.Split(delimiter);
+                        if (!string.IsNullOrEmpty(substrings[0]) && !string.IsNullOrEmpty(substrings[1]))
+                        {
+                            arrival = Convert.ToDateTime(substrings[0] + " " + substrings[1]).ToString("yyyy-MM-dd HH:mm");
+                        }
+                    }
+                }
+                return arrival;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("GetArrivalDateItinerary" + ex.Message + "Det" + ex.StackTrace);
+                return DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+            }
+        }
+        private string GetDepartureDateItinerary(string Itinerary)
+        {
+            try
+            {
+                string departure = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+                ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
+                APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
+                clientInfoHeader.AppID = "Query Example";
+                String queryString = "SELECT ATD,ATDTime FROM CO.Itinerary WHERE ID = " + Itinerary;
+                //String queryString = "SELECT Liters, Liters * 3.7854 Gallons FROM CO.Fueling WHERE ID = " + id;
+                clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 1, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
+                foreach (CSVTable table in queryCSV.CSVTables)
+                {
+                    String[] rowData = table.Rows;
+                    foreach (String data in rowData)
+                    {
+                        Char delimiter = '|';
+                        string[] substrings = data.Split(delimiter);
+                        if (!string.IsNullOrEmpty(substrings[0]) && !string.IsNullOrEmpty(substrings[1]))
+                        {
+                            departure = Convert.ToDateTime(substrings[0] + " " + substrings[1]).ToString("yyyy-MM-dd HH:mm");
+                        }
+                    }
+                }
+                return departure;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("GetDepartureDateItinerary" + ex.Message + "Det" + ex.StackTrace);
+                return DateTime.Now.ToString("yyyy-MM-dd HH:mm"); ;
+            }
+        }
         private double GetFuels()
         {
             try
@@ -504,9 +612,7 @@ namespace InvoiceCreation
                     {
                         Char delimiter = '|';
                         string[] substrings = data.Split(delimiter);
-
                         fuels = string.IsNullOrEmpty(substrings[0]) ? 0 : Convert.ToDouble(substrings[0]);
-                        VoucheN = substrings[1];
                     }
                 }
 
@@ -527,6 +633,60 @@ namespace InvoiceCreation
                         }
                     }
                 }*/
+                return fuels;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message + "Det" + ex.StackTrace);
+                return 0;
+            }
+        }
+        private string GetFVN(string FuelId)
+        {
+            try
+            {
+                string vn = "";
+                //Liters * 3.7854 
+                ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
+                APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
+                clientInfoHeader.AppID = "Query Example";
+                String queryString = "SELECT VoucherNumber FROM CO.Fueling WHERE ID = " + FuelId;
+                clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 1, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
+                foreach (CSVTable table in queryCSV.CSVTables)
+                {
+                    String[] rowData = table.Rows;
+                    foreach (String data in rowData)
+                    {
+                        vn = data;
+                    }
+                }
+                return vn;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message + "Det" + ex.StackTrace);
+                return "";
+            }
+        }
+        private double GetFuels(string FuelId)
+        {
+            try
+            {
+                double fuels = 0;
+                //Liters * 3.7854 
+                ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
+                APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
+                clientInfoHeader.AppID = "Query Example";
+                String queryString = "SELECT Liters FROM CO.Fueling WHERE ID = " + FuelId;
+                clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 10000, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
+                foreach (CSVTable table in queryCSV.CSVTables)
+                {
+                    String[] rowData = table.Rows;
+                    foreach (String data in rowData)
+                    {
+                        fuels += string.IsNullOrEmpty(data) ? 0 : Convert.ToDouble(data);
+                    }
+                }
                 return fuels;
             }
             catch (Exception ex)
@@ -648,7 +808,6 @@ namespace InvoiceCreation
                 MessageBox.Show(response.Content);
             }
         }
-
         private void Invoice_Load_1(object sender, EventArgs e)
         {
             foreach (DataGridViewRow dgvRenglon in dataGridServicios.Rows)

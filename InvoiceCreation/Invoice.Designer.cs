@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Invoice));
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.BtnInvoice = new System.Windows.Forms.Button();
             this.dataGridServicios = new System.Windows.Forms.DataGridView();
             this.label11 = new System.Windows.Forms.Label();
@@ -77,12 +77,14 @@
             this.lblExRate = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.txtExchangeRate = new System.Windows.Forms.TextBox();
+            this.lblArrivalDate = new System.Windows.Forms.Label();
+            this.lblDepartureDate = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridServicios)).BeginInit();
             this.SuspendLayout();
             // 
             // BtnInvoice
             // 
-            this.BtnInvoice.Image = global::InvoiceCreation.Properties.Resources.receipt16;
+            this.BtnInvoice.Image = ((System.Drawing.Image)(resources.GetObject("BtnInvoice.Image")));
             this.BtnInvoice.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.BtnInvoice.Location = new System.Drawing.Point(9, 240);
             this.BtnInvoice.Name = "BtnInvoice";
@@ -103,23 +105,23 @@
             this.dataGridServicios.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.dataGridServicios.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
             this.dataGridServicios.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.ControlDarkDark;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridServicios.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.ControlDarkDark;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridServicios.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.dataGridServicios.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.ControlDarkDark;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridServicios.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.ControlDarkDark;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridServicios.DefaultCellStyle = dataGridViewCellStyle4;
             this.dataGridServicios.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.dataGridServicios.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnF2;
             this.dataGridServicios.Location = new System.Drawing.Point(0, 268);
@@ -405,7 +407,6 @@
             this.lblPayTerm.Name = "lblPayTerm";
             this.lblPayTerm.Size = new System.Drawing.Size(67, 15);
             this.lblPayTerm.TabIndex = 76;
-            this.lblPayTerm.Visible = false;
             // 
             // lblPSN
             // 
@@ -516,11 +517,27 @@
             this.txtExchangeRate.TabIndex = 88;
             this.txtExchangeRate.TabStop = false;
             // 
+            // lblArrivalDate
+            // 
+            this.lblArrivalDate.Location = new System.Drawing.Point(424, 207);
+            this.lblArrivalDate.Name = "lblArrivalDate";
+            this.lblArrivalDate.Size = new System.Drawing.Size(119, 21);
+            this.lblArrivalDate.TabIndex = 90;
+            // 
+            // lblDepartureDate
+            // 
+            this.lblDepartureDate.Location = new System.Drawing.Point(424, 245);
+            this.lblDepartureDate.Name = "lblDepartureDate";
+            this.lblDepartureDate.Size = new System.Drawing.Size(119, 21);
+            this.lblDepartureDate.TabIndex = 91;
+            // 
             // Invoice
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(767, 431);
+            this.Controls.Add(this.lblDepartureDate);
+            this.Controls.Add(this.lblArrivalDate);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.txtExchangeRate);
             this.Controls.Add(this.lblExRate);
@@ -629,5 +646,7 @@
         private System.Windows.Forms.Label lblExRate;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.TextBox txtExchangeRate;
+        private System.Windows.Forms.Label lblArrivalDate;
+        private System.Windows.Forms.Label lblDepartureDate;
     }
 }

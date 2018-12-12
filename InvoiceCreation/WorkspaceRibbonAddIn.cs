@@ -50,6 +50,16 @@ namespace InvoiceCreation
         public string TripNumber { get; set; }
         public string Reservation { get; set; }
         public string SNumber { get; set; }
+
+        public DateTime Arrival { get; set; }
+        public DateTime Departure { get; set; }
+        public DateTime? ArrivalDate { get; set; }
+        public DateTime? DepartureDate { get; set; }
+        public string ArrivalTime { get; set; }
+        public string DepartureTime { get; set; }
+        public DateTime CatDate { get; set; }
+        public DateTime GYCDate { get; set; }
+        public DateTime SeneamDate { get; set; }
         public Dictionary<string, string> BUS { get; set; }
 
 
@@ -70,7 +80,6 @@ namespace InvoiceCreation
             {
                 if (Init())
                 {
-
                     Incident = (IIncident)recordContext.GetWorkspaceRecord(WorkspaceRecordType.Incident);
                     IncidentID = Incident.ID;
                     IList<ICfVal> campos = Incident.CustomField;
@@ -93,7 +102,18 @@ namespace InvoiceCreation
                         {
                             CatOrder = val.ValStr;
                         }
-
+                        if (val.CfId == 37)
+                        {
+                            CatDate = Convert.ToDateTime(val.ValDttm);
+                        }
+                        if (val.CfId == 47)
+                        {
+                            GYCDate = Convert.ToDateTime(val.ValDate);
+                        }
+                        if (val.CfId == 66)
+                        {
+                            SeneamDate = Convert.ToDateTime(val.ValDate);
+                        }
                         if (val.CfId == 57)
                         {
                             PartyId = val.ValStr;
@@ -122,26 +142,46 @@ namespace InvoiceCreation
                         {
                             CatCombust = val.ValStr;
                         }
+
+                        if (val.CfId == 100)
+                        {
+                            ArrivalDate = val.ValDate;
+                        }
+                        if (val.CfId == 94)
+                        {
+                            ArrivalTime = val.ValStr;
+                        }
+                        if (val.CfId == 101)
+                        {
+                            DepartureDate = val.ValDate;
+                        }
+                        if (val.CfId == 95)
+                        {
+                            DepartureTime = val.ValStr;
+                        }
                     }
 
+                    if (SrType == "FUEL")
+                    {
+                        Departure = Convert.ToDateTime(DepartureDate);
+                        Departure = Convert.ToDateTime(Departure.ToString("yyyy-MM-dd") + " " + DepartureTime.Insert(2, ":"));
+                        Arrival = Convert.ToDateTime(ArrivalDate);
+                        Arrival = Convert.ToDateTime(Arrival.ToString("yyyy-MM-dd") + " " + ArrivalTime.Insert(2, ":"));
+                    }
                     ICAO = getICAODesi();
                     SrType = GetSRType();
                     AircraftCategory = GetCargoGroup(ICAO);
                     Tail = GetTail();
                     ClientType = GetClientType();
                     FuelType = GetFuelType();
-
                     ExRate = getExchangeRate(DateTime.Now);
                     PayTerm = GetPaymentTermns();
                     PartySiteNumber = getPartySiteNumber();
                     BUS = GetBUS();
-
                     servicios = GetListServices();
-
                     invoice = new Invoice(inDesignMode, recordContext, global);
                     DgvServicios = ((DataGridView)invoice.Controls["dataGridServicios"]);
                     BUnitS = ((ComboBox)invoice.Controls["cboBU"]);
-
                     BUnitS.DataSource = new BindingSource(BUS, null);
                     BUnitS.DisplayMember = "Value";
                     BUnitS.ValueMember = "Key";
@@ -176,6 +216,7 @@ namespace InvoiceCreation
                     DgvServicios.Columns.Add(combNumber);
                     DgvServicios.Columns.Add(combBU);
                     DgvServicios.DataSource = servicios.OrderBy(o => o.ServiceID).ToList();
+
                     DgvServicios.Columns[3].ReadOnly = true;
                     DgvServicios.Columns[4].ReadOnly = true;
                     DgvServicios.Columns[5].ReadOnly = true;
@@ -185,6 +226,7 @@ namespace InvoiceCreation
                     DgvServicios.Columns[9].ReadOnly = true;
                     DgvServicios.Columns[10].ReadOnly = true;
                     DgvServicios.Columns[11].ReadOnly = true;
+
                     DgvServicios.Columns[3].Visible = false;
                     DgvServicios.Columns[8].Visible = false;
                     DgvServicios.Columns[10].Visible = false;
@@ -193,6 +235,10 @@ namespace InvoiceCreation
                     DgvServicios.Columns[13].Visible = false;
                     DgvServicios.Columns[14].Visible = false;
                     DgvServicios.Columns[16].Visible = false;
+                    DgvServicios.Columns[17].Visible = false;
+                    DgvServicios.Columns[19].Visible = false;
+                    DgvServicios.Columns[20].Visible = false;
+
                     ((TextBox)invoice.Controls["txtIncidentID"]).Text = IncidentID.ToString();
                     ((TextBox)invoice.Controls["txtCustomerName"]).Text = Nombre;
                     ((TextBox)invoice.Controls["txtRFC"]).Text = RFC;
@@ -212,20 +258,30 @@ namespace InvoiceCreation
                     ((System.Windows.Forms.Label)invoice.Controls["lblRoutes"]).Text = GetRoutes();
                     ((System.Windows.Forms.Label)invoice.Controls["lblArrival"]).Text = GetArrival();
                     ((System.Windows.Forms.Label)invoice.Controls["lblDeparture"]).Text = GetDeparture();
-
                     ((System.Windows.Forms.Label)invoice.Controls["lblTripNumber"]).Text = TripNumber;
                     ((System.Windows.Forms.Label)invoice.Controls["lblCatOrder"]).Text = CatOrder;
                     ((System.Windows.Forms.Label)invoice.Controls["lblReservation"]).Text = Reservation;
                     ((System.Windows.Forms.Label)invoice.Controls["lblSNumber"]).Text = SNumber;
                     ((System.Windows.Forms.Label)invoice.Controls["lblStatus"]).Text = GetStatus();
-                    //lblCateringOrder
-
-
-
-
-                    if (Nombre.Contains("Test"))
+                    if (SrType == "FUEL")
                     {
-                        MessageBox.Show("Due to client, prices have been changed to USD Currency");
+                        ((System.Windows.Forms.Label)invoice.Controls["lblArrivalDate"]).Text = Arrival.ToString("yyyy-MM-dd HH:mm");
+                        ((System.Windows.Forms.Label)invoice.Controls["lblDepartureDate"]).Text = Departure.ToString("yyyy-MM-dd HH:mm");
+                    }
+                    if (SrType == "CATERING")
+                    {
+                        ((System.Windows.Forms.Label)invoice.Controls["lblArrivalDate"]).Text = CatDate.ToLocalTime().ToString("yyyy-MM-dd HH:mm");
+                        ((System.Windows.Forms.Label)invoice.Controls["lblDepartureDate"]).Text = CatDate.ToLocalTime().ToString("yyyy-MM-dd HH:mm");
+                    }
+                    if (SrType == "GYCUSTODIA")
+                    {
+                        ((System.Windows.Forms.Label)invoice.Controls["lblArrivalDate"]).Text = GYCDate.ToString("yyyy-MM-dd HH:mm");
+                        ((System.Windows.Forms.Label)invoice.Controls["lblDepartureDate"]).Text = GYCDate.ToString("yyyy-MM-dd HH:mm");
+                    }
+                    if (SrType == "SENEAM")
+                    {
+                        ((System.Windows.Forms.Label)invoice.Controls["lblArrivalDate"]).Text = SeneamDate.ToString("yyyy-MM-dd HH:mm");
+                        ((System.Windows.Forms.Label)invoice.Controls["lblDepartureDate"]).Text = SeneamDate.ToString("yyyy-MM-dd HH:mm");
                     }
 
                     invoice.ShowDialog();
@@ -804,7 +860,7 @@ namespace InvoiceCreation
                 ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
                 APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
                 clientInfoHeader.AppID = "Query Example";
-                String queryString = "SELECT  ID,ItemNumber,ItemDescription,IDProveedor,Costo,CuentaGasto,Precio,InternalInvoice,ERPInvoice,Fuel_Id,Iva,Site,Facturado FROM CO.Services WHERE Informativo = '0' AND (Componente IS NULL OR Componente  = '0') AND Incident = " + IncidentID;
+                String queryString = "SELECT  ID,ItemNumber,ItemDescription,IDProveedor,Costo,CuentaGasto,Precio,InternalInvoice,ERPInvoice,Fuel_Id,Iva,Site,Facturado,Itinerary,Aircraft.LookupName FROM CO.Services WHERE Informativo = '0' AND (Componente IS NULL OR Componente  = '0') AND Incident = " + IncidentID;
                 global.LogMessage(queryString);
                 clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 10000, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
                 foreach (CSVTable table in queryCSV.CSVTables)
@@ -828,6 +884,8 @@ namespace InvoiceCreation
                         service.Tax = substrings[10];
                         service.Site = substrings[11];
                         service.Facturado = substrings[12] == "1" ? "1" : "0";
+                        service.Itinerary = substrings[13];
+                        service.Aircraft = substrings[14];
                         services.Add(service);
                     }
                 }
