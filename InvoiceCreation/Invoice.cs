@@ -1,6 +1,7 @@
 ﻿using InvoiceCreation.SOAPICCS;
 using RestSharp;
 using RightNow.AddIns.AddInViews;
+using RightNow.AddIns.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -53,6 +54,7 @@ namespace InvoiceCreation
                             {
                                 EjecutarBatch();
                                 MessageBox.Show("Invoice no: " + i + " Services send: " + y);
+                                RecordContext.ExecuteEditorCommand(EditorCommand.Save);
                             }
                         }
                         Cursor.Current = Cursors.Default;
@@ -228,16 +230,9 @@ namespace InvoiceCreation
                                 //"<inv:ConversionRate>1</inv:ConversionRate>";
                             }
                             envelope += "<inv:GlDate>" + DateTime.Now.ToString("yyyy-MM-dd") + "</inv:GlDate>" +
-                            "<inv:ItemNumber>" + itemN + "</inv:ItemNumber>";
-                            if (lblSRtype.Text == "PERMISOS")
-                            {
-                                envelope += "<inv:Description>" + Aircraft + " / " + itemDe + "</inv:Description>";
-                            }
-                            else
-                            {
-                                envelope += "<inv:Description>" + itemDe + "</inv:Description>";
-                            }
-                            envelope += "<inv:LineType>LINE</inv:LineType>" +
+                           "<inv:ItemNumber>" + itemN + "</inv:ItemNumber>" +
+                           "<inv:Description>" + itemDe + "</inv:Description>" +
+                           "<inv:LineType>LINE</inv:LineType>" +
                            "<inv:Quantity unitCode=\"SER\">1</inv:Quantity>" +
                            "<inv:TaxCode>" + IVA + "</inv:TaxCode>" +
                            "<inv:PaymentTermsName>" + lblPayTerm.Text + "</inv:PaymentTermsName>" +
@@ -245,13 +240,17 @@ namespace InvoiceCreation
                            "<inv:UnitSellingPrice currencyCode=\"" + cboCurrency.Text + "\">" + Precio + "</inv:UnitSellingPrice>" +
                            "<inv:TransactionInterfaceLineDff xsi:type=\"tran2:InvoiceLineContext\">" +
                                "<tran2:__FLEX_Context>Invoice_Line_Context</tran2:__FLEX_Context>" +
-                               "<tran2:lines>" + ServiceId + "</tran2:lines>" +
+                               "<tran2:lines>" + x + y + ServiceId + "</tran2:lines>" +
                                "</inv:TransactionInterfaceLineDff>" +
                                "<inv:TransactionLineDff>" +
                                "<tran5:xxProveedor>" + Sup + "</tran5:xxProveedor>" +
                                "<tran5:xxCostoRealFull>" + Precio + "</tran5:xxCostoRealFull>" +
-                               "<tran5:xxCantidad>1</tran5:xxCantidad>" +
-                               "</inv:TransactionLineDff>" +
+                               "<tran5:xxCantidad>1</tran5:xxCantidad>";
+                            if (lblSRtype.Text == "PERMISOS")
+                            {
+                                envelope += "<tran5:xxMatricula>" + Aircraft + "</tran5:xxMatricula>";
+                            }
+                            envelope += "</inv:TransactionLineDff>" +
                                "<inv:TransactionInterfaceHeaderDff>" +
                                "<tran6:xxServiceRequest>" + lblRN.Text + "</tran6:xxServiceRequest>";
                             if (lblSRtype.Text == "FCC" || lblSRtype.Text == "FBO")
@@ -822,6 +821,8 @@ namespace InvoiceCreation
                 }
             }
         }
+
+
     }
 
 

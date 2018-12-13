@@ -247,6 +247,7 @@ namespace InvoiceCreation
                     ((TextBox)invoice.Controls["txtUtilidad"]).Text = CatUtilidad;
                     ((TextBox)invoice.Controls["txtCombustible"]).Text = CatCombust;
                     ((TextBox)invoice.Controls["txtExchangeRate"]).Text = Math.Round(ExRate, 4).ToString();
+                    ((TextBox)invoice.Controls["txtStatus"]).Text = GetStatus();
                     ((System.Windows.Forms.Label)invoice.Controls["lblRN"]).Text = GetReferenceNumber();
                     ((System.Windows.Forms.Label)invoice.Controls["lblSRtype"]).Text = SrType;
                     ((System.Windows.Forms.Label)invoice.Controls["lblCurrency"]).Text = GetSrCurrency();
@@ -263,6 +264,8 @@ namespace InvoiceCreation
                     ((System.Windows.Forms.Label)invoice.Controls["lblReservation"]).Text = Reservation;
                     ((System.Windows.Forms.Label)invoice.Controls["lblSNumber"]).Text = SNumber;
                     ((System.Windows.Forms.Label)invoice.Controls["lblStatus"]).Text = GetStatus();
+                    
+
                     if (SrType == "FUEL")
                     {
                         ((System.Windows.Forms.Label)invoice.Controls["lblArrivalDate"]).Text = Arrival.ToString("yyyy-MM-dd HH:mm");
@@ -689,7 +692,7 @@ namespace InvoiceCreation
             ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
             APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
             clientInfoHeader.AppID = "Query Example";
-            String queryString = "SELECT CustomFields.co.Airports.LookupName,CustomFields.co.Airports1.LookupName FROM Incident WHERE ID = " + IncidentID;
+            String queryString = "SELECT CustomFields.co.Airports.LookupName FROM Incident WHERE ID = " + IncidentID;
             clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 10000, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
             foreach (CSVTable table in queryCSV.CSVTables)
             {
@@ -725,7 +728,7 @@ namespace InvoiceCreation
             ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
             APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
             clientInfoHeader.AppID = "Query Example";
-            String queryString = "SELECT CustomFields.co.Airports1.LookupName,CustomFields.co.Airports1.LookupName FROM Incident WHERE ID = " + IncidentID;
+            String queryString = "SELECT CustomFields.co.Airports1.LookupName FROM Incident WHERE ID = " + IncidentID;
             clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 1, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
             foreach (CSVTable table in queryCSV.CSVTables)
             {

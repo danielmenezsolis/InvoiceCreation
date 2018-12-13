@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Invoice));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.BtnInvoice = new System.Windows.Forms.Button();
             this.dataGridServicios = new System.Windows.Forms.DataGridView();
             this.label11 = new System.Windows.Forms.Label();
@@ -46,8 +46,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.txtEnvelope = new System.Windows.Forms.TextBox();
             this.txtIncidentID = new System.Windows.Forms.TextBox();
@@ -79,6 +77,10 @@
             this.txtExchangeRate = new System.Windows.Forms.TextBox();
             this.lblArrivalDate = new System.Windows.Forms.Label();
             this.lblDepartureDate = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.txtStatus = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridServicios)).BeginInit();
             this.SuspendLayout();
             // 
@@ -105,23 +107,23 @@
             this.dataGridServicios.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.dataGridServicios.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
             this.dataGridServicios.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.ControlDarkDark;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridServicios.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.ControlDarkDark;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridServicios.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dataGridServicios.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.ControlDarkDark;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridServicios.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.ControlDarkDark;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridServicios.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridServicios.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.dataGridServicios.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnF2;
             this.dataGridServicios.Location = new System.Drawing.Point(0, 268);
@@ -169,7 +171,7 @@
             // 
             // txtUtilidad
             // 
-            this.txtUtilidad.Location = new System.Drawing.Point(528, 78);
+            this.txtUtilidad.Location = new System.Drawing.Point(528, 100);
             this.txtUtilidad.Name = "txtUtilidad";
             this.txtUtilidad.ReadOnly = true;
             this.txtUtilidad.Size = new System.Drawing.Size(177, 20);
@@ -178,7 +180,7 @@
             // 
             // txtCombustible
             // 
-            this.txtCombustible.Location = new System.Drawing.Point(528, 122);
+            this.txtCombustible.Location = new System.Drawing.Point(528, 133);
             this.txtCombustible.Name = "txtCombustible";
             this.txtCombustible.ReadOnly = true;
             this.txtCombustible.Size = new System.Drawing.Size(177, 20);
@@ -205,7 +207,7 @@
             // 
             // txtAccount
             // 
-            this.txtAccount.Location = new System.Drawing.Point(143, 100);
+            this.txtAccount.Location = new System.Drawing.Point(143, 104);
             this.txtAccount.Name = "txtAccount";
             this.txtAccount.ReadOnly = true;
             this.txtAccount.Size = new System.Drawing.Size(177, 20);
@@ -214,7 +216,7 @@
             // 
             // txtRoyalty
             // 
-            this.txtRoyalty.Location = new System.Drawing.Point(528, 34);
+            this.txtRoyalty.Location = new System.Drawing.Point(528, 67);
             this.txtRoyalty.Name = "txtRoyalty";
             this.txtRoyalty.ReadOnly = true;
             this.txtRoyalty.Size = new System.Drawing.Size(177, 20);
@@ -242,29 +244,11 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(441, 129);
+            this.label6.Location = new System.Drawing.Point(436, 140);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(27, 13);
             this.label6.TabIndex = 57;
             this.label6.Text = "Fuel";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(441, 85);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(32, 13);
-            this.label7.TabIndex = 58;
-            this.label7.Text = "Utility";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(441, 37);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(42, 13);
-            this.label8.TabIndex = 59;
-            this.label8.Text = "Royalty";
             // 
             // label9
             // 
@@ -292,6 +276,7 @@
             this.txtIncidentID.ReadOnly = true;
             this.txtIncidentID.Size = new System.Drawing.Size(55, 20);
             this.txtIncidentID.TabIndex = 62;
+            this.txtIncidentID.Visible = false;
             // 
             // cboIVA
             // 
@@ -308,7 +293,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(441, 176);
+            this.label5.Location = new System.Drawing.Point(436, 174);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(49, 13);
             this.label5.TabIndex = 64;
@@ -357,7 +342,6 @@
             this.lblSRtype.Name = "lblSRtype";
             this.lblSRtype.Size = new System.Drawing.Size(67, 21);
             this.lblSRtype.TabIndex = 69;
-            this.lblSRtype.Visible = false;
             // 
             // lblCurrency
             // 
@@ -365,7 +349,6 @@
             this.lblCurrency.Name = "lblCurrency";
             this.lblCurrency.Size = new System.Drawing.Size(67, 21);
             this.lblCurrency.TabIndex = 70;
-            this.lblCurrency.Visible = false;
             // 
             // lblICAO
             // 
@@ -373,7 +356,6 @@
             this.lblICAO.Name = "lblICAO";
             this.lblICAO.Size = new System.Drawing.Size(67, 21);
             this.lblICAO.TabIndex = 71;
-            this.lblICAO.Visible = false;
             // 
             // lblAircraftCategory
             // 
@@ -381,7 +363,6 @@
             this.lblAircraftCategory.Name = "lblAircraftCategory";
             this.lblAircraftCategory.Size = new System.Drawing.Size(67, 21);
             this.lblAircraftCategory.TabIndex = 72;
-            this.lblAircraftCategory.Visible = false;
             // 
             // lblTail
             // 
@@ -389,7 +370,6 @@
             this.lblTail.Name = "lblTail";
             this.lblTail.Size = new System.Drawing.Size(67, 21);
             this.lblTail.TabIndex = 73;
-            this.lblTail.Visible = false;
             // 
             // BtnChange
             // 
@@ -414,7 +394,6 @@
             this.lblPSN.Name = "lblPSN";
             this.lblPSN.Size = new System.Drawing.Size(67, 10);
             this.lblPSN.TabIndex = 77;
-            this.lblPSN.Visible = false;
             // 
             // lblRoutes
             // 
@@ -422,7 +401,6 @@
             this.lblRoutes.Name = "lblRoutes";
             this.lblRoutes.Size = new System.Drawing.Size(67, 10);
             this.lblRoutes.TabIndex = 78;
-            this.lblRoutes.Visible = false;
             // 
             // lblArrival
             // 
@@ -430,15 +408,13 @@
             this.lblArrival.Name = "lblArrival";
             this.lblArrival.Size = new System.Drawing.Size(55, 13);
             this.lblArrival.TabIndex = 79;
-            this.lblArrival.Visible = false;
             // 
             // lblDeparture
             // 
-            this.lblDeparture.Location = new System.Drawing.Point(338, 197);
+            this.lblDeparture.Location = new System.Drawing.Point(224, 207);
             this.lblDeparture.Name = "lblDeparture";
             this.lblDeparture.Size = new System.Drawing.Size(44, 21);
             this.lblDeparture.TabIndex = 80;
-            this.lblDeparture.Visible = false;
             // 
             // lblCatOrder
             // 
@@ -446,7 +422,6 @@
             this.lblCatOrder.Name = "lblCatOrder";
             this.lblCatOrder.Size = new System.Drawing.Size(55, 10);
             this.lblCatOrder.TabIndex = 81;
-            this.lblCatOrder.Visible = false;
             // 
             // lblTripNumber
             // 
@@ -454,7 +429,6 @@
             this.lblTripNumber.Name = "lblTripNumber";
             this.lblTripNumber.Size = new System.Drawing.Size(67, 10);
             this.lblTripNumber.TabIndex = 82;
-            this.lblTripNumber.Visible = false;
             // 
             // lblReservation
             // 
@@ -462,7 +436,6 @@
             this.lblReservation.Name = "lblReservation";
             this.lblReservation.Size = new System.Drawing.Size(67, 10);
             this.lblReservation.TabIndex = 83;
-            this.lblReservation.Visible = false;
             // 
             // lblSNumber
             // 
@@ -470,7 +443,6 @@
             this.lblSNumber.Name = "lblSNumber";
             this.lblSNumber.Size = new System.Drawing.Size(67, 10);
             this.lblSNumber.TabIndex = 84;
-            this.lblSNumber.Visible = false;
             // 
             // lblStatus
             // 
@@ -478,7 +450,6 @@
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new System.Drawing.Size(55, 10);
             this.lblStatus.TabIndex = 85;
-            this.lblStatus.Visible = false;
             // 
             // cboCurrency
             // 
@@ -497,7 +468,6 @@
             this.lblExRate.Name = "lblExRate";
             this.lblExRate.Size = new System.Drawing.Size(67, 10);
             this.lblExRate.TabIndex = 87;
-            this.lblExRate.Visible = false;
             // 
             // label12
             // 
@@ -519,23 +489,61 @@
             // 
             // lblArrivalDate
             // 
-            this.lblArrivalDate.Location = new System.Drawing.Point(424, 207);
+            this.lblArrivalDate.Location = new System.Drawing.Point(450, 207);
             this.lblArrivalDate.Name = "lblArrivalDate";
             this.lblArrivalDate.Size = new System.Drawing.Size(119, 21);
             this.lblArrivalDate.TabIndex = 90;
             // 
             // lblDepartureDate
             // 
-            this.lblDepartureDate.Location = new System.Drawing.Point(424, 245);
+            this.lblDepartureDate.Location = new System.Drawing.Point(441, 242);
             this.lblDepartureDate.Name = "lblDepartureDate";
             this.lblDepartureDate.Size = new System.Drawing.Size(119, 21);
             this.lblDepartureDate.TabIndex = 91;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(436, 35);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(37, 13);
+            this.label14.TabIndex = 92;
+            this.label14.Text = "Status";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(436, 107);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(32, 13);
+            this.label15.TabIndex = 58;
+            this.label15.Text = "Utility";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(436, 74);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(42, 13);
+            this.label16.TabIndex = 59;
+            this.label16.Text = "Royalty";
+            // 
+            // txtStatus
+            // 
+            this.txtStatus.Location = new System.Drawing.Point(528, 34);
+            this.txtStatus.Name = "txtStatus";
+            this.txtStatus.ReadOnly = true;
+            this.txtStatus.Size = new System.Drawing.Size(177, 20);
+            this.txtStatus.TabIndex = 93;
+            this.txtStatus.TabStop = false;
             // 
             // Invoice
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(767, 431);
+            this.Controls.Add(this.txtStatus);
+            this.Controls.Add(this.label14);
             this.Controls.Add(this.lblDepartureDate);
             this.Controls.Add(this.lblArrivalDate);
             this.Controls.Add(this.label12);
@@ -565,9 +573,9 @@
             this.Controls.Add(this.label5);
             this.Controls.Add(this.cboIVA);
             this.Controls.Add(this.txtIncidentID);
+            this.Controls.Add(this.label16);
             this.Controls.Add(this.label9);
-            this.Controls.Add(this.label8);
-            this.Controls.Add(this.label7);
+            this.Controls.Add(this.label15);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -615,8 +623,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox txtEnvelope;
         private System.Windows.Forms.TextBox txtIncidentID;
@@ -648,5 +654,9 @@
         private System.Windows.Forms.TextBox txtExchangeRate;
         private System.Windows.Forms.Label lblArrivalDate;
         private System.Windows.Forms.Label lblDepartureDate;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.TextBox txtStatus;
     }
 }
