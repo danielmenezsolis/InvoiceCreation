@@ -26,5 +26,6 @@ namespace InvoiceCreation
         public string Facturado { get; set; }
         public string Itinerary { get; set; }
         public string Aircraft { get; set; }
+        public string Lts { get; set; }
     }
 }

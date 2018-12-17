@@ -26,9 +26,11 @@ namespace InvoiceCreation
         public string BUG { get; set; }
         public string BUIDG { get; set; }
         public bool created { get; set; }
+        public bool blnCurrencychanged { get; set; }
 
         public Invoice(bool inDesignMode, IRecordContext RecordContext, IGlobalContext globalContext)
         {
+            blnCurrencychanged = false;
             this.GlobalContext = globalContext;
             this.RecordContext = RecordContext;
             this.DesingMode = inDesignMode;
@@ -162,172 +164,197 @@ namespace InvoiceCreation
                     {
                         if (dgvRenglon.Cells[1].Value.ToString() == x.ToString())
                         {
-                            string itemN = dgvRenglon.Cells[4].Value.ToString();
-                            string itemDe = dgvRenglon.Cells[5].Value.ToString();
-                            BUIDG = cboBU.SelectedValue.ToString();
-                            BUG = cboBU.Text;
-                            DataGridViewComboBoxCell Ctt = (DataGridViewComboBoxCell)dgvRenglon.Cells[0];
-                            string CustomerTrxTypeNameText = Ctt.FormattedValue.ToString();
-                            string BatchSourceName = "";
-                            string ServiceId = dgvRenglon.Cells[3].Value.ToString();
-                            string FuelId = dgvRenglon.Cells[12].Value.ToString();
-                            string Itinerary = dgvRenglon.Cells[19].Value.ToString();
-                            string Aircraft = dgvRenglon.Cells[20].Value.ToString();
+                            double Precio = String.IsNullOrEmpty(dgvRenglon.Cells[9].Value.ToString()) ? 0 : Convert.ToDouble(dgvRenglon.Cells[9].Value.ToString());
+                            if (Precio > 0)
+                            {
+                                string itemN = string.IsNullOrEmpty(dgvRenglon.Cells[4].Value.ToString()) ? " " : dgvRenglon.Cells[4].Value.ToString();
+                                string itemDe = string.IsNullOrEmpty(dgvRenglon.Cells[5].Value.ToString()) ? " " : dgvRenglon.Cells[5].Value.ToString(); BUIDG = cboBU.SelectedValue.ToString();
+                                BUG = cboBU.Text;
+                                DataGridViewComboBoxCell Ctt = (DataGridViewComboBoxCell)dgvRenglon.Cells[0];
+                                string CustomerTrxTypeNameText = Ctt.FormattedValue.ToString();
+                                string BatchSourceName = " ";
+                                string ServiceId = string.IsNullOrEmpty(dgvRenglon.Cells[3].Value.ToString()) ? " " : dgvRenglon.Cells[3].Value.ToString(); ;
+                                string FuelId = string.IsNullOrEmpty(dgvRenglon.Cells[12].Value.ToString()) ? " " : dgvRenglon.Cells[12].Value.ToString();
+                                string Itinerary = string.IsNullOrEmpty(dgvRenglon.Cells[19].Value.ToString()) ? " " : dgvRenglon.Cells[19].Value.ToString();
+                                string Aircraft = string.IsNullOrEmpty(dgvRenglon.Cells[20].Value.ToString()) ? " " : dgvRenglon.Cells[20].Value.ToString();
+                                string IVA = string.IsNullOrEmpty(dgvRenglon.Cells[16].Value.ToString()) ? " " : dgvRenglon.Cells[16].Value.ToString();
+                                double Costo = String.IsNullOrEmpty(dgvRenglon.Cells[7].Value.ToString()) ? 0 : Convert.ToDouble(dgvRenglon.Cells[7].Value.ToString());
+                                string Sup = string.IsNullOrEmpty(dgvRenglon.Cells[6].Value.ToString()) ? " " : dgvRenglon.Cells[6].Value.ToString();
+                                string lineDate = lblRN.Text.Substring(0, 6);
+                                string lineVal = lblRN.Text.Substring(6).Replace("-", string.Empty).Replace("0", string.Empty);
+                                string Arrival = string.IsNullOrEmpty(lblArrival.Text) ? " " : lblArrival.Text;
+                                string Departure = string.IsNullOrEmpty(lblDeparture.Text) ? " " : lblDeparture.Text;
+                                string ICAO = string.IsNullOrEmpty(lblICAO.Text) ? " " : lblICAO.Text;
+                                string Tail = string.IsNullOrEmpty(lblTail.Text) ? " " : lblTail.Text;
+                                string TripNumber = string.IsNullOrEmpty(lblTripNumber.Text) ? " " : lblTripNumber.Text;
+                                string Reservation = string.IsNullOrEmpty(lblReservation.Text) ? " " : lblReservation.Text;
+                                string CatOrder = string.IsNullOrEmpty(lblCatOrder.Text) ? " " : lblCatOrder.Text;
+                                string SNumber = string.IsNullOrEmpty(lblSNumber.Text) ? " " : lblSNumber.Text;
+                                string Status = string.IsNullOrEmpty(lblStatus.Text) ? " " : lblStatus.Text;
 
-                            if (BUG.Contains("US"))
-                            {
-                                BatchSourceName = "ORIGEN ICCS US";
-                                CustomerTrxTypeNameText = "CFCC_ICCS_US";
-                            }
-                            else
-                            {
-                                if (CustomerTrxTypeNameText == "Invoice")
+
+
+
+
+
+                                if (BUG.Contains("US"))
                                 {
-
-                                    CustomerTrxTypeNameText = "CFCC";
+                                    BatchSourceName = "ORIGEN ICCS US";
+                                    CustomerTrxTypeNameText = "CFCC_ICCS_US";
                                 }
                                 else
                                 {
-                                    CustomerTrxTypeNameText = "RCBO ICCS";
-                                }
-
-                                BatchSourceName = "ORIGEN ICCS";
-                            }
-                            string IVA = dgvRenglon.Cells[16].Value.ToString();
-                            double Costo = String.IsNullOrEmpty(dgvRenglon.Cells[7].Value.ToString()) ? 0 : Convert.ToDouble(dgvRenglon.Cells[7].Value.ToString());
-                            double Precio = String.IsNullOrEmpty(dgvRenglon.Cells[9].Value.ToString()) ? 0 : Convert.ToDouble(dgvRenglon.Cells[9].Value.ToString());
-                            string Sup = dgvRenglon.Cells[6].Value.ToString();
-                            string lineDate = lblRN.Text.Substring(0, 6);
-                            string lineVal = lblRN.Text.Substring(6).Replace("-", string.Empty).Replace("0", string.Empty);
-
-                            Random rnd = new Random();
-                            string envelope = "<soapenv:Envelope " +
-                            "   xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"" +
-                            "   xmlns:typ=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/invoices/invoiceService/types/\"" +
-                            "   xmlns:inv=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/invoices/invoiceService/\"" +
-                            "   xmlns:tran=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/autoInvoices/model/flex/TransactionInterfaceGdf/\"" +
-                            "   xmlns:tran1=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/autoInvoices/model/flex/TransactionLineInterfaceGdf/\"" +
-                            "   xmlns:tran2=\"http://xmlns.oracle.com/apps/flex/financials/receivables/transactions/autoInvoices/TransactionLineInterfaceLineDff/\"" +
-                            "   xmlns:tran3=\"http://xmlns.oracle.com/apps/flex/financials/receivables/transactions/autoInvoices/TransactionInterfaceLinkToDff/\"" +
-                            "   xmlns:tran4=\"http://xmlns.oracle.com/apps/flex/financials/receivables/transactions/autoInvoices/TransactionInterfaceReferenceDff/\"" +
-                            "   xmlns:tran5=\"http://xmlns.oracle.com/apps/flex/financials/receivables/transactions/autoInvoices/TransactionLineDff/\"" +
-                            "   xmlns:tran6=\"http://xmlns.oracle.com/apps/flex/financials/receivables/transactions/autoInvoices/TransactionInterfaceHeaderDff/\"" +
-                            "   xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-                            " <soapenv:Header/> " +
-                            " <soapenv:Body> " +
-                            "<typ:createInterfaceLine>" +
-                            "<typ:interfaceLine>" +
-                            "<inv:OrgId>" + BUIDG + "</inv:OrgId>" +
-                            "<inv:BatchSourceName>" + BatchSourceName + "</inv:BatchSourceName>" +
-                            "<inv:CustomerTrxTypeName>" + CustomerTrxTypeNameText + "</inv:CustomerTrxTypeName>" +
-                            "<inv:BillCustomerAccountNumber>" + txtAccount.Text + "</inv:BillCustomerAccountNumber>" +
-                            "<inv:BillCustomerSiteNumber>" + lblPSN.Text + "</inv:BillCustomerSiteNumber>" +
-                            "<inv:TrxDate>" + DateTime.Now.ToString("yyyy-MM-dd") + "</inv:TrxDate>" +
-                            "<inv:CurrencyCode>" + cboCurrency.Text + "</inv:CurrencyCode>";
-                            if (cboCurrency.Text == "USD")
-                            {
-                                envelope += "<inv:ConversionType>DOF</inv:ConversionType>";
-                                //"<inv:ConversionRate>1</inv:ConversionRate>";
-                            }
-                            envelope += "<inv:GlDate>" + DateTime.Now.ToString("yyyy-MM-dd") + "</inv:GlDate>" +
-                           "<inv:ItemNumber>" + itemN + "</inv:ItemNumber>" +
-                           "<inv:Description>" + itemDe + "</inv:Description>" +
-                           "<inv:LineType>LINE</inv:LineType>" +
-                           "<inv:Quantity unitCode=\"SER\">1</inv:Quantity>" +
-                           "<inv:TaxCode>" + IVA + "</inv:TaxCode>" +
-                           "<inv:PaymentTermsName>" + lblPayTerm.Text + "</inv:PaymentTermsName>" +
-                           //"<inv:PaymentTermsName>30 DIAS</inv:PaymentTermsName>" +
-                           "<inv:UnitSellingPrice currencyCode=\"" + cboCurrency.Text + "\">" + Precio + "</inv:UnitSellingPrice>" +
-                           "<inv:TransactionInterfaceLineDff xsi:type=\"tran2:InvoiceLineContext\">" +
-                               "<tran2:__FLEX_Context>Invoice_Line_Context</tran2:__FLEX_Context>" +
-                               "<tran2:lines>" + x + y + ServiceId + "</tran2:lines>" +
-                               "</inv:TransactionInterfaceLineDff>" +
-                               "<inv:TransactionLineDff>" +
-                               "<tran5:xxProveedor>" + Sup + "</tran5:xxProveedor>" +
-                               "<tran5:xxCostoRealFull>" + Precio + "</tran5:xxCostoRealFull>" +
-                               "<tran5:xxCantidad>1</tran5:xxCantidad>";
-                            if (lblSRtype.Text == "PERMISOS")
-                            {
-                                envelope += "<tran5:xxMatricula>" + Aircraft + "</tran5:xxMatricula>";
-                            }
-                            envelope += "</inv:TransactionLineDff>" +
-                               "<inv:TransactionInterfaceHeaderDff>" +
-                               "<tran6:xxServiceRequest>" + lblRN.Text + "</tran6:xxServiceRequest>";
-                            if (lblSRtype.Text == "FCC" || lblSRtype.Text == "FBO")
-                            {
-                                envelope += "<tran6:xxDatosFactura>" + lblTail.Text + "|" + lblICAO.Text + "|" + lblArrival.Text + "|" + GetArrivalDateItinerary(Itinerary) + "|" + GetDepartureDateItinerary(Itinerary) + "|" + lblSRtype.Text + " " + DateTime.Now.ToString("yyyy-MM-dd") + "|" + lblTripNumber.Text + "|" + lblReservation.Text + "|" + lblCatOrder.Text + "|" + lblSNumber.Text + "||" + lblStatus.Text + "</tran6:xxDatosFactura>";
-                                envelope += "<tran6:xxDatosDeRutas>" + GetRoutes(Itinerary) + "</tran6:xxDatosDeRutas>";
-                            }
-                            else
-                            {
-                                envelope += "<tran6:xxDatosFactura>" + lblTail.Text + "|" + lblICAO.Text + "|" + lblArrival.Text + "|" + lblArrivalDate.Text + "|" + lblDepartureDate.Text + "|" + lblSRtype.Text + " " + DateTime.Now.ToString("yyyy-MM-dd") + "|" + lblTripNumber.Text + "|" + lblReservation.Text + "|" + lblCatOrder.Text + "|" + lblSNumber.Text + "||" + lblStatus.Text + "</tran6:xxDatosFactura>";
-                            }
-                            if (!string.IsNullOrEmpty(FuelId))
-                            {
-                                double Lts = GetFuels(FuelId);
-                                if (Lts > 0)
-                                {
-                                    string VN = GetFVN(FuelId);
-                                    envelope += "<tran6:xxDatosCombistible>" + Lts + " LTRS. / " + (Math.Round(Convert.ToDouble((Precio / (Lts / 3.7853)) / 3.7853), 2)).ToString() + " USD " + Math.Round(Convert.ToDouble((Lts / 3.7853)), 2).ToString() + " GALS. /" + Math.Round(Convert.ToDouble(Precio / (Lts / 3.7853)), 2).ToString() + " USD |" + VN + "</tran6:xxDatosCombistible>";
-                                }
-                            }
-                            envelope += "<tran6:xxGpofactura>" + x + "</tran6:xxGpofactura>" +
-                                "</inv:TransactionInterfaceHeaderDff>" +
-                              "</typ:interfaceLine>" +
-                                                                         "</typ:createInterfaceLine>" +
-                                                                     "</soapenv:Body>" +
-                                                                  "</soapenv:Envelope>";
-
-                            byte[] byteArray = Encoding.UTF8.GetBytes(envelope);
-                            GlobalContext.LogMessage(envelope);
-                            // Construct the base 64 encoded string used as credentials for the service call
-                            byte[] toEncodeAsBytes = System.Text.ASCIIEncoding.ASCII.GetBytes("itotal" + ":" + "Oracle123");
-                            string credentials = System.Convert.ToBase64String(toEncodeAsBytes);
-                            // Create HttpWebRequest connection to the service
-                            HttpWebRequest request =
-                             (HttpWebRequest)WebRequest.Create("https://egqy-test.fa.us6.oraclecloud.com:443/fscmService/RecInvoiceService");
-                            // Configure the request content type to be xml, HTTP method to be POST, and set the content length
-                            request.Method = "POST";
-                            request.ContentType = "text/xml;charset=UTF-8";
-                            request.ContentLength = byteArray.Length;
-                            // Configure the request to use basic authentication, with base64 encoded user name and password, to invoke the service.
-                            request.Headers.Add("Authorization", "Basic " + credentials);
-                            // Set the SOAP action to be invoked; while the call works without this, the value is expected to be set based as per standards
-                            request.Headers.Add("SOAPAction", "http://xmlns.oracle.com/apps/financials/receivables/transactions/invoices/invoiceService/createInterfaceLine");
-                            // Write the xml payload to the request
-                            Stream dataStream = request.GetRequestStream();
-                            dataStream.Write(byteArray, 0, byteArray.Length);
-                            dataStream.Close();
-                            // Write the xml payload to the request
-                            XDocument doc;
-                            XmlDocument docu = new XmlDocument();
-                            string result;
-                            using (WebResponse response = request.GetResponse())
-                            {
-                                using (Stream stream = response.GetResponseStream())
-                                {
-                                    doc = XDocument.Load(stream);
-                                    result = doc.ToString();
-                                    XmlDocument xmlDoc = new XmlDocument();
-                                    xmlDoc.LoadXml(result);
-                                    XmlNamespaceManager nms = new XmlNamespaceManager(xmlDoc.NameTable);
-                                    nms.AddNamespace("ns2", "http://xmlns.oracle.com/apps/financials/receivables/transactions/invoices/invoiceService/");
-                                    nms.AddNamespace("ns1", "http://xmlns.oracle.com/apps/financials/receivables/transactions/invoices/invoiceService/types/");
-
-                                    XmlNode desiredNode = xmlDoc.SelectSingleNode("//ns2:TransactionLineDff", nms);
-                                    if (desiredNode.HasChildNodes)
+                                    if (CustomerTrxTypeNameText == "Invoice")
                                     {
-                                        for (int i = 0; i < desiredNode.ChildNodes.Count; i++)
+
+                                        CustomerTrxTypeNameText = "CFCC";
+                                    }
+                                    else
+                                    {
+                                        CustomerTrxTypeNameText = "RCBO ICCS";
+                                    }
+
+                                    BatchSourceName = "ORIGEN ICCS";
+                                }
+
+                                Random rnd = new Random();
+                                string envelope = "<soapenv:Envelope " +
+                                "   xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"" +
+                                "   xmlns:typ=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/invoices/invoiceService/types/\"" +
+                                "   xmlns:inv=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/invoices/invoiceService/\"" +
+                                "   xmlns:tran=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/autoInvoices/model/flex/TransactionInterfaceGdf/\"" +
+                                "   xmlns:tran1=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/autoInvoices/model/flex/TransactionLineInterfaceGdf/\"" +
+                                "   xmlns:tran2=\"http://xmlns.oracle.com/apps/flex/financials/receivables/transactions/autoInvoices/TransactionLineInterfaceLineDff/\"" +
+                                "   xmlns:tran3=\"http://xmlns.oracle.com/apps/flex/financials/receivables/transactions/autoInvoices/TransactionInterfaceLinkToDff/\"" +
+                                "   xmlns:tran4=\"http://xmlns.oracle.com/apps/flex/financials/receivables/transactions/autoInvoices/TransactionInterfaceReferenceDff/\"" +
+                                "   xmlns:tran5=\"http://xmlns.oracle.com/apps/flex/financials/receivables/transactions/autoInvoices/TransactionLineDff/\"" +
+                                "   xmlns:tran6=\"http://xmlns.oracle.com/apps/flex/financials/receivables/transactions/autoInvoices/TransactionInterfaceHeaderDff/\"" +
+                                "   xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                                " <soapenv:Header/> " +
+                                " <soapenv:Body> " +
+                                "<typ:createInterfaceLine>" +
+                                "<typ:interfaceLine>" +
+                                "<inv:OrgId>" + BUIDG + "</inv:OrgId>" +
+                                "<inv:BatchSourceName>" + BatchSourceName + "</inv:BatchSourceName>" +
+                                "<inv:CustomerTrxTypeName>" + CustomerTrxTypeNameText + "</inv:CustomerTrxTypeName>" +
+                                "<inv:BillCustomerAccountNumber>" + txtAccount.Text + "</inv:BillCustomerAccountNumber>" +
+                                "<inv:BillCustomerSiteNumber>" + lblPSN.Text + "</inv:BillCustomerSiteNumber>" +
+                                "<inv:TrxDate>" + DateTime.Now.ToString("yyyy-MM-dd") + "</inv:TrxDate>" +
+                                "<inv:CurrencyCode>" + cboCurrency.Text + "</inv:CurrencyCode>";
+                                if (cboCurrency.Text == "USD")
+                                {
+                                    envelope += "<inv:ConversionType>DOF</inv:ConversionType>";
+                                    //"<inv:ConversionRate>1</inv:ConversionRate>";
+                                }
+                                envelope += "<inv:GlDate>" + DateTime.Now.ToString("yyyy-MM-dd") + "</inv:GlDate>" +
+                               "<inv:ItemNumber>" + itemN + "</inv:ItemNumber>" +
+                               "<inv:Description>" + itemDe + "</inv:Description>" +
+                               "<inv:LineType>LINE</inv:LineType>" +
+                               "<inv:Quantity unitCode=\"SER\">1</inv:Quantity>" +
+                               "<inv:TaxCode>" + IVA + "</inv:TaxCode>" +
+                               "<inv:PaymentTermsName>" + lblPayTerm.Text + "</inv:PaymentTermsName>" +
+                               //"<inv:PaymentTermsName>30 DIAS</inv:PaymentTermsName>" +
+                               "<inv:UnitSellingPrice currencyCode=\"" + cboCurrency.Text + "\">" + Precio + "</inv:UnitSellingPrice>" +
+                               "<inv:TransactionInterfaceLineDff xsi:type=\"tran2:InvoiceLineContext\">" +
+                                   "<tran2:__FLEX_Context>Invoice_Line_Context</tran2:__FLEX_Context>" +
+                                   "<tran2:lines>" + x + y + ServiceId + "</tran2:lines>" +
+                                   "</inv:TransactionInterfaceLineDff>" +
+                                   "<inv:TransactionLineDff>" +
+                                   "<tran5:xxProveedor>" + Sup + "</tran5:xxProveedor>" +
+                                   "<tran5:xxCostoRealFull>" + Precio + "</tran5:xxCostoRealFull>" +
+                                   "<tran5:xxCantidad>1</tran5:xxCantidad>";
+                                if (lblSRtype.Text == "PERMISOS")
+                                {
+                                    envelope += "<tran5:xxMatricula>" + Aircraft + "</tran5:xxMatricula>";
+                                }
+                                envelope += "</inv:TransactionLineDff>" +
+                                   "<inv:TransactionInterfaceHeaderDff>" +
+                                   "<tran6:xxServiceRequest>" + lblRN.Text + "</tran6:xxServiceRequest>";
+                                if (lblSRtype.Text == "FCC" || lblSRtype.Text == "FBO")
+                                {
+                                    envelope += "<tran6:xxDatosFactura>" + Tail + "|" + ICAO + "|" + Arrival + "|" + GetArrivalDateItinerary(Itinerary) + "|" + GetDepartureDateItinerary(Itinerary) + "|" + lblSRtype.Text + " " + DateTime.Now.ToString("yyyy-MM-dd") + "|" + TripNumber + "|" + Reservation + "|" + CatOrder + "|" + SNumber + "| |" + Status + "</tran6:xxDatosFactura>";
+                                    envelope += "<tran6:xxDatosDeRutas>" + GetRoutes(Itinerary) + "</tran6:xxDatosDeRutas>";
+                                }
+                                else
+                                {
+                                    envelope += "<tran6:xxDatosFactura>" + Tail + "|" + ICAO + "|" + Arrival + "|" + lblArrivalDate.Text + "|" + lblDepartureDate.Text + "|" + lblSRtype.Text + " " + DateTime.Now.ToString("yyyy-MM-dd") + "|" + TripNumber + "|" + Reservation + "|" + CatOrder + "|" + SNumber + "| |" + Status + "</tran6:xxDatosFactura>";
+                                }
+                                if (lblSRtype.Text == "FUEL")
+                                {
+                                    envelope += "<tran6:xxDatosDeRutas>" + Arrival + "|" + Departure + "</tran6:xxDatosDeRutas>";
+                                }
+
+                                if (!string.IsNullOrEmpty(FuelId))
+                                {
+                                    double Lts = GetFuels(FuelId);
+                                    if (Lts > 0)
+                                    {
+                                        string VN = GetFVN(FuelId);
+                                        envelope += "<tran6:xxDatosCombistible>" + Lts + " LTRS. / " + (Math.Round(Convert.ToDouble((Precio / (Lts / 3.7853)) / 3.7853), 2)).ToString() + " USD " + Math.Round(Convert.ToDouble((Lts / 3.7853)), 2).ToString() + " GALS. /" + Math.Round(Convert.ToDouble(Precio / (Lts / 3.7853)), 2).ToString() + " USD |" + VN + "</tran6:xxDatosCombistible>";
+                                    }
+                                }
+                                envelope += "<tran6:xxGpofactura>" + x + "</tran6:xxGpofactura>" +
+                                    "</inv:TransactionInterfaceHeaderDff>" +
+                                  "</typ:interfaceLine>" +
+                                                                             "</typ:createInterfaceLine>" +
+                                                                         "</soapenv:Body>" +
+                                                                      "</soapenv:Envelope>";
+
+                                byte[] byteArray = Encoding.UTF8.GetBytes(envelope);
+                                GlobalContext.LogMessage(envelope);
+                                // Construct the base 64 encoded string used as credentials for the service call
+                                byte[] toEncodeAsBytes = System.Text.ASCIIEncoding.ASCII.GetBytes("itotal" + ":" + "Oracle123");
+                                string credentials = System.Convert.ToBase64String(toEncodeAsBytes);
+                                // Create HttpWebRequest connection to the service
+                                HttpWebRequest request =
+                                 (HttpWebRequest)WebRequest.Create("https://egqy-test.fa.us6.oraclecloud.com:443/fscmService/RecInvoiceService");
+                                // Configure the request content type to be xml, HTTP method to be POST, and set the content length
+                                request.Method = "POST";
+                                request.ContentType = "text/xml;charset=UTF-8";
+                                request.ContentLength = byteArray.Length;
+                                // Configure the request to use basic authentication, with base64 encoded user name and password, to invoke the service.
+                                request.Headers.Add("Authorization", "Basic " + credentials);
+                                // Set the SOAP action to be invoked; while the call works without this, the value is expected to be set based as per standards
+                                request.Headers.Add("SOAPAction", "http://xmlns.oracle.com/apps/financials/receivables/transactions/invoices/invoiceService/createInterfaceLine");
+                                // Write the xml payload to the request
+                                Stream dataStream = request.GetRequestStream();
+                                dataStream.Write(byteArray, 0, byteArray.Length);
+                                dataStream.Close();
+                                // Write the xml payload to the request
+                                XDocument doc;
+                                XmlDocument docu = new XmlDocument();
+                                string result;
+                                using (WebResponse response = request.GetResponse())
+                                {
+                                    using (Stream stream = response.GetResponseStream())
+                                    {
+                                        doc = XDocument.Load(stream);
+                                        result = doc.ToString();
+                                        XmlDocument xmlDoc = new XmlDocument();
+                                        xmlDoc.LoadXml(result);
+                                        XmlNamespaceManager nms = new XmlNamespaceManager(xmlDoc.NameTable);
+                                        nms.AddNamespace("ns2", "http://xmlns.oracle.com/apps/financials/receivables/transactions/invoices/invoiceService/");
+                                        nms.AddNamespace("ns1", "http://xmlns.oracle.com/apps/financials/receivables/transactions/invoices/invoiceService/types/");
+
+                                        XmlNode desiredNode = xmlDoc.SelectSingleNode("//ns2:TransactionLineDff", nms);
+                                        if (desiredNode.HasChildNodes)
                                         {
-                                            if (desiredNode.ChildNodes[i].LocalName == "InterfaceLineGuid")
+                                            for (int i = 0; i < desiredNode.ChildNodes.Count; i++)
                                             {
-                                                UpdateInvoicedService(ServiceId, desiredNode.ChildNodes[i].InnerText, x);
-                                                y++;
+                                                if (desiredNode.ChildNodes[i].LocalName == "InterfaceLineGuid")
+                                                {
+                                                    UpdateInvoicedService(ServiceId, desiredNode.ChildNodes[i].InnerText, x);
+                                                    y++;
+                                                }
                                             }
                                         }
                                     }
+                                    response.Close();
                                 }
-                                response.Close();
+                            }
+                            else
+                            {
+                                MessageBox.Show("Price must have a value greater tha zero");
                             }
                         }
 
@@ -439,7 +466,6 @@ namespace InvoiceCreation
                     }
                     response.Close();
                 }
-
             }
             catch (Exception ex)
             {
@@ -520,7 +546,7 @@ namespace InvoiceCreation
                     routes += data;
                 }
             }
-            return routes;
+            return string.IsNullOrEmpty(routes) ? " " : routes;
         }
         private string GetArrivalDateItinerary(string Itinerary)
         {
@@ -644,7 +670,7 @@ namespace InvoiceCreation
         {
             try
             {
-                string vn = "";
+                string vn = " ";
                 //Liters * 3.7854 
                 ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
                 APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
@@ -664,7 +690,7 @@ namespace InvoiceCreation
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message + "Det" + ex.StackTrace);
-                return "";
+                return " ";
             }
         }
         private double GetFuels(string FuelId)
@@ -809,6 +835,7 @@ namespace InvoiceCreation
         }
         private void Invoice_Load_1(object sender, EventArgs e)
         {
+            cboCurrency.Text = lblCurrency.Text;
             foreach (DataGridViewRow dgvRenglon in dataGridServicios.Rows)
             {
                 if (dgvRenglon.Cells[18].Value.ToString() == "1")
@@ -820,11 +847,46 @@ namespace InvoiceCreation
                     dgvRenglon.ReadOnly = false;
                 }
             }
+            dataGridServicios.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
         }
-
-
+        private void cboCurrency_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cboCurrency.Text != lblCurrency.Text)
+            {
+                blnCurrencychanged = true;
+            }
+            ChangeCurrencyCost();
+        }
+        private void ChangeCurrencyCost()
+        {
+            if (blnCurrencychanged)
+            {
+                if (cboCurrency.Text == "MXN")
+                {
+                    foreach (DataGridViewRow dgvRenglon in dataGridServicios.Rows)
+                    {
+                        if (!String.IsNullOrEmpty(dgvRenglon.Cells[9].Value.ToString()) && dgvRenglon.Cells[9].Value.ToString() != "0")
+                        {
+                            double Precio = Convert.ToDouble(dgvRenglon.Cells[9].Value.ToString());
+                            dgvRenglon.Cells[9].Value = Math.Round((Precio * Convert.ToDouble(txtExchangeRate.Text)), 4);
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (DataGridViewRow dgvRenglon in dataGridServicios.Rows)
+                    {
+                        if (!String.IsNullOrEmpty(dgvRenglon.Cells[9].Value.ToString()) && dgvRenglon.Cells[9].Value.ToString() != "0")
+                        {
+                            double Precio = Convert.ToDouble(dgvRenglon.Cells[9].Value.ToString());
+                            dgvRenglon.Cells[9].Value = Math.Round((Precio / Convert.ToDouble(txtExchangeRate.Text)), 4);
+                        }
+                    }
+                }
+            }
+        }
     }
-
 
 
 }

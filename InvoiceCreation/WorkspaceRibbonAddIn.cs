@@ -61,7 +61,7 @@ namespace InvoiceCreation
         public DateTime GYCDate { get; set; }
         public DateTime SeneamDate { get; set; }
         public Dictionary<string, string> BUS { get; set; }
-
+        public bool blnzeroval { get; set; }
 
 
         public WorkspaceRibbonAddIn(bool inDesignMode, IRecordContext RecordContext, IGlobalContext globalContext)
@@ -80,6 +80,7 @@ namespace InvoiceCreation
             {
                 if (Init())
                 {
+                    blnzeroval = false;
                     Incident = (IIncident)recordContext.GetWorkspaceRecord(WorkspaceRecordType.Incident);
                     IncidentID = Incident.ID;
                     IList<ICfVal> campos = Incident.CustomField;
@@ -234,11 +235,12 @@ namespace InvoiceCreation
                     DgvServicios.Columns[12].Visible = false;
                     DgvServicios.Columns[13].Visible = false;
                     DgvServicios.Columns[14].Visible = false;
-                    DgvServicios.Columns[16].Visible = false;
+                    DgvServicios.Columns[15].Visible = false;
+                    //DgvServicios.Columns[16].Visible = false;
                     DgvServicios.Columns[17].Visible = false;
+                    DgvServicios.Columns[18].Visible = false;
                     DgvServicios.Columns[19].Visible = false;
                     DgvServicios.Columns[20].Visible = false;
-
                     ((TextBox)invoice.Controls["txtIncidentID"]).Text = IncidentID.ToString();
                     ((TextBox)invoice.Controls["txtCustomerName"]).Text = Nombre;
                     ((TextBox)invoice.Controls["txtRFC"]).Text = RFC;
@@ -264,7 +266,7 @@ namespace InvoiceCreation
                     ((System.Windows.Forms.Label)invoice.Controls["lblReservation"]).Text = Reservation;
                     ((System.Windows.Forms.Label)invoice.Controls["lblSNumber"]).Text = SNumber;
                     ((System.Windows.Forms.Label)invoice.Controls["lblStatus"]).Text = GetStatus();
-                    
+
 
                     if (SrType == "FUEL")
                     {
@@ -285,6 +287,17 @@ namespace InvoiceCreation
                     {
                         ((System.Windows.Forms.Label)invoice.Controls["lblArrivalDate"]).Text = SeneamDate.ToString("yyyy-MM-dd HH:mm");
                         ((System.Windows.Forms.Label)invoice.Controls["lblDepartureDate"]).Text = SeneamDate.ToString("yyyy-MM-dd HH:mm");
+                    }
+                    if (blnzeroval == true)
+                    {
+                        MessageBox.Show("There are some zero values on prices list, please check.");
+                    }
+                    DgvServicios.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+                    List<Services> faturados = new List<Services>();
+                    faturados = servicios.Where(x => x.Facturado == "1").ToList();
+                    if (servicios.Count == faturados.Count)
+                    {
+                        MessageBox.Show("All services have been invoiced");
                     }
 
                     invoice.ShowDialog();
@@ -878,9 +891,13 @@ namespace InvoiceCreation
                         service.ItemNumber = substrings[1];
                         service.Description = substrings[2];
                         service.SupplierID = substrings[3];
-                        service.Cost = String.IsNullOrEmpty(substrings[4]) ? "0" : (Math.Round(Convert.ToDouble(substrings[4]), 4)).ToString();
+                        service.Cost = String.IsNullOrEmpty(substrings[4]) ? "0" : (Math.Round(Convert.ToDouble(substrings[4]), 2)).ToString();
                         service.CuentaGasto = substrings[5];
-                        service.Precio = String.IsNullOrEmpty(substrings[6]) ? "0" : (Math.Round(Convert.ToDouble(substrings[6]), 4)).ToString();
+                        service.Precio = String.IsNullOrEmpty(substrings[6]) ? "0" : (Math.Round(Convert.ToDouble(substrings[6]), 2)).ToString();
+                        if (service.Precio == "0")
+                        {
+                            blnzeroval = true;
+                        }
                         service.InvoiceNumber = substrings[7];
                         service.ERPInvoice = substrings[8];
                         service.FuelId = substrings[9];
@@ -889,6 +906,7 @@ namespace InvoiceCreation
                         service.Facturado = substrings[12] == "1" ? "1" : "0";
                         service.Itinerary = substrings[13];
                         service.Aircraft = substrings[14];
+                        service.Lts = string.IsNullOrEmpty(service.FuelId) ? "0" : GetFuels(service.FuelId).ToString();
                         services.Add(service);
                     }
                 }
@@ -900,6 +918,33 @@ namespace InvoiceCreation
                 MessageBox.Show("Error en GetServices: " + ex.Message);
                 global.LogMessage(ex.Message);
                 return null;
+            }
+        }
+        private double GetFuels(string FuelId)
+        {
+            try
+            {
+                double fuels = 0;
+                //Liters * 3.7854 
+                ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
+                APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
+                clientInfoHeader.AppID = "Query Example";
+                String queryString = "SELECT Liters FROM CO.Fueling WHERE ID = " + FuelId;
+                clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 10000, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
+                foreach (CSVTable table in queryCSV.CSVTables)
+                {
+                    String[] rowData = table.Rows;
+                    foreach (String data in rowData)
+                    {
+                        fuels += string.IsNullOrEmpty(data) ? 0 : Convert.ToDouble(data);
+                    }
+                }
+                return fuels;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message + "Det" + ex.StackTrace);
+                return 0;
             }
         }
         private double getExchangeRate(DateTime date)

@@ -342,13 +342,15 @@
             this.lblSRtype.Name = "lblSRtype";
             this.lblSRtype.Size = new System.Drawing.Size(67, 21);
             this.lblSRtype.TabIndex = 69;
+            this.lblSRtype.Visible = false;
             // 
             // lblCurrency
             // 
-            this.lblCurrency.Location = new System.Drawing.Point(338, 35);
+            this.lblCurrency.Location = new System.Drawing.Point(528, 192);
             this.lblCurrency.Name = "lblCurrency";
-            this.lblCurrency.Size = new System.Drawing.Size(67, 21);
+            this.lblCurrency.Size = new System.Drawing.Size(177, 21);
             this.lblCurrency.TabIndex = 70;
+            this.lblCurrency.Visible = false;
             // 
             // lblICAO
             // 
@@ -356,6 +358,7 @@
             this.lblICAO.Name = "lblICAO";
             this.lblICAO.Size = new System.Drawing.Size(67, 21);
             this.lblICAO.TabIndex = 71;
+            this.lblICAO.Visible = false;
             // 
             // lblAircraftCategory
             // 
@@ -363,6 +366,7 @@
             this.lblAircraftCategory.Name = "lblAircraftCategory";
             this.lblAircraftCategory.Size = new System.Drawing.Size(67, 21);
             this.lblAircraftCategory.TabIndex = 72;
+            this.lblAircraftCategory.Visible = false;
             // 
             // lblTail
             // 
@@ -370,6 +374,7 @@
             this.lblTail.Name = "lblTail";
             this.lblTail.Size = new System.Drawing.Size(67, 21);
             this.lblTail.TabIndex = 73;
+            this.lblTail.Visible = false;
             // 
             // BtnChange
             // 
@@ -387,6 +392,7 @@
             this.lblPayTerm.Name = "lblPayTerm";
             this.lblPayTerm.Size = new System.Drawing.Size(67, 15);
             this.lblPayTerm.TabIndex = 76;
+            this.lblPayTerm.Visible = false;
             // 
             // lblPSN
             // 
@@ -394,6 +400,7 @@
             this.lblPSN.Name = "lblPSN";
             this.lblPSN.Size = new System.Drawing.Size(67, 10);
             this.lblPSN.TabIndex = 77;
+            this.lblPSN.Visible = false;
             // 
             // lblRoutes
             // 
@@ -401,6 +408,7 @@
             this.lblRoutes.Name = "lblRoutes";
             this.lblRoutes.Size = new System.Drawing.Size(67, 10);
             this.lblRoutes.TabIndex = 78;
+            this.lblRoutes.Visible = false;
             // 
             // lblArrival
             // 
@@ -408,6 +416,7 @@
             this.lblArrival.Name = "lblArrival";
             this.lblArrival.Size = new System.Drawing.Size(55, 13);
             this.lblArrival.TabIndex = 79;
+            this.lblArrival.Visible = false;
             // 
             // lblDeparture
             // 
@@ -418,17 +427,18 @@
             // 
             // lblCatOrder
             // 
-            this.lblCatOrder.Location = new System.Drawing.Point(338, 228);
+            this.lblCatOrder.Location = new System.Drawing.Point(338, 218);
             this.lblCatOrder.Name = "lblCatOrder";
             this.lblCatOrder.Size = new System.Drawing.Size(55, 10);
             this.lblCatOrder.TabIndex = 81;
             // 
             // lblTripNumber
             // 
-            this.lblTripNumber.Location = new System.Drawing.Point(338, 218);
+            this.lblTripNumber.Location = new System.Drawing.Point(338, 234);
             this.lblTripNumber.Name = "lblTripNumber";
             this.lblTripNumber.Size = new System.Drawing.Size(67, 10);
             this.lblTripNumber.TabIndex = 82;
+            this.lblTripNumber.Visible = false;
             // 
             // lblReservation
             // 
@@ -436,6 +446,7 @@
             this.lblReservation.Name = "lblReservation";
             this.lblReservation.Size = new System.Drawing.Size(67, 10);
             this.lblReservation.TabIndex = 83;
+            this.lblReservation.Visible = false;
             // 
             // lblSNumber
             // 
@@ -443,6 +454,7 @@
             this.lblSNumber.Name = "lblSNumber";
             this.lblSNumber.Size = new System.Drawing.Size(67, 10);
             this.lblSNumber.TabIndex = 84;
+            this.lblSNumber.Visible = false;
             // 
             // lblStatus
             // 
@@ -450,6 +462,7 @@
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new System.Drawing.Size(55, 10);
             this.lblStatus.TabIndex = 85;
+            this.lblStatus.Visible = false;
             // 
             // cboCurrency
             // 
@@ -461,6 +474,7 @@
             this.cboCurrency.Name = "cboCurrency";
             this.cboCurrency.Size = new System.Drawing.Size(177, 21);
             this.cboCurrency.TabIndex = 86;
+            this.cboCurrency.SelectedIndexChanged += new System.EventHandler(this.cboCurrency_SelectedIndexChanged);
             // 
             // lblExRate
             // 
@@ -468,6 +482,7 @@
             this.lblExRate.Name = "lblExRate";
             this.lblExRate.Size = new System.Drawing.Size(67, 10);
             this.lblExRate.TabIndex = 87;
+            this.lblExRate.Visible = false;
             // 
             // label12
             // 
@@ -493,6 +508,7 @@
             this.lblArrivalDate.Name = "lblArrivalDate";
             this.lblArrivalDate.Size = new System.Drawing.Size(119, 21);
             this.lblArrivalDate.TabIndex = 90;
+            this.lblArrivalDate.Visible = false;
             // 
             // lblDepartureDate
             // 
@@ -500,6 +516,7 @@
             this.lblDepartureDate.Name = "lblDepartureDate";
             this.lblDepartureDate.Size = new System.Drawing.Size(119, 21);
             this.lblDepartureDate.TabIndex = 91;
+            this.lblDepartureDate.Visible = false;
             // 
             // label14
             // 
