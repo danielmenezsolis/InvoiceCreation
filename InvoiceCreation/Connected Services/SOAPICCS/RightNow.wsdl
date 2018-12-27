@@ -2,7 +2,7 @@
 <wsdl:definitions xmlns:rno_v1_4="urn:objects.ws.rightnow.com/v1_4" xmlns:rnm_v1_4="urn:messages.ws.rightnow.com/v1_4" xmlns:rna_v1_4="urn:metadata.ws.rightnow.com/v1_4" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:rnn_v1_4="urn:nullfields.ws.rightnow.com/v1_4" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:rnb_v1_4="urn:base.ws.rightnow.com/v1_4" xmlns:rng_v1_4="urn:generic.ws.rightnow.com/v1_4" xmlns:rnw_v1_4="urn:wsdl.ws.rightnow.com/v1_4" xmlns:rnf_v1_4="urn:faults.ws.rightnow.com/v1_4" xmlns="http://schemas.xmlsoap.org/wsdl/" name="RightNow" targetNamespace="urn:wsdl.ws.rightnow.com/v1_4" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:documentation>
     <version>1.4</version>
-    <wsdlRevision>1.4.18.5</wsdlRevision>
+    <wsdlRevision>1.4.18.8</wsdlRevision>
   </wsdl:documentation>
   <wsp:Policy xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="SyncPolicy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy">
     <wsp:ExactlyOne>

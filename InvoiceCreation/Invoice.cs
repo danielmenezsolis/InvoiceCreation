@@ -4,6 +4,7 @@ using RightNow.AddIns.AddInViews;
 using RightNow.AddIns.Common;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -19,6 +20,7 @@ namespace InvoiceCreation
 {
     public partial class Invoice : Form
     {
+        public string CurrentCurrency { get; set; }
         public bool DesingMode { get; set; }
         public IRecordContext RecordContext { get; set; }
         public IGlobalContext GlobalContext { get; set; }
@@ -191,11 +193,8 @@ namespace InvoiceCreation
                                 string CatOrder = string.IsNullOrEmpty(lblCatOrder.Text) ? " " : lblCatOrder.Text;
                                 string SNumber = string.IsNullOrEmpty(lblSNumber.Text) ? " " : lblSNumber.Text;
                                 string Status = string.IsNullOrEmpty(lblStatus.Text) ? " " : lblStatus.Text;
-
-
-
-
-
+                                string ArrivalDate = string.IsNullOrEmpty(lblArrivalDate.Text) ? " " : lblArrivalDate.Text;
+                                string DepartureDate = string.IsNullOrEmpty(lblDepartureDate.Text) ? " " : lblDepartureDate.Text;
 
                                 if (BUG.Contains("US"))
                                 {
@@ -217,7 +216,6 @@ namespace InvoiceCreation
                                     BatchSourceName = "ORIGEN ICCS";
                                 }
 
-                                Random rnd = new Random();
                                 string envelope = "<soapenv:Envelope " +
                                 "   xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"" +
                                 "   xmlns:typ=\"http://xmlns.oracle.com/apps/financials/receivables/transactions/invoices/invoiceService/types/\"" +
@@ -277,7 +275,7 @@ namespace InvoiceCreation
                                 }
                                 else
                                 {
-                                    envelope += "<tran6:xxDatosFactura>" + Tail + "|" + ICAO + "|" + Arrival + "|" + lblArrivalDate.Text + "|" + lblDepartureDate.Text + "|" + lblSRtype.Text + " " + DateTime.Now.ToString("yyyy-MM-dd") + "|" + TripNumber + "|" + Reservation + "|" + CatOrder + "|" + SNumber + "| |" + Status + "</tran6:xxDatosFactura>";
+                                    envelope += "<tran6:xxDatosFactura>" + Tail + "|" + ICAO + "|" + Arrival + "|" + ArrivalDate + "|" + DepartureDate + "|" + lblSRtype.Text + " " + DateTime.Now.ToString("yyyy-MM-dd") + "|" + TripNumber + "|" + Reservation + "|" + CatOrder + "|" + SNumber + "| |" + Status + "</tran6:xxDatosFactura>";
                                 }
                                 if (lblSRtype.Text == "FUEL")
                                 {
@@ -343,7 +341,7 @@ namespace InvoiceCreation
                                             {
                                                 if (desiredNode.ChildNodes[i].LocalName == "InterfaceLineGuid")
                                                 {
-                                                    UpdateInvoicedService(ServiceId, desiredNode.ChildNodes[i].InnerText, x);
+                                                    UpdateInvoicedService(ServiceId, desiredNode.ChildNodes[i].InnerText, x, Precio);
                                                     y++;
                                                 }
                                             }
@@ -697,6 +695,7 @@ namespace InvoiceCreation
         {
             try
             {
+                FuelId = FuelId == "N/A" ? "0" : FuelId;
                 double fuels = 0;
                 //Liters * 3.7854 
                 ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
@@ -800,7 +799,7 @@ namespace InvoiceCreation
 
 
         }
-        private void UpdateInvoicedService(string IdSer, string InvoiceRef, int InvoiceNumber)
+        private void UpdateInvoicedService(string IdSer, string InvoiceRef, int InvoiceNumber, double precio)
         {
             var client = new RestClient("https://iccsmx.custhelp.com/");
             var request = new RestRequest("/services/rest/connect/v1.4/CO.Services/" + IdSer + "", Method.POST)
@@ -811,6 +810,7 @@ namespace InvoiceCreation
             // Información de precios costos
             body +=
                 "\"Facturado\":true," +
+                "\"Precio\":" + precio + "," +
             "\"ERPInvoice\":\"" + InvoiceRef + "\"," +
             "\"InternalInvoice\":" + InvoiceNumber + "";
 
@@ -838,8 +838,13 @@ namespace InvoiceCreation
             cboCurrency.Text = lblCurrency.Text;
             foreach (DataGridViewRow dgvRenglon in dataGridServicios.Rows)
             {
-                if (dgvRenglon.Cells[18].Value.ToString() == "1")
+                if (dgvRenglon.Cells[18].Value.ToString() == "Facturado")
                 {
+                    foreach (DataGridViewColumn col in dataGridServicios.Columns)
+                    {
+
+                        dgvRenglon.Cells[col.Index].Style.BackColor = Color.Green;
+                    }
                     dgvRenglon.ReadOnly = true;
                 }
                 else
@@ -847,21 +852,33 @@ namespace InvoiceCreation
                     dgvRenglon.ReadOnly = false;
                 }
             }
-            dataGridServicios.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridServicios.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
 
         }
         private void cboCurrency_SelectedIndexChanged(object sender, EventArgs e)
         {
+            bool change = false;
+            if (CurrentCurrency != cboCurrency.Text)
+            {
+                CurrentCurrency = cboCurrency.Text;
+                change = true;
+            }
+
             if (cboCurrency.Text != lblCurrency.Text)
             {
+
                 blnCurrencychanged = true;
             }
-            ChangeCurrencyCost();
+            if (change)
+            {
+                ChangeCurrencyCost();
+            }
         }
         private void ChangeCurrencyCost()
         {
             if (blnCurrencychanged)
             {
+
                 if (cboCurrency.Text == "MXN")
                 {
                     foreach (DataGridViewRow dgvRenglon in dataGridServicios.Rows)
@@ -869,7 +886,7 @@ namespace InvoiceCreation
                         if (!String.IsNullOrEmpty(dgvRenglon.Cells[9].Value.ToString()) && dgvRenglon.Cells[9].Value.ToString() != "0")
                         {
                             double Precio = Convert.ToDouble(dgvRenglon.Cells[9].Value.ToString());
-                            dgvRenglon.Cells[9].Value = Math.Round((Precio * Convert.ToDouble(txtExchangeRate.Text)), 4);
+                            dgvRenglon.Cells[9].Value = Math.Round((Precio * Convert.ToDouble(txtExchangeRate.Text)), 2);
                         }
                     }
                 }
@@ -880,7 +897,7 @@ namespace InvoiceCreation
                         if (!String.IsNullOrEmpty(dgvRenglon.Cells[9].Value.ToString()) && dgvRenglon.Cells[9].Value.ToString() != "0")
                         {
                             double Precio = Convert.ToDouble(dgvRenglon.Cells[9].Value.ToString());
-                            dgvRenglon.Cells[9].Value = Math.Round((Precio / Convert.ToDouble(txtExchangeRate.Text)), 4);
+                            dgvRenglon.Cells[9].Value = Math.Round((Precio / Convert.ToDouble(txtExchangeRate.Text)), 2);
                         }
                     }
                 }

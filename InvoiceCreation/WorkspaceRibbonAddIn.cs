@@ -27,6 +27,7 @@ namespace InvoiceCreation
         private RightNowSyncPortClient clientORN { get; set; }
         public DataGridView DgvServicios { get; set; }
         public ComboBox BUnitS { get; set; }
+        public ComboBox CboCurrencies { get; set; }
         public List<Services> servicios { get; set; }
         public IIncident Incident { get; set; }
         public string Nombre { get; set; }
@@ -183,6 +184,7 @@ namespace InvoiceCreation
                     invoice = new Invoice(inDesignMode, recordContext, global);
                     DgvServicios = ((DataGridView)invoice.Controls["dataGridServicios"]);
                     BUnitS = ((ComboBox)invoice.Controls["cboBU"]);
+                    CboCurrencies = ((ComboBox)invoice.Controls["cboCurrency"]);
                     BUnitS.DataSource = new BindingSource(BUS, null);
                     BUnitS.DisplayMember = "Value";
                     BUnitS.ValueMember = "Key";
@@ -218,7 +220,9 @@ namespace InvoiceCreation
                     DgvServicios.Columns.Add(combBU);
                     DgvServicios.DataSource = servicios.OrderBy(o => o.ServiceID).ToList();
 
-                    DgvServicios.Columns[3].ReadOnly = true;
+
+
+
                     DgvServicios.Columns[4].ReadOnly = true;
                     DgvServicios.Columns[5].ReadOnly = true;
                     DgvServicios.Columns[6].ReadOnly = true;
@@ -227,6 +231,15 @@ namespace InvoiceCreation
                     DgvServicios.Columns[9].ReadOnly = true;
                     DgvServicios.Columns[10].ReadOnly = true;
                     DgvServicios.Columns[11].ReadOnly = true;
+
+                    DgvServicios.Columns[0].Width = 400;
+                    DgvServicios.Columns[1].Width = 400;
+                    DgvServicios.Columns[2].Width = 400;
+                    DgvServicios.Columns[4].Width = 800;
+                    DgvServicios.Columns[5].Width = 500;
+                    DgvServicios.Columns[6].Width = 300;
+                    DgvServicios.Columns[8].Width = 300;
+
 
                     DgvServicios.Columns[3].Visible = false;
                     DgvServicios.Columns[8].Visible = false;
@@ -241,6 +254,7 @@ namespace InvoiceCreation
                     DgvServicios.Columns[18].Visible = false;
                     DgvServicios.Columns[19].Visible = false;
                     DgvServicios.Columns[20].Visible = false;
+
                     ((TextBox)invoice.Controls["txtIncidentID"]).Text = IncidentID.ToString();
                     ((TextBox)invoice.Controls["txtCustomerName"]).Text = Nombre;
                     ((TextBox)invoice.Controls["txtRFC"]).Text = RFC;
@@ -292,12 +306,14 @@ namespace InvoiceCreation
                     {
                         MessageBox.Show("There are some zero values on prices list, please check.");
                     }
-                    DgvServicios.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+                    DgvServicios.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
                     List<Services> faturados = new List<Services>();
-                    faturados = servicios.Where(x => x.Facturado == "1").ToList();
+                    faturados = servicios.Where(x => x.Facturado == "Facturado").ToList();
                     if (servicios.Count == faturados.Count)
                     {
                         MessageBox.Show("All services have been invoiced");
+                        BUnitS.Enabled = false;
+                        CboCurrencies.Enabled = false;
                     }
 
                     invoice.ShowDialog();
@@ -900,13 +916,13 @@ namespace InvoiceCreation
                         }
                         service.InvoiceNumber = substrings[7];
                         service.ERPInvoice = substrings[8];
-                        service.FuelId = substrings[9];
+                        service.FuelId = String.IsNullOrEmpty(substrings[9]) ? "N/A" : substrings[9];
                         service.Tax = substrings[10];
                         service.Site = substrings[11];
-                        service.Facturado = substrings[12] == "1" ? "1" : "0";
+                        service.Facturado = substrings[12] == "1" ? "Facturado" : "No Facturado";
                         service.Itinerary = substrings[13];
                         service.Aircraft = substrings[14];
-                        service.Lts = string.IsNullOrEmpty(service.FuelId) ? "0" : GetFuels(service.FuelId).ToString();
+                        service.Lts = service.FuelId == "N/A" ? "N/A" : GetFuels(service.FuelId).ToString();
                         services.Add(service);
                     }
                 }
