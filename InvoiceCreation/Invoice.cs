@@ -59,9 +59,14 @@ namespace InvoiceCreation
                                 EjecutarBatch();
                                 MessageBox.Show("Invoice no: " + i + " Services send: " + y);
                                 RecordContext.ExecuteEditorCommand(EditorCommand.Save);
+                                created = true;
                             }
                         }
                         Cursor.Current = Cursors.Default;
+                        if (created)
+                        {
+                            this.Close();
+                        }
                     }
                     else
                     {
@@ -162,7 +167,7 @@ namespace InvoiceCreation
                 int y = 0;
                 foreach (DataGridViewRow dgvRenglon in dataGridServicios.Rows)
                 {
-                    if (!String.IsNullOrEmpty(dgvRenglon.Cells[0].FormattedValue.ToString()) && !String.IsNullOrEmpty(dgvRenglon.Cells[1].FormattedValue.ToString()))
+                    if (!String.IsNullOrEmpty(dgvRenglon.Cells[0].FormattedValue.ToString()) && !String.IsNullOrEmpty(dgvRenglon.Cells[1].FormattedValue.ToString()) && dgvRenglon.Cells[18].Value.ToString() == "No Facturado")
                     {
                         if (dgvRenglon.Cells[1].Value.ToString() == x.ToString())
                         {
@@ -172,8 +177,13 @@ namespace InvoiceCreation
                                 string itemN = string.IsNullOrEmpty(dgvRenglon.Cells[4].Value.ToString()) ? " " : dgvRenglon.Cells[4].Value.ToString();
                                 string itemDe = string.IsNullOrEmpty(dgvRenglon.Cells[5].Value.ToString()) ? " " : dgvRenglon.Cells[5].Value.ToString(); BUIDG = cboBU.SelectedValue.ToString();
                                 BUG = cboBU.Text;
-                                DataGridViewComboBoxCell Ctt = (DataGridViewComboBoxCell)dgvRenglon.Cells[0];
-                                string CustomerTrxTypeNameText = Ctt.FormattedValue.ToString();
+                                DataGridViewTextBoxCell Ctt = (DataGridViewTextBoxCell)dgvRenglon.Cells[0];
+                                string CustomerTrxTypeNameText = Ctt.FormattedValue.ToString().ToUpper();
+                                if (CustomerTrxTypeNameText != "R" && CustomerTrxTypeNameText != "I")
+                                {
+                                    MessageBox.Show("Type should be 'R' or 'I', Invoice Line will not be sent");
+                                    continue;
+                                }
                                 string BatchSourceName = " ";
                                 string ServiceId = string.IsNullOrEmpty(dgvRenglon.Cells[3].Value.ToString()) ? " " : dgvRenglon.Cells[3].Value.ToString(); ;
                                 string FuelId = string.IsNullOrEmpty(dgvRenglon.Cells[12].Value.ToString()) ? " " : dgvRenglon.Cells[12].Value.ToString();
@@ -195,7 +205,7 @@ namespace InvoiceCreation
                                 string Status = string.IsNullOrEmpty(lblStatus.Text) ? " " : lblStatus.Text;
                                 string ArrivalDate = string.IsNullOrEmpty(lblArrivalDate.Text) ? " " : lblArrivalDate.Text;
                                 string DepartureDate = string.IsNullOrEmpty(lblDepartureDate.Text) ? " " : lblDepartureDate.Text;
-
+                                string InvoiceType = CustomerTrxTypeNameText;
                                 if (BUG.Contains("US"))
                                 {
                                     BatchSourceName = "ORIGEN ICCS US";
@@ -203,7 +213,7 @@ namespace InvoiceCreation
                                 }
                                 else
                                 {
-                                    if (CustomerTrxTypeNameText == "Invoice")
+                                    if (CustomerTrxTypeNameText == "I")
                                     {
 
                                         CustomerTrxTypeNameText = "CFCC";
@@ -341,7 +351,7 @@ namespace InvoiceCreation
                                             {
                                                 if (desiredNode.ChildNodes[i].LocalName == "InterfaceLineGuid")
                                                 {
-                                                    UpdateInvoicedService(ServiceId, desiredNode.ChildNodes[i].InnerText, x, Precio);
+                                                    UpdateInvoicedService(ServiceId, desiredNode.ChildNodes[i].InnerText, x, Precio, InvoiceType);
                                                     y++;
                                                 }
                                             }
@@ -799,7 +809,7 @@ namespace InvoiceCreation
 
 
         }
-        private void UpdateInvoicedService(string IdSer, string InvoiceRef, int InvoiceNumber, double precio)
+        private void UpdateInvoicedService(string IdSer, string InvoiceRef, int InvoiceNumber, double precio, string InvoiceType)
         {
             var client = new RestClient("https://iccsmx.custhelp.com/");
             var request = new RestRequest("/services/rest/connect/v1.4/CO.Services/" + IdSer + "", Method.POST)
@@ -810,7 +820,8 @@ namespace InvoiceCreation
             // Información de precios costos
             body +=
                 "\"Facturado\":true," +
-                "\"Precio\":" + precio + "," +
+                "\"Precio\":\"" + precio + "\"," +
+                "\"InvoiceType\":\"" + InvoiceType + "\"," +
             "\"ERPInvoice\":\"" + InvoiceRef + "\"," +
             "\"InternalInvoice\":" + InvoiceNumber + "";
 
@@ -840,10 +851,13 @@ namespace InvoiceCreation
             {
                 if (dgvRenglon.Cells[18].Value.ToString() == "Facturado")
                 {
+
                     foreach (DataGridViewColumn col in dataGridServicios.Columns)
                     {
-
+                        dgvRenglon.Cells[0].Value = dgvRenglon.Cells[22].Value;
+                        dgvRenglon.Cells[1].Value = dgvRenglon.Cells[10].Value;
                         dgvRenglon.Cells[col.Index].Style.BackColor = Color.Green;
+                        dgvRenglon.Cells[col.Index].Style.ForeColor = Color.White;
                     }
                     dgvRenglon.ReadOnly = true;
                 }
@@ -855,6 +869,27 @@ namespace InvoiceCreation
             dataGridServicios.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
 
         }
+
+        private void dataGridServicios_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+        {
+            e.Control.KeyPress -= new KeyPressEventHandler(Column1_KeyPress);
+            if (dataGridServicios.CurrentCell.ColumnIndex == 1) //Desired Column
+            {
+                TextBox tb = e.Control as TextBox;
+                if (tb != null)
+                {
+                    tb.KeyPress += new KeyPressEventHandler(Column1_KeyPress);
+                }
+            }
+        }
+        private void Column1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
+
         private void cboCurrency_SelectedIndexChanged(object sender, EventArgs e)
         {
             bool change = false;
@@ -903,6 +938,12 @@ namespace InvoiceCreation
                 }
             }
         }
+
+        private void dataGridServicios_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
     }
 
 

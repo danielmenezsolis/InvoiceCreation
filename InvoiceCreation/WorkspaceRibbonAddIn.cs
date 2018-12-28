@@ -189,13 +189,28 @@ namespace InvoiceCreation
                     BUnitS.DisplayMember = "Value";
                     BUnitS.ValueMember = "Key";
 
+
+                    DataGridViewTextBoxColumn boxColumn = new DataGridViewTextBoxColumn();
+                    boxColumn.HeaderText = "Type";
+                    boxColumn.Name = "Type";
+                    boxColumn.MaxInputLength = 1;
+                    DataGridViewTextBoxColumn boxBU = new DataGridViewTextBoxColumn();
+                    boxBU.HeaderText = "BU";
+                    boxBU.Name = "BU";
+                    boxBU.MaxInputLength = 1;
+                    DataGridViewTextBoxColumn boxNumber = new DataGridViewTextBoxColumn();
+                    boxNumber.HeaderText = "Invoice #";
+                    boxNumber.Name = "Invoice #";
+                    boxNumber.MaxInputLength = 2;
+
+                    /*
                     DataGridViewComboBoxColumn combType = new DataGridViewComboBoxColumn();
                     combType.HeaderText = "Type";
                     combType.Name = "Type";
                     combType.MaxDropDownItems = 2;
                     combType.Items.Add("Invoice");
                     combType.Items.Add("Recipe");
-
+                    
 
                     DataGridViewComboBoxColumn combBU = new DataGridViewComboBoxColumn();
                     combBU.HeaderText = "Business Unit";
@@ -206,6 +221,7 @@ namespace InvoiceCreation
                     combBU.ValueMember = "Key";
                     combBU.Visible = false;
 
+
                     DataGridViewComboBoxColumn combNumber = new DataGridViewComboBoxColumn();
                     combNumber.HeaderText = "Number";
                     combNumber.Name = "Number";
@@ -214,14 +230,12 @@ namespace InvoiceCreation
                     for (int i = 1; i <= 10; i++)
                     {
                         combNumber.Items.Add(i.ToString());
-                    }
-                    DgvServicios.Columns.Add(combType);
-                    DgvServicios.Columns.Add(combNumber);
-                    DgvServicios.Columns.Add(combBU);
+                    }  
+                    */
+                    DgvServicios.Columns.Add(boxColumn);
+                    DgvServicios.Columns.Add(boxNumber);
+                    DgvServicios.Columns.Add(boxBU);
                     DgvServicios.DataSource = servicios.OrderBy(o => o.ServiceID).ToList();
-
-
-
 
                     DgvServicios.Columns[4].ReadOnly = true;
                     DgvServicios.Columns[5].ReadOnly = true;
@@ -240,7 +254,8 @@ namespace InvoiceCreation
                     DgvServicios.Columns[6].Width = 300;
                     DgvServicios.Columns[8].Width = 300;
 
-
+                    
+                    DgvServicios.Columns[2].Visible = false;
                     DgvServicios.Columns[3].Visible = false;
                     DgvServicios.Columns[8].Visible = false;
                     DgvServicios.Columns[10].Visible = false;
@@ -254,6 +269,8 @@ namespace InvoiceCreation
                     DgvServicios.Columns[18].Visible = false;
                     DgvServicios.Columns[19].Visible = false;
                     DgvServicios.Columns[20].Visible = false;
+                    DgvServicios.Columns[22].Visible = false;
+
 
                     ((TextBox)invoice.Controls["txtIncidentID"]).Text = IncidentID.ToString();
                     ((TextBox)invoice.Controls["txtCustomerName"]).Text = Nombre;
@@ -892,7 +909,7 @@ namespace InvoiceCreation
                 ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
                 APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
                 clientInfoHeader.AppID = "Query Example";
-                String queryString = "SELECT  ID,ItemNumber,ItemDescription,IDProveedor,Costo,CuentaGasto,Precio,InternalInvoice,ERPInvoice,Fuel_Id,Iva,Site,Facturado,Itinerary,Aircraft.LookupName FROM CO.Services WHERE Informativo = '0' AND (Componente IS NULL OR Componente  = '0') AND Incident = " + IncidentID;
+                String queryString = "SELECT  ID,ItemNumber,ItemDescription,IDProveedor,Costo,CuentaGasto,Precio,InternalInvoice,ERPInvoice,Fuel_Id,Iva,Site,Facturado,Itinerary,Aircraft.LookupName,InvoiceType FROM CO.Services WHERE Informativo = '0' AND (Componente IS NULL OR Componente  = '0') AND Incident = " + IncidentID;
                 global.LogMessage(queryString);
                 clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 10000, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
                 foreach (CSVTable table in queryCSV.CSVTables)
@@ -923,6 +940,7 @@ namespace InvoiceCreation
                         service.Itinerary = substrings[13];
                         service.Aircraft = substrings[14];
                         service.Lts = service.FuelId == "N/A" ? "N/A" : GetFuels(service.FuelId).ToString();
+                        service.InvoiceType = substrings[15];
                         services.Add(service);
                     }
                 }

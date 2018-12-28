@@ -132,6 +132,8 @@
             this.dataGridServicios.Size = new System.Drawing.Size(846, 163);
             this.dataGridServicios.TabIndex = 5;
             this.dataGridServicios.TabStop = false;
+            this.dataGridServicios.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridServicios_CellContentClick);
+            this.dataGridServicios.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGridServicios_EditingControlShowing);
             // 
             // label11
             // 
@@ -169,7 +171,7 @@
             // 
             // txtUtilidad
             // 
-            this.txtUtilidad.Location = new System.Drawing.Point(621, 100);
+            this.txtUtilidad.Location = new System.Drawing.Point(598, 100);
             this.txtUtilidad.Name = "txtUtilidad";
             this.txtUtilidad.ReadOnly = true;
             this.txtUtilidad.Size = new System.Drawing.Size(207, 20);
@@ -178,7 +180,7 @@
             // 
             // txtCombustible
             // 
-            this.txtCombustible.Location = new System.Drawing.Point(621, 133);
+            this.txtCombustible.Location = new System.Drawing.Point(598, 133);
             this.txtCombustible.Name = "txtCombustible";
             this.txtCombustible.ReadOnly = true;
             this.txtCombustible.Size = new System.Drawing.Size(207, 20);
@@ -214,7 +216,7 @@
             // 
             // txtRoyalty
             // 
-            this.txtRoyalty.Location = new System.Drawing.Point(621, 67);
+            this.txtRoyalty.Location = new System.Drawing.Point(598, 67);
             this.txtRoyalty.Name = "txtRoyalty";
             this.txtRoyalty.ReadOnly = true;
             this.txtRoyalty.Size = new System.Drawing.Size(207, 20);
@@ -242,7 +244,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(529, 140);
+            this.label6.Location = new System.Drawing.Point(506, 140);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(27, 13);
             this.label6.TabIndex = 57;
@@ -282,7 +284,7 @@
             this.cboIVA.Items.AddRange(new object[] {
             "0%",
             "16%"});
-            this.cboIVA.Location = new System.Drawing.Point(621, 168);
+            this.cboIVA.Location = new System.Drawing.Point(598, 168);
             this.cboIVA.Name = "cboIVA";
             this.cboIVA.Size = new System.Drawing.Size(207, 21);
             this.cboIVA.TabIndex = 63;
@@ -291,7 +293,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(529, 174);
+            this.label5.Location = new System.Drawing.Point(506, 174);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(49, 13);
             this.label5.TabIndex = 64;
@@ -344,7 +346,7 @@
             // 
             // lblCurrency
             // 
-            this.lblCurrency.Location = new System.Drawing.Point(621, 192);
+            this.lblCurrency.Location = new System.Drawing.Point(598, 192);
             this.lblCurrency.Name = "lblCurrency";
             this.lblCurrency.Size = new System.Drawing.Size(207, 21);
             this.lblCurrency.TabIndex = 70;
@@ -468,7 +470,7 @@
             this.cboCurrency.Items.AddRange(new object[] {
             "MXN",
             "USD"});
-            this.cboCurrency.Location = new System.Drawing.Point(621, 166);
+            this.cboCurrency.Location = new System.Drawing.Point(598, 166);
             this.cboCurrency.Name = "cboCurrency";
             this.cboCurrency.Size = new System.Drawing.Size(207, 21);
             this.cboCurrency.TabIndex = 86;
@@ -519,7 +521,7 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(529, 35);
+            this.label14.Location = new System.Drawing.Point(506, 35);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(37, 13);
             this.label14.TabIndex = 92;
@@ -528,7 +530,7 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(529, 107);
+            this.label15.Location = new System.Drawing.Point(506, 107);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(32, 13);
             this.label15.TabIndex = 58;
@@ -537,7 +539,7 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(529, 74);
+            this.label16.Location = new System.Drawing.Point(506, 74);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(42, 13);
             this.label16.TabIndex = 59;
@@ -545,7 +547,7 @@
             // 
             // txtStatus
             // 
-            this.txtStatus.Location = new System.Drawing.Point(621, 34);
+            this.txtStatus.Location = new System.Drawing.Point(598, 34);
             this.txtStatus.Name = "txtStatus";
             this.txtStatus.ReadOnly = true;
             this.txtStatus.Size = new System.Drawing.Size(207, 20);

@@ -27,5 +27,6 @@ namespace InvoiceCreation
         public string Itinerary { get; set; }
         public string Aircraft { get; set; }
         public string Lts { get; set; }
+        public string InvoiceType { get; set; }
     }
 }
