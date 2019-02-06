@@ -65,6 +65,8 @@ namespace InvoiceCreation
         public bool blnzeroval { get; set; }
 
 
+
+
         public WorkspaceRibbonAddIn(bool inDesignMode, IRecordContext RecordContext, IGlobalContext globalContext)
         {
             if (inDesignMode == false)
@@ -170,6 +172,7 @@ namespace InvoiceCreation
                         Arrival = Convert.ToDateTime(ArrivalDate);
                         Arrival = Convert.ToDateTime(Arrival.ToString("yyyy-MM-dd") + " " + ArrivalTime.Insert(2, ":"));
                     }
+
                     ICAO = getICAODesi();
                     SrType = GetSRType();
                     AircraftCategory = GetCargoGroup(ICAO);
@@ -236,7 +239,6 @@ namespace InvoiceCreation
                     DgvServicios.Columns.Add(boxNumber);
                     DgvServicios.Columns.Add(boxBU);
                     DgvServicios.DataSource = servicios.OrderBy(o => o.ServiceID).ToList();
-
                     DgvServicios.Columns[4].ReadOnly = true;
                     DgvServicios.Columns[5].ReadOnly = true;
                     DgvServicios.Columns[6].ReadOnly = true;
@@ -245,7 +247,6 @@ namespace InvoiceCreation
                     DgvServicios.Columns[9].ReadOnly = true;
                     DgvServicios.Columns[10].ReadOnly = true;
                     DgvServicios.Columns[11].ReadOnly = true;
-
                     DgvServicios.Columns[0].Width = 400;
                     DgvServicios.Columns[1].Width = 400;
                     DgvServicios.Columns[2].Width = 400;
@@ -253,8 +254,6 @@ namespace InvoiceCreation
                     DgvServicios.Columns[5].Width = 500;
                     DgvServicios.Columns[6].Width = 300;
                     DgvServicios.Columns[8].Width = 300;
-
-                    
                     DgvServicios.Columns[2].Visible = false;
                     DgvServicios.Columns[3].Visible = false;
                     DgvServicios.Columns[8].Visible = false;
@@ -281,6 +280,9 @@ namespace InvoiceCreation
                     ((TextBox)invoice.Controls["txtCombustible"]).Text = CatCombust;
                     ((TextBox)invoice.Controls["txtExchangeRate"]).Text = Math.Round(ExRate, 4).ToString();
                     ((TextBox)invoice.Controls["txtStatus"]).Text = GetStatus();
+
+
+                    ((System.Windows.Forms.Label)invoice.Controls["lblPartyId"]).Text = PartyId;
                     ((System.Windows.Forms.Label)invoice.Controls["lblRN"]).Text = GetReferenceNumber();
                     ((System.Windows.Forms.Label)invoice.Controls["lblSRtype"]).Text = SrType;
                     ((System.Windows.Forms.Label)invoice.Controls["lblCurrency"]).Text = GetSrCurrency();
@@ -332,7 +334,6 @@ namespace InvoiceCreation
                         BUnitS.Enabled = false;
                         CboCurrencies.Enabled = false;
                     }
-
                     invoice.ShowDialog();
 
                 }
@@ -342,7 +343,6 @@ namespace InvoiceCreation
                 MessageBox.Show("Error en Click: " + ex.Message + "Det: " + ex.StackTrace);
             }
         }
-
         public Dictionary<string, string> GetBUS()
         {
             Dictionary<string, string> test = new Dictionary<string, string>();
@@ -444,7 +444,6 @@ namespace InvoiceCreation
             }
             return test;
         }
-
         public string getPartySiteNumber()
         {
             try
@@ -508,8 +507,6 @@ namespace InvoiceCreation
                 return "";
             }
         }
-
-
         public string GetPaymentTermns()
         {
             string val = "";
@@ -566,6 +563,8 @@ namespace InvoiceCreation
                     nms.AddNamespace("ns3", "http://xmlns.oracle.com/apps/financials/receivables/customers/customerProfileService/");
                     XmlNode desiredNode = xmlDoc.SelectSingleNode("//ns3:PaymentTerms", nms);
                     val = desiredNode.FirstChild == null ? "" : desiredNode.FirstChild.InnerText;
+
+
                 }
             }
 
@@ -909,7 +908,7 @@ namespace InvoiceCreation
                 ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
                 APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
                 clientInfoHeader.AppID = "Query Example";
-                String queryString = "SELECT  ID,ItemNumber,ItemDescription,IDProveedor,Costo,CuentaGasto,Precio,InternalInvoice,ERPInvoice,Fuel_Id,Iva,Site,Facturado,Itinerary,Aircraft.LookupName,InvoiceType FROM CO.Services WHERE Informativo = '0' AND (Componente IS NULL OR Componente  = '0') AND Incident = " + IncidentID;
+                String queryString = "SELECT ID,ItemNumber,ItemDescription,IDProveedor,Costo,CuentaGasto,Precio,InternalInvoice,ERPInvoice,Fuel_Id,Iva,Site,Facturado,Itinerary,Aircraft.LookupName,InvoiceType FROM CO.Services WHERE Informativo = '0' AND (Componente IS NULL OR Componente  = '0') AND ListoFactura = 1 AND Incident = " + IncidentID;
                 global.LogMessage(queryString);
                 clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 10000, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
                 foreach (CSVTable table in queryCSV.CSVTables)
@@ -933,11 +932,11 @@ namespace InvoiceCreation
                         }
                         service.InvoiceNumber = substrings[7];
                         service.ERPInvoice = substrings[8];
-                        service.FuelId = String.IsNullOrEmpty(substrings[9]) ? "N/A" : substrings[9];
+                        service.FuelId = string.IsNullOrEmpty(substrings[9]) ? "N/A" : substrings[9];
                         service.Tax = substrings[10];
                         service.Site = substrings[11];
-                        service.Facturado = substrings[12] == "1" ? "Facturado" : "No Facturado";
-                        service.Itinerary = substrings[13];
+                        service.Facturado = substrings[12] == "1" ? "Invoiced" : "Not Invoiced";
+                        service.Itinerary = string.IsNullOrEmpty(substrings[13]) ? "0" : substrings[13];
                         service.Aircraft = substrings[14];
                         service.Lts = service.FuelId == "N/A" ? "N/A" : GetFuels(service.FuelId).ToString();
                         service.InvoiceType = substrings[15];
@@ -1080,13 +1079,11 @@ namespace InvoiceCreation
                 return 1;
             }
         }
-
     }
 
     [AddIn("Generate Invoice", Version = "1.0.0.0")]
     public class WorkspaceRibbonButtonFactory : IWorkspaceRibbonButtonFactory
     {
-
         IGlobalContext globalContext { get; set; }
         public IWorkspaceRibbonButton CreateControl(bool inDesignMode, IRecordContext RecordContext)
         {
@@ -1096,23 +1093,18 @@ namespace InvoiceCreation
         {
             get { return Properties.Resources.receipt32; }
         }
-
-
         public System.Drawing.Image Image16
         {
             get { return Properties.Resources.receipt16; }
         }
-
         public string Text
         {
             get { return "Generate Invoice"; }
         }
-
         public string Tooltip
         {
             get { return "Generate Invoice"; }
         }
-
         public bool Initialize(IGlobalContext GlobalContext)
         {
             this.globalContext = GlobalContext;

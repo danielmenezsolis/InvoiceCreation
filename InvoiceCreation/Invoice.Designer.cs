@@ -81,6 +81,17 @@
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.txtStatus = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.label18 = new System.Windows.Forms.Label();
+            this.label20 = new System.Windows.Forms.Label();
+            this.txtEmail = new System.Windows.Forms.TextBox();
+            this.txtCardNumber = new System.Windows.Forms.TextBox();
+            this.cboPMethod = new System.Windows.Forms.ComboBox();
+            this.cboCFDI = new System.Windows.Forms.ComboBox();
+            this.cboPTerms = new System.Windows.Forms.ComboBox();
+            this.lblPartyId = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridServicios)).BeginInit();
             this.SuspendLayout();
             // 
@@ -88,7 +99,7 @@
             // 
             this.BtnInvoice.Image = ((System.Drawing.Image)(resources.GetObject("BtnInvoice.Image")));
             this.BtnInvoice.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.BtnInvoice.Location = new System.Drawing.Point(9, 240);
+            this.BtnInvoice.Location = new System.Drawing.Point(11, 289);
             this.BtnInvoice.Name = "BtnInvoice";
             this.BtnInvoice.Size = new System.Drawing.Size(77, 23);
             this.BtnInvoice.TabIndex = 1;
@@ -124,7 +135,7 @@
             this.dataGridServicios.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridServicios.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.dataGridServicios.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnF2;
-            this.dataGridServicios.Location = new System.Drawing.Point(0, 268);
+            this.dataGridServicios.Location = new System.Drawing.Point(0, 321);
             this.dataGridServicios.MultiSelect = false;
             this.dataGridServicios.Name = "dataGridServicios";
             this.dataGridServicios.RowHeadersVisible = false;
@@ -155,7 +166,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 222);
+            this.label1.Location = new System.Drawing.Point(11, 271);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(74, 13);
             this.label1.TabIndex = 46;
@@ -164,14 +175,14 @@
             // label2
             // 
             this.label2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label2.Location = new System.Drawing.Point(-3, 229);
+            this.label2.Location = new System.Drawing.Point(-1, 278);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(1000, 2);
             this.label2.TabIndex = 47;
             // 
             // txtUtilidad
             // 
-            this.txtUtilidad.Location = new System.Drawing.Point(598, 100);
+            this.txtUtilidad.Location = new System.Drawing.Point(598, 86);
             this.txtUtilidad.Name = "txtUtilidad";
             this.txtUtilidad.ReadOnly = true;
             this.txtUtilidad.Size = new System.Drawing.Size(207, 20);
@@ -180,7 +191,7 @@
             // 
             // txtCombustible
             // 
-            this.txtCombustible.Location = new System.Drawing.Point(598, 133);
+            this.txtCombustible.Location = new System.Drawing.Point(598, 112);
             this.txtCombustible.Name = "txtCombustible";
             this.txtCombustible.ReadOnly = true;
             this.txtCombustible.Size = new System.Drawing.Size(207, 20);
@@ -198,7 +209,7 @@
             // 
             // txtRFC
             // 
-            this.txtRFC.Location = new System.Drawing.Point(151, 67);
+            this.txtRFC.Location = new System.Drawing.Point(151, 60);
             this.txtRFC.Name = "txtRFC";
             this.txtRFC.ReadOnly = true;
             this.txtRFC.Size = new System.Drawing.Size(207, 20);
@@ -207,7 +218,7 @@
             // 
             // txtAccount
             // 
-            this.txtAccount.Location = new System.Drawing.Point(151, 104);
+            this.txtAccount.Location = new System.Drawing.Point(151, 86);
             this.txtAccount.Name = "txtAccount";
             this.txtAccount.ReadOnly = true;
             this.txtAccount.Size = new System.Drawing.Size(207, 20);
@@ -216,7 +227,7 @@
             // 
             // txtRoyalty
             // 
-            this.txtRoyalty.Location = new System.Drawing.Point(598, 67);
+            this.txtRoyalty.Location = new System.Drawing.Point(598, 60);
             this.txtRoyalty.Name = "txtRoyalty";
             this.txtRoyalty.ReadOnly = true;
             this.txtRoyalty.Size = new System.Drawing.Size(207, 20);
@@ -226,7 +237,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(39, 74);
+            this.label3.Location = new System.Drawing.Point(39, 67);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(28, 13);
             this.label3.TabIndex = 54;
@@ -235,7 +246,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(39, 107);
+            this.label4.Location = new System.Drawing.Point(38, 93);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(87, 13);
             this.label4.TabIndex = 55;
@@ -244,7 +255,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(506, 140);
+            this.label6.Location = new System.Drawing.Point(455, 119);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(27, 13);
             this.label6.TabIndex = 57;
@@ -253,7 +264,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(39, 41);
+            this.label9.Location = new System.Drawing.Point(38, 37);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(82, 13);
             this.label9.TabIndex = 60;
@@ -271,7 +282,7 @@
             // txtIncidentID
             // 
             this.txtIncidentID.Enabled = false;
-            this.txtIncidentID.Location = new System.Drawing.Point(781, 208);
+            this.txtIncidentID.Location = new System.Drawing.Point(799, 242);
             this.txtIncidentID.Name = "txtIncidentID";
             this.txtIncidentID.ReadOnly = true;
             this.txtIncidentID.Size = new System.Drawing.Size(47, 20);
@@ -284,7 +295,7 @@
             this.cboIVA.Items.AddRange(new object[] {
             "0%",
             "16%"});
-            this.cboIVA.Location = new System.Drawing.Point(598, 168);
+            this.cboIVA.Location = new System.Drawing.Point(598, 138);
             this.cboIVA.Name = "cboIVA";
             this.cboIVA.Size = new System.Drawing.Size(207, 21);
             this.cboIVA.TabIndex = 63;
@@ -293,7 +304,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(506, 174);
+            this.label5.Location = new System.Drawing.Point(455, 146);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(49, 13);
             this.label5.TabIndex = 64;
@@ -305,7 +316,7 @@
             this.cboBU.Items.AddRange(new object[] {
             "BU ICCS",
             "BU ICCS US"});
-            this.cboBU.Location = new System.Drawing.Point(151, 166);
+            this.cboBU.Location = new System.Drawing.Point(151, 138);
             this.cboBU.Name = "cboBU";
             this.cboBU.Size = new System.Drawing.Size(207, 21);
             this.cboBU.TabIndex = 65;
@@ -313,7 +324,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(39, 174);
+            this.label10.Location = new System.Drawing.Point(39, 146);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(71, 13);
             this.label10.TabIndex = 66;
@@ -346,7 +357,7 @@
             // 
             // lblCurrency
             // 
-            this.lblCurrency.Location = new System.Drawing.Point(598, 192);
+            this.lblCurrency.Location = new System.Drawing.Point(387, 283);
             this.lblCurrency.Name = "lblCurrency";
             this.lblCurrency.Size = new System.Drawing.Size(207, 21);
             this.lblCurrency.TabIndex = 70;
@@ -354,7 +365,7 @@
             // 
             // lblICAO
             // 
-            this.lblICAO.Location = new System.Drawing.Point(385, 66);
+            this.lblICAO.Location = new System.Drawing.Point(364, 202);
             this.lblICAO.Name = "lblICAO";
             this.lblICAO.Size = new System.Drawing.Size(97, 21);
             this.lblICAO.TabIndex = 71;
@@ -362,7 +373,7 @@
             // 
             // lblAircraftCategory
             // 
-            this.lblAircraftCategory.Location = new System.Drawing.Point(385, 87);
+            this.lblAircraftCategory.Location = new System.Drawing.Point(364, 297);
             this.lblAircraftCategory.Name = "lblAircraftCategory";
             this.lblAircraftCategory.Size = new System.Drawing.Size(97, 21);
             this.lblAircraftCategory.TabIndex = 72;
@@ -370,7 +381,7 @@
             // 
             // lblTail
             // 
-            this.lblTail.Location = new System.Drawing.Point(385, 108);
+            this.lblTail.Location = new System.Drawing.Point(364, 293);
             this.lblTail.Name = "lblTail";
             this.lblTail.Size = new System.Drawing.Size(97, 21);
             this.lblTail.TabIndex = 73;
@@ -378,7 +389,7 @@
             // 
             // BtnChange
             // 
-            this.BtnChange.Location = new System.Drawing.Point(647, 234);
+            this.BtnChange.Location = new System.Drawing.Point(649, 283);
             this.BtnChange.Name = "BtnChange";
             this.BtnChange.Size = new System.Drawing.Size(138, 23);
             this.BtnChange.TabIndex = 75;
@@ -388,7 +399,7 @@
             // 
             // lblPayTerm
             // 
-            this.lblPayTerm.Location = new System.Drawing.Point(385, 129);
+            this.lblPayTerm.Location = new System.Drawing.Point(373, 283);
             this.lblPayTerm.Name = "lblPayTerm";
             this.lblPayTerm.Size = new System.Drawing.Size(97, 15);
             this.lblPayTerm.TabIndex = 76;
@@ -404,7 +415,7 @@
             // 
             // lblRoutes
             // 
-            this.lblRoutes.Location = new System.Drawing.Point(385, 154);
+            this.lblRoutes.Location = new System.Drawing.Point(499, 233);
             this.lblRoutes.Name = "lblRoutes";
             this.lblRoutes.Size = new System.Drawing.Size(97, 10);
             this.lblRoutes.TabIndex = 78;
@@ -420,21 +431,21 @@
             // 
             // lblDeparture
             // 
-            this.lblDeparture.Location = new System.Drawing.Point(224, 207);
+            this.lblDeparture.Location = new System.Drawing.Point(236, 288);
             this.lblDeparture.Name = "lblDeparture";
             this.lblDeparture.Size = new System.Drawing.Size(74, 21);
             this.lblDeparture.TabIndex = 80;
             // 
             // lblCatOrder
             // 
-            this.lblCatOrder.Location = new System.Drawing.Point(385, 218);
+            this.lblCatOrder.Location = new System.Drawing.Point(273, 291);
             this.lblCatOrder.Name = "lblCatOrder";
             this.lblCatOrder.Size = new System.Drawing.Size(85, 10);
             this.lblCatOrder.TabIndex = 81;
             // 
             // lblTripNumber
             // 
-            this.lblTripNumber.Location = new System.Drawing.Point(338, 234);
+            this.lblTripNumber.Location = new System.Drawing.Point(340, 283);
             this.lblTripNumber.Name = "lblTripNumber";
             this.lblTripNumber.Size = new System.Drawing.Size(97, 10);
             this.lblTripNumber.TabIndex = 82;
@@ -458,7 +469,7 @@
             // 
             // lblStatus
             // 
-            this.lblStatus.Location = new System.Drawing.Point(338, 247);
+            this.lblStatus.Location = new System.Drawing.Point(340, 296);
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new System.Drawing.Size(85, 10);
             this.lblStatus.TabIndex = 85;
@@ -470,7 +481,7 @@
             this.cboCurrency.Items.AddRange(new object[] {
             "MXN",
             "USD"});
-            this.cboCurrency.Location = new System.Drawing.Point(598, 166);
+            this.cboCurrency.Location = new System.Drawing.Point(598, 138);
             this.cboCurrency.Name = "cboCurrency";
             this.cboCurrency.Size = new System.Drawing.Size(207, 21);
             this.cboCurrency.TabIndex = 86;
@@ -478,7 +489,7 @@
             // 
             // lblExRate
             // 
-            this.lblExRate.Location = new System.Drawing.Point(385, 144);
+            this.lblExRate.Location = new System.Drawing.Point(385, 138);
             this.lblExRate.Name = "lblExRate";
             this.lblExRate.Size = new System.Drawing.Size(97, 10);
             this.lblExRate.TabIndex = 87;
@@ -487,7 +498,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(39, 140);
+            this.label12.Location = new System.Drawing.Point(39, 119);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(81, 13);
             this.label12.TabIndex = 89;
@@ -495,7 +506,7 @@
             // 
             // txtExchangeRate
             // 
-            this.txtExchangeRate.Location = new System.Drawing.Point(151, 133);
+            this.txtExchangeRate.Location = new System.Drawing.Point(151, 112);
             this.txtExchangeRate.Name = "txtExchangeRate";
             this.txtExchangeRate.ReadOnly = true;
             this.txtExchangeRate.Size = new System.Drawing.Size(207, 20);
@@ -504,7 +515,7 @@
             // 
             // lblArrivalDate
             // 
-            this.lblArrivalDate.Location = new System.Drawing.Point(497, 207);
+            this.lblArrivalDate.Location = new System.Drawing.Point(499, 256);
             this.lblArrivalDate.Name = "lblArrivalDate";
             this.lblArrivalDate.Size = new System.Drawing.Size(149, 21);
             this.lblArrivalDate.TabIndex = 90;
@@ -512,7 +523,7 @@
             // 
             // lblDepartureDate
             // 
-            this.lblDepartureDate.Location = new System.Drawing.Point(441, 242);
+            this.lblDepartureDate.Location = new System.Drawing.Point(443, 291);
             this.lblDepartureDate.Name = "lblDepartureDate";
             this.lblDepartureDate.Size = new System.Drawing.Size(149, 21);
             this.lblDepartureDate.TabIndex = 91;
@@ -521,7 +532,7 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(506, 35);
+            this.label14.Location = new System.Drawing.Point(455, 41);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(37, 13);
             this.label14.TabIndex = 92;
@@ -530,7 +541,7 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(506, 107);
+            this.label15.Location = new System.Drawing.Point(455, 93);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(32, 13);
             this.label15.TabIndex = 58;
@@ -539,7 +550,7 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(506, 74);
+            this.label16.Location = new System.Drawing.Point(455, 69);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(42, 13);
             this.label16.TabIndex = 59;
@@ -554,11 +565,118 @@
             this.txtStatus.TabIndex = 93;
             this.txtStatus.TabStop = false;
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(38, 172);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(87, 13);
+            this.label7.TabIndex = 94;
+            this.label7.Text = "Payment Method";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(455, 172);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(80, 13);
+            this.label8.TabIndex = 96;
+            this.label8.Text = "Payment Terms";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(38, 202);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(53, 13);
+            this.label17.TabIndex = 98;
+            this.label17.Text = "CFDI Use";
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(455, 202);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(120, 13);
+            this.label18.TabIndex = 100;
+            this.label18.Text = "Account / Card Number";
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(39, 227);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(32, 13);
+            this.label20.TabIndex = 101;
+            this.label20.Text = "Email";
+            // 
+            // txtEmail
+            // 
+            this.txtEmail.Location = new System.Drawing.Point(151, 224);
+            this.txtEmail.Multiline = true;
+            this.txtEmail.Name = "txtEmail";
+            this.txtEmail.Size = new System.Drawing.Size(207, 38);
+            this.txtEmail.TabIndex = 102;
+            this.txtEmail.TabStop = false;
+            // 
+            // txtCardNumber
+            // 
+            this.txtCardNumber.Location = new System.Drawing.Point(598, 197);
+            this.txtCardNumber.MaxLength = 4;
+            this.txtCardNumber.Name = "txtCardNumber";
+            this.txtCardNumber.Size = new System.Drawing.Size(207, 20);
+            this.txtCardNumber.TabIndex = 103;
+            this.txtCardNumber.TabStop = false;
+            // 
+            // cboPMethod
+            // 
+            this.cboPMethod.FormattingEnabled = true;
+            this.cboPMethod.Location = new System.Drawing.Point(151, 165);
+            this.cboPMethod.Name = "cboPMethod";
+            this.cboPMethod.Size = new System.Drawing.Size(207, 21);
+            this.cboPMethod.TabIndex = 104;
+            // 
+            // cboCFDI
+            // 
+            this.cboCFDI.FormattingEnabled = true;
+            this.cboCFDI.Location = new System.Drawing.Point(151, 194);
+            this.cboCFDI.Name = "cboCFDI";
+            this.cboCFDI.Size = new System.Drawing.Size(207, 21);
+            this.cboCFDI.TabIndex = 105;
+            // 
+            // cboPTerms
+            // 
+            this.cboPTerms.FormattingEnabled = true;
+            this.cboPTerms.Location = new System.Drawing.Point(598, 164);
+            this.cboPTerms.Name = "cboPTerms";
+            this.cboPTerms.Size = new System.Drawing.Size(207, 21);
+            this.cboPTerms.TabIndex = 106;
+            // 
+            // lblPartyId
+            // 
+            this.lblPartyId.AutoSize = true;
+            this.lblPartyId.Location = new System.Drawing.Point(682, 227);
+            this.lblPartyId.Name = "lblPartyId";
+            this.lblPartyId.Size = new System.Drawing.Size(0, 13);
+            this.lblPartyId.TabIndex = 107;
+            // 
             // Invoice
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(846, 431);
+            this.AutoSize = true;
+            this.ClientSize = new System.Drawing.Size(846, 484);
+            this.Controls.Add(this.lblPartyId);
+            this.Controls.Add(this.cboPTerms);
+            this.Controls.Add(this.cboCFDI);
+            this.Controls.Add(this.cboPMethod);
+            this.Controls.Add(this.txtCardNumber);
+            this.Controls.Add(this.txtEmail);
+            this.Controls.Add(this.label20);
+            this.Controls.Add(this.label18);
+            this.Controls.Add(this.label17);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.label7);
             this.Controls.Add(this.txtStatus);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.lblDepartureDate);
@@ -566,7 +684,6 @@
             this.Controls.Add(this.label12);
             this.Controls.Add(this.txtExchangeRate);
             this.Controls.Add(this.lblExRate);
-            this.Controls.Add(this.cboCurrency);
             this.Controls.Add(this.lblStatus);
             this.Controls.Add(this.lblSNumber);
             this.Controls.Add(this.lblReservation);
@@ -588,7 +705,6 @@
             this.Controls.Add(this.label10);
             this.Controls.Add(this.cboBU);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.cboIVA);
             this.Controls.Add(this.txtIncidentID);
             this.Controls.Add(this.label16);
             this.Controls.Add(this.label9);
@@ -609,6 +725,8 @@
             this.Controls.Add(this.BtnInvoice);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txtEnvelope);
+            this.Controls.Add(this.cboCurrency);
+            this.Controls.Add(this.cboIVA);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -675,5 +793,16 @@
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.TextBox txtStatus;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.TextBox txtEmail;
+        private System.Windows.Forms.TextBox txtCardNumber;
+        private System.Windows.Forms.ComboBox cboPMethod;
+        private System.Windows.Forms.ComboBox cboCFDI;
+        private System.Windows.Forms.ComboBox cboPTerms;
+        private System.Windows.Forms.Label lblPartyId;
     }
 }

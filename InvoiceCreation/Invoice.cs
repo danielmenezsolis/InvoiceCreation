@@ -1,5 +1,8 @@
 ﻿using InvoiceCreation.SOAPICCS;
+using MoreLinq;
+using Newtonsoft.Json;
 using RestSharp;
+using RestSharp.Authenticators;
 using RightNow.AddIns.AddInViews;
 using RightNow.AddIns.Common;
 using System;
@@ -167,7 +170,7 @@ namespace InvoiceCreation
                 int y = 0;
                 foreach (DataGridViewRow dgvRenglon in dataGridServicios.Rows)
                 {
-                    if (!String.IsNullOrEmpty(dgvRenglon.Cells[0].FormattedValue.ToString()) && !String.IsNullOrEmpty(dgvRenglon.Cells[1].FormattedValue.ToString()) && dgvRenglon.Cells[18].Value.ToString() == "No Facturado")
+                    if (!String.IsNullOrEmpty(dgvRenglon.Cells[0].FormattedValue.ToString()) && !String.IsNullOrEmpty(dgvRenglon.Cells[1].FormattedValue.ToString()) && dgvRenglon.Cells[18].Value.ToString() == "Not Invoiced")
                     {
                         if (dgvRenglon.Cells[1].Value.ToString() == x.ToString())
                         {
@@ -301,12 +304,17 @@ namespace InvoiceCreation
                                         envelope += "<tran6:xxDatosCombistible>" + Lts + " LTRS. / " + (Math.Round(Convert.ToDouble((Precio / (Lts / 3.7853)) / 3.7853), 2)).ToString() + " USD " + Math.Round(Convert.ToDouble((Lts / 3.7853)), 2).ToString() + " GALS. /" + Math.Round(Convert.ToDouble(Precio / (Lts / 3.7853)), 2).ToString() + " USD |" + VN + "</tran6:xxDatosCombistible>";
                                     }
                                 }
-                                envelope += "<tran6:xxGpofactura>" + x + "</tran6:xxGpofactura>" +
-                                    "</inv:TransactionInterfaceHeaderDff>" +
-                                  "</typ:interfaceLine>" +
-                                                                             "</typ:createInterfaceLine>" +
-                                                                         "</soapenv:Body>" +
-                                                                      "</soapenv:Envelope>";
+                                envelope += "<tran6:xxFormaDePago>" + cboPTerms.SelectedValue.ToString() + "</tran6:xxFormaDePago>" +
+                                "<tran6:xxUsoCfdi>" + cboCFDI.SelectedValue.ToString() + "</tran6:xxUsoCfdi>" +
+                                "<tran6:xxMetodoDePago>" + cboPMethod.SelectedValue.ToString() + "</tran6:xxMetodoDePago>" +
+                                "<tran6:xxDatosCuenta>" + txtCardNumber.Text + "</tran6:xxDatosCuenta>" +
+                                "<tran6:emailLoop1>" + txtEmail.Text + "</tran6:emailLoop1>" +
+                                "<tran6:xxGpofactura>" + x + "</tran6:xxGpofactura>" +
+                                   "</inv:TransactionInterfaceHeaderDff>" +
+                                "</typ:interfaceLine>" +
+                                     "</typ:createInterfaceLine>" +
+                                     "</soapenv:Body>" +
+                                 "</soapenv:Envelope>";
 
                                 byte[] byteArray = Encoding.UTF8.GetBytes(envelope);
                                 GlobalContext.LogMessage(envelope);
@@ -414,6 +422,11 @@ namespace InvoiceCreation
                  "<tran3:xxDatosFactura>" + lblTail.Text + "|" + lblICAO.Text + "|MMAC|JUL-25-2018 1440 Z|JUL-25-2018 1800 Z|FBO JUL-25-2018|46789</tran3:xxDatosFactura>" +
                  "<tran3:xxDatosDeRutas>" + lblRoutes.Text + "</tran3:xxDatosDeRutas>" +
                  "<tran3:xxDatosCombistible>" + GetFuels() + " LTRS. / " + (GetFuels() * 3.7853).ToString() + " /GALS." + "</tran3:xxDatosCombistible>" +
+                 "<tran3:xxMetodoDePago>" + cboPMethod.SelectedValue.ToString() + "</tran3:xxMetodoDePago>" +
+                 "<tran3:xxFormaDePago>" + cboPTerms.SelectedValue.ToString() + "</tran3:xxFormaDePago>" +
+                 "<tran3:xxUsoCfdi>" + cboCFDI.SelectedValue.ToString() + "</tran3:xxUsoCfdi>" +
+                 "<tran3:xxDatosCuenta>" + txtCardNumber.Text + "</tran3:xxDatosCuenta>" +
+                 "<tran3:emailLoop1>" + txtEmail.Text + "</tran3:emailLoop1>" +
                 "</inv:TransactionHeaderFLEX>" +
                  "</typ:invoiceHeaderInformation>" +
                  "</typ:createSimpleInvoice>" +
@@ -846,12 +859,12 @@ namespace InvoiceCreation
         }
         private void Invoice_Load_1(object sender, EventArgs e)
         {
+            LoadCombos();
             cboCurrency.Text = lblCurrency.Text;
             foreach (DataGridViewRow dgvRenglon in dataGridServicios.Rows)
             {
-                if (dgvRenglon.Cells[18].Value.ToString() == "Facturado")
+                if (dgvRenglon.Cells[18].Value.ToString() == "Invoiced")
                 {
-
                     foreach (DataGridViewColumn col in dataGridServicios.Columns)
                     {
                         dgvRenglon.Cells[0].Value = dgvRenglon.Cells[22].Value;
@@ -867,7 +880,43 @@ namespace InvoiceCreation
                 }
             }
             dataGridServicios.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            getCustomerData(Convert.ToInt64(lblPartyId.Text));
+        }
+        private void LoadCombos()
+        {
+            try
+            {
+                var client = new RestClient("https://iccs.bigmachines.com/");
+                string User = Encoding.UTF8.GetString(Convert.FromBase64String("aW1wbGVtZW50YWRvcg=="));
+                string Pass = Encoding.UTF8.GetString(Convert.FromBase64String("U2luZXJneSoyMDE4"));
+                client.Authenticator = new HttpBasicAuthenticator("servicios", "Sinergy*2018");
+                string definicion = "";
+                GlobalContext.LogMessage(definicion);
+                var request = new RestRequest("rest/v6/customCatalogoFactura/" + definicion, Method.GET);
+                IRestResponse response = client.Execute(request);
+                RootObject rootObject = JsonConvert.DeserializeObject<RootObject>(response.Content);
+                Dictionary<string, string> CFDI = new Dictionary<string, string>();
+                Dictionary<string, string> FPago = new Dictionary<string, string>();
+                Dictionary<string, string> MPago = new Dictionary<string, string>();
 
+                CFDI = rootObject.items.FindAll(x => (x.str_tipo.Trim().ToUpper() == "XX_USO_CFDI")).OrderBy(i => i.str_descripcion).ToDictionary(k => k.str_codigo, k => k.str_descripcion);
+                FPago = rootObject.items.FindAll(x => (x.str_tipo.Trim().ToUpper() == "XXVS_FORMA_PAGO")).OrderBy(i => i.str_descripcion).ToDictionary(k => k.str_codigo, k => k.str_descripcion);
+                MPago = rootObject.items.FindAll(x => (x.str_tipo.Trim().ToUpper() == "XX_METODO_DE_PAGO")).OrderBy(i => i.str_descripcion).ToDictionary(k => k.str_codigo, k => k.str_descripcion);
+
+                cboCFDI.DataSource = new BindingSource(CFDI, null);
+                cboCFDI.DisplayMember = "Value";
+                cboCFDI.ValueMember = "Key";
+                cboPMethod.DataSource = new BindingSource(MPago, null);
+                cboPMethod.DisplayMember = "Value";
+                cboPMethod.ValueMember = "Key";
+                cboPTerms.DataSource = new BindingSource(FPago, null);
+                cboPTerms.DisplayMember = "Value";
+                cboPTerms.ValueMember = "Key";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message + "Det" + ex.StackTrace);
+            }
         }
 
         private void dataGridServicios_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
@@ -938,13 +987,161 @@ namespace InvoiceCreation
                 }
             }
         }
+        private void getCustomerData(long PartyId)
+        {
+            string envelope = "<soapenv:Envelope" +
+"   xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"" +
+"   xmlns:typ=\"http://xmlns.oracle.com/apps/cdm/foundation/parties/customerAccountService/applicationModule/types/\"" +
+"   xmlns:typ1=\"http://xmlns.oracle.com/adf/svc/types/\">" +
+   "<soapenv:Header />" +
+   "<soapenv:Body>" +
+   "<typ:findCustomerAccount>" +
+   "<typ:findCriteria>" +
+   "<typ1:fetchStart>0</typ1:fetchStart>" +
+   "<typ1:fetchSize>-1</typ1:fetchSize>" +
+    "<typ1:filter>" +
+    "<typ1:group>" +
+    "<typ1:item>" +
+    "<typ1:conjunction>And</typ1:conjunction>" +
+      "<typ1:attribute>PartyId</typ1:attribute>" +
+      "<typ1:operator>=</typ1:operator>" +
+      "<typ1:value>300000001801651</typ1:value>" +
+  "</typ1:item>" +
+  "</typ1:group>" +
+"</typ1:filter>" +
+"</typ:findCriteria>" +
+"<typ:findControl>" +
+"<typ1:retrieveAllTranslations>true</typ1:retrieveAllTranslations>" +
+"</typ:findControl>" +
+"</typ:findCustomerAccount>" +
+"</soapenv:Body>" +
+"</soapenv:Envelope>";
 
+            byte[] byteArray = Encoding.UTF8.GetBytes(envelope);
+            // Construct the base 64 encoded string used as credentials for the service call
+            byte[] toEncodeAsBytes = System.Text.ASCIIEncoding.ASCII.GetBytes("itotal" + ":" + "Oracle123");
+            string credentials = System.Convert.ToBase64String(toEncodeAsBytes);
+            // Create HttpWebRequest connection to the service
+            HttpWebRequest request =
+             (HttpWebRequest)WebRequest.Create("https://egqy-test.fa.us6.oraclecloud.com:443/crmService/CustomerAccountService");
+            // Configure the request content type to be xml, HTTP method to be POST, and set the content length
+            request.Method = "POST";
+            request.ContentType = "text/xml;charset=UTF-8";
+            request.ContentLength = byteArray.Length;
+            // Configure the request to use basic authentication, with base64 encoded user name and password, to invoke the service.
+            request.Headers.Add("Authorization", "Basic " + credentials);
+            // Set the SOAP action to be invoked; while the call works without this, the value is expected to be set based as per standards
+            request.Headers.Add("SOAPAction", "http://xmlns.oracle.com/apps/cdm/foundation/parties/organizationService/applicationModule/findOrganizationProfile");
+            // Write the xml payload to the request
+            Stream dataStream = request.GetRequestStream();
+            dataStream.Write(byteArray, 0, byteArray.Length);
+            dataStream.Close();
+
+            // Write the xml payload to the request
+            XDocument doc;
+            XmlDocument docu = new XmlDocument();
+            string result;
+
+            // Get the response and process it; In this example, we simply print out the response XDocument doc;
+            using (WebResponse response = request.GetResponse())
+            {
+                using (Stream stream = response.GetResponseStream())
+                {
+                    doc = XDocument.Load(stream);
+                    result = doc.ToString();
+                    XmlDocument xmlDoc = new XmlDocument();
+                    xmlDoc.LoadXml(result);
+                    GlobalContext.LogMessage(result);
+                    XmlNamespaceManager nms = new XmlNamespaceManager(xmlDoc.NameTable);
+                    nms.AddNamespace("env", "http://schemas.xmlsoap.org/soap/envelope/");
+                    nms.AddNamespace("wsa", "http://www.w3.org/2005/08/addressing");
+                    nms.AddNamespace("ns0", "http://xmlns.oracle.com/apps/cdm/foundation/parties/customerAccountService/applicationModule/types/");
+                    nms.AddNamespace("ns2", "http://xmlns.oracle.com/apps/cdm/foundation/parties/customerAccountService/");
+                    nms.AddNamespace("ns1", "http://xmlns.oracle.com/adf/svc/types/");
+                    nms.AddNamespace("ns6", "http://xmlns.oracle.com/apps/cdm/foundation/parties/flex/custAccountSiteUse/");
+                    XmlNode desiredNode = xmlDoc.SelectSingleNode("//ns2:Value", nms);
+                    if (desiredNode.HasChildNodes)
+                    {
+                        for (int i = 0; i < desiredNode.ChildNodes.Count; i++)
+                        {
+                            if (desiredNode.ChildNodes[i].LocalName == "AccountNumber")
+                            {
+
+                            }
+                            if (desiredNode.ChildNodes[i].LocalName == "CustAcctInformation")
+                            {
+
+                                XmlNodeList nodeListvalue = desiredNode.ChildNodes[i].ChildNodes;
+                                foreach (XmlNode nodeValueorg in nodeListvalue)
+                                {
+                                    if (nodeValueorg.LocalName == "xxUsoCfdi")
+                                    {
+                                        GlobalContext.LogMessage(nodeValueorg.InnerText);
+                                        cboCFDI.SelectedValue = nodeValueorg.InnerText;
+                                    }
+                                    if (nodeValueorg.LocalName == "xxFormaDePago")
+                                    {
+                                        GlobalContext.LogMessage(nodeValueorg.InnerText);
+                                        cboPTerms.SelectedValue = nodeValueorg.InnerText;
+                                    }
+                                    if (nodeValueorg.LocalName == "xxMetodoDePago")
+                                    {
+                                        GlobalContext.LogMessage(nodeValueorg.InnerText);
+                                        cboPMethod.SelectedValue = nodeValueorg.InnerText;
+                                    }
+                                    if (nodeValueorg.LocalName == "emailLoop1")
+                                    {
+                                        GlobalContext.LogMessage(nodeValueorg.InnerText);
+                                        txtEmail.Text = nodeValueorg.InnerText;
+                                    }
+                                    if (nodeValueorg.LocalName == "xxDatosCuenta")
+                                    {
+                                        GlobalContext.LogMessage(nodeValueorg.InnerText);
+                                        txtCardNumber.Text = nodeValueorg.InnerText;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
         private void dataGridServicios_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
         }
-
     }
-
-
 }
+public class Link
+{
+    public string rel { get; set; }
+    public string href { get; set; }
+}
+
+public class Item
+{
+    public int id { get; set; }
+    public string str_codigo { get; set; }
+    public string str_startdate { get; set; }
+    public string str_tipo { get; set; }
+    public int int_idiccs { get; set; }
+    public string str_descripcion { get; set; }
+    public string str_enddate { get; set; }
+    public List<Link> links { get; set; }
+}
+
+public class Link2
+{
+    public string rel { get; set; }
+    public string href { get; set; }
+}
+
+public class RootObject
+{
+    public bool hasMore { get; set; }
+    public List<Item> items { get; set; }
+    public List<Link2> links { get; set; }
+}
+
+
