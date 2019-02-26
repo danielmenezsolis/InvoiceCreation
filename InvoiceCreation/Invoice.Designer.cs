@@ -659,6 +659,7 @@
             this.lblPartyId.Name = "lblPartyId";
             this.lblPartyId.Size = new System.Drawing.Size(0, 13);
             this.lblPartyId.TabIndex = 107;
+            this.lblPartyId.Visible = false;
             // 
             // Invoice
             // 

@@ -23,6 +23,7 @@ namespace InvoiceCreation
 {
     public partial class Invoice : Form
     {
+        public string pswCPQ { get; set; }
         public string CurrentCurrency { get; set; }
         public bool DesingMode { get; set; }
         public IRecordContext RecordContext { get; set; }
@@ -859,6 +860,7 @@ namespace InvoiceCreation
         }
         private void Invoice_Load_1(object sender, EventArgs e)
         {
+            pswCPQ = getPassword("CPQ");
             LoadCombos();
             cboCurrency.Text = lblCurrency.Text;
             foreach (DataGridViewRow dgvRenglon in dataGridServicios.Rows)
@@ -882,6 +884,24 @@ namespace InvoiceCreation
             dataGridServicios.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             getCustomerData(Convert.ToInt64(lblPartyId.Text));
         }
+        public string getPassword(string application)
+        {
+            string password = "";
+            ClientInfoHeader clientInfoHeader = new ClientInfoHeader();
+            APIAccessRequestHeader aPIAccessRequest = new APIAccessRequestHeader();
+            clientInfoHeader.AppID = "Query Example";
+            String queryString = "SELECT Password FROM CO.Password WHERE Aplicacion='" + application + "'";
+            clientORN.QueryCSV(clientInfoHeader, aPIAccessRequest, queryString, 1, "|", false, false, out CSVTableSet queryCSV, out byte[] FileData);
+            foreach (CSVTable table in queryCSV.CSVTables)
+            {
+                String[] rowData = table.Rows;
+                foreach (String data in rowData)
+                {
+                    password = String.IsNullOrEmpty(data) ? "" : data;
+                }
+            }
+            return password;
+        }
         private void LoadCombos()
         {
             try
@@ -889,7 +909,7 @@ namespace InvoiceCreation
                 var client = new RestClient("https://iccs.bigmachines.com/");
                 string User = Encoding.UTF8.GetString(Convert.FromBase64String("aW1wbGVtZW50YWRvcg=="));
                 string Pass = Encoding.UTF8.GetString(Convert.FromBase64String("U2luZXJneSoyMDE4"));
-                client.Authenticator = new HttpBasicAuthenticator("servicios", "Sinergy*2018");
+                client.Authenticator = new HttpBasicAuthenticator("servicios", "Sinergy2019.");
                 string definicion = "";
                 GlobalContext.LogMessage(definicion);
                 var request = new RestRequest("rest/v6/customCatalogoFactura/" + definicion, Method.GET);
@@ -1005,7 +1025,7 @@ namespace InvoiceCreation
     "<typ1:conjunction>And</typ1:conjunction>" +
       "<typ1:attribute>PartyId</typ1:attribute>" +
       "<typ1:operator>=</typ1:operator>" +
-      "<typ1:value>300000001801651</typ1:value>" +
+      "<typ1:value>" + lblPartyId.Text + "</typ1:value>" +
   "</typ1:item>" +
   "</typ1:group>" +
 "</typ1:filter>" +
@@ -1018,6 +1038,7 @@ namespace InvoiceCreation
 "</soapenv:Envelope>";
 
             byte[] byteArray = Encoding.UTF8.GetBytes(envelope);
+            GlobalContext.LogMessage("find:" + envelope);
             // Construct the base 64 encoded string used as credentials for the service call
             byte[] toEncodeAsBytes = System.Text.ASCIIEncoding.ASCII.GetBytes("itotal" + ":" + "Oracle123");
             string credentials = System.Convert.ToBase64String(toEncodeAsBytes);
