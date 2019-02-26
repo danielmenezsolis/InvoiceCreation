@@ -909,7 +909,7 @@ namespace InvoiceCreation
                 var client = new RestClient("https://iccs.bigmachines.com/");
                 string User = Encoding.UTF8.GetString(Convert.FromBase64String("aW1wbGVtZW50YWRvcg=="));
                 string Pass = Encoding.UTF8.GetString(Convert.FromBase64String("U2luZXJneSoyMDE4"));
-                client.Authenticator = new HttpBasicAuthenticator("servicios", "Sinergy2019.");
+                client.Authenticator = new HttpBasicAuthenticator("servicios", pswCPQ);
                 string definicion = "";
                 GlobalContext.LogMessage(definicion);
                 var request = new RestRequest("rest/v6/customCatalogoFactura/" + definicion, Method.GET);
